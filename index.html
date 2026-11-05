@@ -581,7 +581,13 @@ function editCategory(idx) {
     products.forEach(p => { if (p.category === oldName) p.category = name.trim(); });
     saveData(KEY_CAT, categories);
     saveData(KEY_PRODS, products);
-    // Recipe seed data from Chefkoch Top 50 2025
+    renderCategoryList();
+    toast('Aktualisiert ✅');
+  }
+}
+
+/* ===================== RECIPE SEED DATA ===================== */
+var recipes_seed = [
     recipes_seed = [
   {
     id: 'ck-perf-pancake',
@@ -1799,16 +1805,8 @@ function editCategory(idx) {
     dateAdded: new Date().toISOString()
   },
 ];
+];
 
-    if (recipes.length === 0) {
-        recipes = recipes_seed;
-        saveData(KEY_RECIPES, recipes);
-    }
-
-    renderCategoryList();
-    toast('Aktualisiert ✅');
-  }
-}
 
 function deleteCategory(idx) {
   if (!confirm('Kategorie "' + categories[idx] + '" löschen?')) return;
@@ -1829,6 +1827,36 @@ function saveCategory() {
     products.forEach(p => { if (p.category === oldName) p.category = name; });
     saveData(KEY_CAT, categories);
     saveData(KEY_PRODS, products);
+  }
+  
+  // Seed recipes if empty
+  if (recipes.length === 0 && typeof recipes_seed !== 'undefined') {
+    recipes = recipes_seed;
+    saveData(KEY_RECIPES, recipes);
+  }
+  
+  // Seed storage locations if empty
+  if (storages.length === 0) {
+    storages = [
+      { id: 'fridge', name: 'Kühlschrank', icon: '🧊' },
+      { id: 'freezer', name: 'Gefriertruhe', icon: '❄️' },
+      { id: 'pantry', name: 'Vorratskammer', icon: '📦' },
+      { id: 'kitchen', name: 'Küche', icon: '🍽️' },
+      { id: 'balcony', name: 'Balkon', icon: '🏠' },
+      { id: 'basement', name: 'Keller', icon: '🏚️' }
+    ];
+    saveData(KEY_STORE, storages);
+  }
+  
+  // Seed categories if empty (extend defaults)
+  if (categories.length === 0) {
+    categories = ['Lebensmittel','Getränke','Milchprodukte','Fleisch','Kühlung','Konserven','Tiefkühl','Reinigung','Sonstiges'];
+    saveData(KEY_CAT, categories);
+  }
+  
+  // Seed storage products if empty (demo data)
+  if (products.length === 0) {
+    // already seeded above
   } else {
     if (categories.includes(name)) return toast('Existiert schon!');
     categories.push(name);
@@ -2569,6 +2597,31 @@ document.addEventListener('DOMContentLoaded', () => {
       { id: 'demo3', name: 'Spülmittel', category: 'Reinigung', storage: 'kitchen', storageName: '🍽️ Küche', quantity: 1, unit: 'Flasche', minQuantity: 1, expiryDate: '', barcode: '', notes: '', dateAdded: new Date().toISOString() },
     ];
     saveData(KEY_PRODS, products);
+  }
+  
+  // Seed recipes if empty
+  if (recipes.length === 0 && typeof recipes_seed !== 'undefined') {
+    recipes = recipes_seed;
+    saveData(KEY_RECIPES, recipes);
+  }
+  
+  // Seed storage locations if empty
+  if (storages.length === 0) {
+    storages = [
+      { id: 'fridge', name: 'Kühlschrank', icon: '🧊' },
+      { id: 'freezer', name: 'Gefriertruhe', icon: '❄️' },
+      { id: 'pantry', name: 'Vorratskammer', icon: '📦' },
+      { id: 'kitchen', name: 'Küche', icon: '🍽️' },
+      { id: 'balcony', name: 'Balkon', icon: '🏠' },
+      { id: 'basement', name: 'Keller', icon: '🏚️' }
+    ];
+    saveData(KEY_STORE, storages);
+  }
+  
+  // Seed categories if empty
+  if (categories.length === 0) {
+    categories = ['Lebensmittel','Getränke','Milchprodukte','Fleisch','Kühlung','Konserven','Tiefkühl','Reinigung','Sonstiges'];
+    saveData(KEY_CAT, categories);
   }
   
   refreshAll();
