@@ -360,6 +360,9 @@ if (typeof CryptoJS === 'undefined') {
     <div class="btn-group" id="recipeDeleteBtn" style="display:none;">
       <button class="btn btn-danger btn-full" onclick="deleteRecipe()">🗑️ Löschen</button>
     </div>
+    <div class="btn-group" id="recipeShoppingBtn" style="display:none;">
+      <button class="btn btn-secondary btn-full" onclick="addRecipeToShoppingList()">🛒 Zutaten auf Einkaufsliste</button>
+    </div>
   </div>
 </div>
 
@@ -2137,6 +2140,44 @@ function deleteRecipe() {
     toast('Gelöscht 🗑️');
   }
 }
+function addRecipeToShoppingList() {
+  const recipeId = document.getElementById('recipeId').value;
+  if (!recipeId) return;
+  const r = recipes.find(x => x.id === recipeId);
+  if (!r) return;
+  
+  // Get existing shopping items (lowercase names for dedup)
+  const existingNames = shoppingList.map(x => x.name.toLowerCase());
+  let added = 0;
+  
+  // Parse ingredients and add each one
+  r.ingredients.forEach(ing => {
+    const name = ing.trim();
+    if (!name) return;
+    // Skip if already in shopping list
+    if (existingNames.some(n => n === name.toLowerCase())) return;
+    
+    shoppingList.push({
+      id: 'sl_' + Date.now() + '_' + added,
+      name: name,
+      quantity: 1,
+      unit: '',
+      checked: false
+    });
+    existingNames.push(name.toLowerCase());
+    added++;
+  });
+  
+  saveData(KEY_SHOPPING, shoppingList);
+  renderShoppingList();
+  
+  if (added > 0) {
+    toast('✅ ' + added + ' Zutaten zur Einkaufsliste hinzugefügt');
+  } else {
+    toast('ℹ️ Alle Zutaten schon auf der Liste');
+  }
+}
+
 
 function renderRecipes() {
   const container = document.getElementById('recipeList');
