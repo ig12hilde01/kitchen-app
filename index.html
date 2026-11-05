@@ -154,7 +154,45 @@ h3 { font-size:1rem; font-weight:600; }
 .expiry-expired { border-left:4px solid var(--danger); }
 </style>
 </head>
-<body>
+<body><div id="pw-gate" style="position:fixed;inset:0;background:#1a1a2e;display:flex;align-items:center;justify-content:center;z-index:9999;">
+  <div style="text-align:center;color:#fff;padding:20px;">
+    <div style="font-size:3rem;margin-bottom:16px;">🍽️</div>
+    <h2 style="margin-bottom:8px;">Kitchen App</h2>
+    <p style="color:#aaa;margin-bottom:24px;">Bitte Passwort eingeben</p>
+    <input type="password" id="pw-input" placeholder="Passwort" style="padding:12px 16px;border:none;border-radius:8px;font-size:1rem;width:240px;text-align:center;" onkeydown="if(event.key==='Enter')checkPw()">
+    <div id="pw-error" style="color:#ff6b6b;margin-top:12px;display:none;">Falsches Passwort</div>
+    <button class="btn btn-primary" onclick="checkPw()" style="margin-top:16px;">Einloggen</button>
+  </div>
+</div>
+<script>
+const PW_HASH = 'b74183a31bb1d0ec4c0352bb7861fb2a66e6d34aab3d41a497544e99220230f0';
+const SALT = 'kitchenVorrat';
+function checkPw() {
+  const input = document.getElementById('pw-input').value;
+  if (!input) return;
+  const hash = CryptoJS.SHA256(input + SALT).toString();
+  if (hash === PW_HASH) {
+    document.getElementById('pw-gate').style.display = 'none';
+    localStorage.setItem('kv_pw_auth', 'true');
+    document.querySelector('.section.active')?.classList.add('active');
+  } else {
+    document.getElementById('pw-error').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-input').focus();
+  }
+}
+// Automatisch wenn schon auth
+if (localStorage.getItem('kv_pw_auth') === 'true') {
+  document.getElementById('pw-gate').style.display = 'none';
+}
+// CryptoJS CDN laden falls nicht da
+if (typeof CryptoJS === 'undefined') {
+  const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js';
+  s.onload = () => { if (localStorage.getItem('kv_pw_auth') === 'true') document.getElementById('pw-gate').style.display = 'none'; };
+  document.head.appendChild(s);
+}
+</script>
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
