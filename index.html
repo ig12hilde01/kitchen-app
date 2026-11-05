@@ -584,12 +584,12 @@ function editCategory(idx) {
     // Recipe seed data from Chefkoch Top 50 2025
     recipes_seed = [
   {
-    id: 'ck-carbonara',
-    name: 'Carbonara wie bei der Mamma in Rom',
-    category: 'Hauptgericht',
+    id: 'ck-perf-pancake',
+    name: 'Der perfekte Pfannkuchen',
+    category: 'Frühstück',
     servings: 4,
-    ingredients: ["400g Spaghetti", "200g Guanciale oder Pancetta", "4 Eigelb", "100g Pecorino Romano", "Schwarzer Pfeffer", "Salz"],
-    steps: '1. Spaghetti in Salzwasser al dente kochen.\n2. Guanciale in grobe Würfel schneiden und in der Pfanne knusprig braten.\n3. Eigelb mit geriebenem Pecorino und viel Pfeffer vermischen.\n4. Nudeln abtropfen (Wasser aufheben!) und in die Pfanne zum Guanciale geben.\n5. Pfanne vom Herd nehmen! Sauce unterrühren – die Resthitze gart die Eier cremig.\n6. Sofort servieren, extra Pecorino darüber.',
+    ingredients: ["250g Mehl", "3 Eier", "250ml Milch", "125ml Wasser", "1 Prise Salz", "2 EL Öl"],
+    steps: '1. Alle Zutaten in einen Topf geben. 2. Mixer 2 Min. auf höchster Stufe. 3. Teig 30 Min. ruhen lassen. 4. Pfanne vorhitzen, Butter dazu. 5. Kleine Pfannkuchen backen. 6. Mit Apfelmuß oder Zucker/Zimt servieren.',
     dateAdded: new Date().toISOString()
   },
   {
@@ -597,8 +597,8 @@ function editCategory(idx) {
     name: 'Lasagne',
     category: 'Hauptgericht',
     servings: 6,
-    ingredients: ["500g Lasagneplatten", "500g Rinderhack", "800g Tomaten (passiert)", "1 Zwiebel", "2 Karotten", "2 Stangen Sellerie", "100ml Rotwein", "200ml Sahne", "100g Parmesan", "50g Butter", "50g Mehl", "500ml Milch", "Muskatnuss", "Salz, Pfeffer, Oregano"],
-    steps: '1. Zwiebel, Karotten, Sellerie fein würfeln. In Butter anbraten.\n2. Hack dazu, braten. Rotwein ablöschen, Tomaten dazu, 30 Min. köcheln.\n3. Bechamel: Butter schmelzen, Mehl dazu, Milch angießen, dickrühren. Muskat, Salz, Pfeffer.\n4. Schichten: Soße, Nudeln, Bechamel, Parmesan. Wiederholen.\n5. Oben viel Parmesan. 35 Min. bei 180°C backen.',
+    ingredients: ["500g Lasagneplatten", "500g Rinderhack", "800g Tomaten passiert", "1 Zwiebel", "2 Karotten", "100ml Rotwein", "200ml Sahne", "100g Parmesan", "Bechamel: 50g Butter, 50g Mehl, 500ml Milch, Muskat"],
+    steps: '1. Zwiebel, Karotten würfeln, in Butter anbraten. 2. Hack dazu, Rotwein ablöschen. 3. Tomaten dazu, 30 Min. köcheln. 4. Bechamel: Butter, Mehl, Milch, Muskat. 5. Schichten: Soße, Nudeln, Bechamel, Parmesan. 6. 35 Min. bei 180°C.',
     dateAdded: new Date().toISOString()
   },
   {
@@ -606,17 +606,8 @@ function editCategory(idx) {
     name: 'Chili con Carne',
     category: 'Hauptgericht',
     servings: 4,
-    ingredients: ["500g Rinderfleisch (gewürfelt)", "1 Dose Kidneybohnen", "1 Dose Mais", "800g gehackte Tomaten", "2 Zwiebeln", "3 Knoblauchzehen", "1 Paprika", "2 EL Chilipaste", "1 TL Kreuzkümmel", "1 TL Rauchpaprika", "Koriander", "Sauerrahm"],
-    steps: '1. Fleisch in großer Pfanne scharf anbraten, herausnehmen.\n2. Zwiebeln, Knoblauch, Paprika anbraten.\n3. Chili, Kreuzkümmel, Paprikapulver dazu, kurz mitrösten.\n4. Fleisch zurück, Tomaten, Bohnen (abgetropft), Mais dazu.\n5. 45 Min. köcheln lassen. Mit Koriander, Sauerrahm servieren.',
-    dateAdded: new Date().toISOString()
-  },
-  {
-    id: 'ck-bolognese',
-    name: 'Die echte Sauce Bolognese',
-    category: 'Hauptgericht',
-    servings: 4,
-    ingredients: ["400g Tagliatelle", "500g Rinderhack", "200g Schweinehack", "1 Zwiebel", "1 Karotte", "1 Stange Sellerie", "400g Tomaten (passiert)", "200ml Rotwein", "200ml Milch", "2 EL Tomatenmark", "Olivenöl", "Salz, Pfeffer, Basilikum"],
-    steps: '1. Zwiebel, Karotte, Sellerie fein würfeln. In Olivenöl weich dünsten.\n2. Hackfleisch braunbraten, Tomatenmark kurz mitrösten.\n3. Mit Rotwein ablöschen, Milch angießen, 2 Stunden köcheln.\n4. Tomaten dazu, weitere 30 Min.\n5. Tagliatelle kochen, Sauce darüber. Mit Basilikum servieren.',
+    ingredients: ["500g Rinderfleisch gewürfelt", "Kidneybohnen 1 Dose", "Mais 1 Dose", "800g gehackte Tomaten", "2 Zwiebeln", "3 Knoblauchzehen", "1 Paprika", "Chilipaste 2 EL", "Kreuzkümmel 1 TL", "Sauerrahm"],
+    steps: '1. Fleisch scharf anbraten. 2. Zwiebeln, Knoblauch, Paprika anbraten. 3. Chili, Kreuzkümmel dazu. 4. Fleisch zurück, Tomaten, Bohnen, Mais. 5. 45 Min. köcheln. 6. Mit Sauerrahm servieren.',
     dateAdded: new Date().toISOString()
   },
   {
@@ -624,26 +615,26 @@ function editCategory(idx) {
     name: 'Gulasch nach Oma Magda',
     category: 'Hauptgericht',
     servings: 4,
-    ingredients: ["800g Rindergulasch", "2 Zwiebeln", "3 Karotten", "2 Kartoffeln", "400g Tomaten", "1 Paprika", "2 EL Paprikapulver edelsüß", "1 EL scharf", "Kümmel", "Knoblauch", "Brühe", "Sauerkraut"],
-    steps: '1. Fleisch in großem Topf scharf anbraten, herausnehmen.\n2. Zwiebeln glasig dünsten, Paprikapulver einrühren.\n3. Fleisch zurück, mit Brühe ablöschen.\n4. 1,5 Std. köcheln lassen.\n5. Gemüse würfeln, dazu geben, weitere 30 Min.\n6. Mit Semmelknödel oder Brot servieren.',
+    ingredients: ["800g Rindergulasch", "2 Zwiebeln", "3 Karotten", "2 Kartoffeln", "400g Tomaten", "Paprika 1", "Paprikapulver 2 EL edelsüß", "Kümmel", "Brühe"],
+    steps: '1. Fleisch anbraten. 2. Zwiebeln, Paprikapulver dazu. 3. Mit Brühe ablöschen, 1,5 Std. köcheln. 4. Gemüse dazu, 30 Min. 5. Mit Semmelknödel servieren.',
     dateAdded: new Date().toISOString()
   },
   {
-    id: 'ck-huhn-butter',
-    name: 'Mozzarella-Hähnchen in Basilikum-Sahnesauce',
+    id: 'ck-carbonara',
+    name: 'Carbonara wie bei der Mamma in Rom',
     category: 'Hauptgericht',
     servings: 4,
-    ingredients: ["4 Hähnchenbrust", "200g Mozzarella", "200ml Sahne", "Frisches Basilikum", "2 EL Olivenöl", "2 Knoblauchzehen", "100ml Weißwein", "Parmesan", "Salz, Pfeffer"],
-    steps: '1. Hähnchen salzen, pfeffern, in Olivenöl goldbraun braten.\n2. Herausnehmen, Knoblauch kurz anbraten.\n3. Mit Weißwein ablöschen, Sahne dazu, einkochen lassen.\n4. Mozzarella in Scheiben schneiden, Hähnchen zurück.\n5. Mozzarella in Sauce schmelzen lassen.\n6. Mit Basilikum und Parmesan servieren.',
+    ingredients: ["400g Spaghetti", "200g Guanciale", "4 Eigelb", "100g Pecorino", "Schwarzer Pfeffer", "Salz"],
+    steps: '1. Spaghetti kochen. 2. Guanciale braten. 3. Eigelb + Pecorino + Pfeffer verrühren. 4. Nudeln zur Pfanne. 5. Pfanne vom Herd! Ei-Sauce unterrühren. 6. Sofort servieren.',
     dateAdded: new Date().toISOString()
   },
   {
-    id: 'ck-butter-chicken',
-    name: 'Indisches Butter Chicken aus dem Ofen',
+    id: 'ck-bolognese',
+    name: 'Die echte Sauce Bolognese',
     category: 'Hauptgericht',
     servings: 4,
-    ingredients: ["4 Hähnchenbrust", "200ml Sahne", "400g Tomaten (passiert)", "2 EL Garam Masala", "1 TL Kurkuma", "1 TL Chilipulver", "1 EL Ingwer (gehackt)", "3 Knoblauchzehen", "50g Butter", "Natürlicher Joghurt zum Marinieren", "Koriander", "Basmati"],
-    steps: '1. Hähnchen mit Joghurt, Garam Masala, Kurkuma marinieren.\n2. 30 Min. im Kühlschrank.\n3. Hähnchen in Ofen bei 200°C ca. 20 Min.\n4. Sauce: Butter schmelzen, Ingwer, Knoblauch anbraten.\n5. Tomaten, Sahne, Chili dazu, 15 Min. köcheln.\n6. Hähnchenstücke in Sauce geben. Mit Basmati und Koriander servieren.',
+    ingredients: ["400g Tagliatelle", "500g Rinderhack", "200g Schweinehack", "1 Zwiebel", "1 Karotte", "1 Sellerie", "400g Tomaten", "200ml Rotwein", "200ml Milch", "Tomatenmark"],
+    steps: '1. Zwiebel, Karotte, Sellerie würfeln, anbraten. 2. Hack braunbraten, Tomatenmark. 3. Rotwein, Milch, 2 Std. köcheln. 4. Tomaten dazu, 30 Min. 5. Tagliatelle kochen, Sauce darüber.',
     dateAdded: new Date().toISOString()
   },
   {
@@ -651,8 +642,8 @@ function editCategory(idx) {
     name: 'Königsberger Klopse',
     category: 'Hauptgericht',
     servings: 4,
-    ingredients: ["400g Hackfleisch (gemischt)", "2 Scheiben Weizenbrötchen", "100ml Milch", "1 Ei", "1 Zwiebel", "60g Butter", "2 EL Mehl", "500ml Fleischbrühe", "2 TL Kapern", "Senf", "Zitronensaft", "Sahne"],
-    steps: '1. Brötchen in Milch einweichen. Auspressen.\n2. Mit Hack, Ei, fein gewürfelter Zwiebel verkneten.\n3. Klopse formen, in kochendem Salzwasser 15 Min. garen.\n4. Butter schmelzen, Mehl einrühren, Brühe angießen.\n5. Kapern, Senf, Zitronensaft, Sahne dazu.\n6. Klopse in Sauce setzen. Mit Salz, Pfeffer, Petersilie. Mit Kochkartoffeln servieren.',
+    ingredients: ["400g Hackfleisch", "2 Scheiben Brötchen", "100ml Milch", "1 Ei", "1 Zwiebel", "60g Butter", "2 EL Mehl", "500ml Brühe", "Kapern", "Senf", "Sahne"],
+    steps: '1. Brötchen in Milch, mit Hack, Ei, Zwiebel verkneten. 2. Klopse formen, in Salzwasser 15 Min. 3. Butter, Mehl, Brühe, Kapern, Senf, Sahne = Soße. 4. Klopse in Soße. 5. Mit Kochkartoffeln.',
     dateAdded: new Date().toISOString()
   },
   {
@@ -660,8 +651,8 @@ function editCategory(idx) {
     name: 'Tiramisu',
     category: 'Nachtisch',
     servings: 6,
-    ingredients: ["500g Mascarpone", "4 Eier (getrennt)", "100g Zucker", "200g Löffelbisquits", "300ml starker Espresso (gekühlt)", "3 EL Rum", "Kakao"],
-    steps: '1. Eigelb mit Zucker cremig schlagen, Mascarpone unterrühren.\n2. Eiweiß steif schlagen, unterheben.\n3. Espresso mit Rum mischen, Löffelbisquits kurz eintunken.\n4. Schichten: Biskuits, Creme, Biskuits, Creme.\n5. Mindestens 4 Std. im Kühlschrank.\n6. Vor dem Servieren reichlich Kakao darüber.',
+    ingredients: ["500g Mascarpone", "4 Eier", "100g Zucker", "200g Löffelbisquits", "300ml Espresso", "3 EL Rum", "Kakao"],
+    steps: '1. Eigelb + Zucker cremig, Mascarpone dazu. 2. Eiweiß steif, unterheben. 3. Espresso + Rum, Biskuits eintunken. 4. Schichten: Biskuits, Creme. 5. 4 Std. Kühlschrank. 6. Kakao darauf.',
     dateAdded: new Date().toISOString()
   },
   {
@@ -669,17 +660,8 @@ function editCategory(idx) {
     name: 'Supersaftiger Apfelkuchen',
     category: 'Nachtisch',
     servings: 8,
-    ingredients: ["6 Äpfel", "250g Butter (weich)", "250g Zucker", "250g Mehl", "5 Eier", "1 Pck. Backpulver", "Zimt", "Vanillepudding-Pulver", "Marzipan zum Dekorieren"],
-    steps: '1. Äpfel schälen, in Spalten schneiden.\n2. Butter mit Zucker schaumig rühren, Eier einzeln dazu.\n3. Mehl mit Backpulver, Vanillepudding, Zimt mischen, unterrühren.\n4. Äpfel unter den Teig heben.\n5. In eingefettete Form geben.\n6. 50 Min. bei 180°C backen. Mit Marzipan dekorieren.',
-    dateAdded: new Date().toISOString()
-  },
-  {
-    id: 'ck-pancakes',
-    name: 'Der perfekte Pfannkuchen',
-    category: 'Frühstück',
-    servings: 4,
-    ingredients: ["250g Mehl", "3 Eier", "250ml Milch", "125ml Wasser", "1 Prise Salz", "2 EL Öl (für den Teig)", "Butter (zum Braten)", "Apfelmuß", "Zucker und Zimt"],
-    steps: '1. Mehl, Eier, Milch, Wasser, Salz, Öl in einen Topf geben.\n2. Mit dem Mixer ca. 2 Min. auf höchster Stufe verrühren.\n3. Teig 30 Min. ruhen lassen.\n4. Pfanne vorhitzen, etwas Butter dazu.\n5. Kleine Pfannkuchen backen (ca. 1-2 Min. pro Seite).\n6. Mit Apfelmuß, Zucker und Zimt servieren.',
+    ingredients: ["6 Äpfel", "250g Butter", "250g Zucker", "250g Mehl", "5 Eier", "Backpulver", "Zimt", "Marzipan"],
+    steps: '1. Äpfel schälen, Spalten. 2. Butter + Zucker schaumig, Eier dazu. 3. Mehl + Backpulver + Zimt unterrühren. 4. Äpfel unterheben. 5. In Form, 50 Min. bei 180°C. 6. Mit Marzipan.',
     dateAdded: new Date().toISOString()
   },
   {
@@ -687,8 +669,8 @@ function editCategory(idx) {
     name: 'Belgische Waffeln',
     category: 'Frühstück',
     servings: 6,
-    ingredients: ["250g Mehl", "10g Backpulver", "50g Zucker", "3 Eier", "150g Butter (geschmolzen)", "300ml Milch", "1 Pck. Vanillezucker", "Puderzucker zum Servieren"],
-    steps: '1. Mehl, Backpulver, Zucker, Vanillezucker mischen.\n2. Eier trennen. Eigelb mit Milch und Butter mischen.\n3. Alles vermengen, Eiweiß steif schlagen, unterheben.\n4. Waffeleisen vorheizen, Testwaffel backen.\n5. Waffeln goldbraun backen (ca. 3-4 Min.).\n6. Mit Puderzucker, frischen Beeren servieren.',
+    ingredients: ["250g Mehl", "10g Backpulver", "50g Zucker", "3 Eier", "150g Butter geschmolzen", "300ml Milch", "Vanillezucker"],
+    steps: '1. Mehl, Backpulver, Zucker mischen. 2. Eier trennen, Eigelb + Milch + Butter. 3. Alles verrühren, Eiweiß unterheben. 4. Waffeleisen vorheizen. 5. Goldbraun backen. 6. Puderzucker + Beeren.',
     dateAdded: new Date().toISOString()
   },
   {
@@ -696,8 +678,8 @@ function editCategory(idx) {
     name: 'Cremiger Nudelauflauf mit Tomatensauce',
     category: 'Hauptgericht',
     servings: 4,
-    ingredients: ["400g Rigatoni", "300g Hackfleisch", "400g Tomaten (passiert)", "1 Zwiebel", "2 Knoblauchzehen", "200ml Sahne", "150g Mozzarella", "50g Parmesan", "Oregano", "Salz, Pfeffer"],
-    steps: '1. Nudeln al dente kochen.\n2. Hackfleisch mit Zwiebel, Knoblauch anbraten.\n3. Tomaten, Sahne, Oregano dazu, 10 Min. köcheln.\n4. Nudeln unterrühren.\n5. In Auflaufform, Mozzarella und Parmesan darauf.\n6. 25 Min. bei 200°C überbacken.',
+    ingredients: ["400g Rigatoni", "300g Hackfleisch", "400g Tomaten", "1 Zwiebel", "2 Knoblauchzehen", "200ml Sahne", "150g Mozzarella", "Parmesan", "Oregano"],
+    steps: '1. Nudeln kochen. 2. Hack mit Zwiebel, Knoblauch anbraten. 3. Tomaten, Sahne, Oregano, 10 Min. 4. Nudeln dazu. 5. Mozzarella + Parmesan drauf. 6. 25 Min. bei 200°C.',
     dateAdded: new Date().toISOString()
   },
   {
@@ -705,8 +687,8 @@ function editCategory(idx) {
     name: 'Das beste Kartoffelgratin',
     category: 'Beilage',
     servings: 4,
-    ingredients: ["1kg Kartoffeln", "200ml Sahne", "200ml Milch", "3 Knoblauchzehen", "100g Gruyère oder Emmentaler", "Muskatnuss", "Salz, Pfeffer", "Butter zum Einfetten"],
-    steps: '1. Kartoffeln schälen, in dünne Scheiben schneiden.\n2. Knoblauch die Form ausreiben.\n3. Sahne, Milch, Muskat, Salz, Pfeffer erhitzen.\n4. Kartoffelschichten in Form legen, Sauce dazwischen.\n5. Käse darüber. Mit Alufolie 40 Min. bei 180°C.\n6. 15 Min. ohne Folie, bis Käse knusprig.',
+    ingredients: ["1kg Kartoffeln", "200ml Sahne", "200ml Milch", "3 Knoblauchzehen", "100g Gruyère", "Muskatnuss", "Butter"],
+    steps: '1. Kartoffeln schälen, dünn schneiden. 2. Form mit Knoblauch einreiben. 3. Sahne, Milch, Muskat, Salz, Pfeffer erhitzen. 4. Kartoffel-Scheiben in Form, Sauce dazwischen. 5. Käse drauf. 6. 40 Min. bei 180°C mit Folie, 15 Min. ohne.',
     dateAdded: new Date().toISOString()
   },
   {
@@ -714,8 +696,1106 @@ function editCategory(idx) {
     name: 'Schnelle Käsespätzle',
     category: 'Hauptgericht',
     servings: 4,
-    ingredients: ["500g Spätzle (oder Nockerl)", "300g Käse (Gouda/Emmentaler)", "4 Zwiebeln", "200ml Sahne", "Butter", "Salz, Pfeffer, Muskat"],
-    steps: '1. Spätzle nach Packungsanleitung kochen.\n2. Zwiebeln in Scheiben schneiden, in Butter karamellisieren.\n3. Spätzle mit Käse, Sahne, gewürzten Zwiebeln schichten.\n4. Im Ofen bei 200°C 15 Min. überbacken.',
+    ingredients: ["500g Spätzle", "300g Käse Gouda", "4 Zwiebeln", "200ml Sahne", "Butter", "Salz, Pfeffer, Muskat"],
+    steps: '1. Spätzle kochen. 2. Zwiebeln in Butter karamellisieren. 3. Spätzle mit Käse, Sahne schichten. 4. 15 Min. bei 200°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-huhn-butter',
+    name: 'Mozzarella-Hähnchen in Basilikum-Sahnesauce',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["4 Hähnchenbrust", "200g Mozzarella", "200ml Sahne", "Basilikum", "2 EL Olivenöl", "Knoblauch", "100ml Weißwein", "Parmesan"],
+    steps: '1. Hähnchen salzen, pfeffern, braten. 2. Knoblauch anbraten. 3. Weißwein, Sahne einkochen. 4. Mozzarella dazu, schmelzen. 5. Mit Basilikum, Parmesan.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-butter-chicken',
+    name: 'Indisches Butter Chicken aus dem Ofen',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["4 Hähnchenbrust", "200ml Sahne", "400g Tomaten", "Garam Masala", "Kurkuma", "Chilipulver", "Ingwer", "Knoblauch", "Butter", "Joghurt", "Basmati"],
+    steps: '1. Hähnchen mit Joghurt, Gewürzen marinieren. 2. 30 Min. Kühlschrank. 3. Ofen 200°C, 20 Min. 4. Butter, Ingwer, Knoblauch anbraten. 5. Tomaten, Sahne, Chili, 15 Min. 6. Hähnchen dazu, Basmati.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-eiersalat',
+    name: 'Einfacher Eiersalat',
+    category: 'Snack',
+    servings: 4,
+    ingredients: ["6 Eier", "150g Mayonnaise", "1 Gurke", "2 Frühlingszwiebeln", "Senf", "Salz, Pfeffer", "Dill"],
+    steps: '1. Eier hart kochen, würfeln. 2. Gurke klein schneiden. 3. Mayonnaise, Senf, Dill mischen. 4. Alles vermengen. 5. Mit Salat servieren.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-gruenkohl',
+    name: 'Grünkohl wie ihn Mutter kochte',
+    category: 'Beilage',
+    servings: 4,
+    ingredients: ["1 Strunk Grünkohl", "2 Speckwürfel", "2 Zwiebeln", "1 Apfel", "Brühe", "Muskat"],
+    steps: '1. Grünkohl putzen, klein schneiden. 2. Speck, Zwiebeln anbraten. 3. Grünkohl dazu, Apfel würfeln. 4. Mit Brühe ablöschen, 1 Std. köcheln. 5. Muskat, Salz, Pfeffer.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-nudel-auflauf-schnell',
+    name: 'Schneller Nudelauflauf',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["400g Nudeln", "300g Hackfleisch", "400g TK-Gemüse", "200ml Sahne", "150g Käse", "Paprika"],
+    steps: '1. Nudeln kochen. 2. Hack anbraten, Gemüse dazu. 3. Sahne, Gewürze. 4. Nudeln mischen. 5. Käse drauf, 20 Min. bei 200°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-brot-friss',
+    name: 'Friss dich dumm Brot',
+    category: 'Brot',
+    servings: 1,
+    ingredients: ["500g Mehl", "250ml Milch", "1 Pck. Trockenhefe", "50g Öl", "1 TL Salz", "1 EL Zucker"],
+    steps: '1. Alle Zutaten verkneten. 2. 30 Min. ruhen. 3. In Kastenform. 4. 45 Min. bei 180°C backen.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-milchreis',
+    name: 'Der perfekte Milchreis',
+    category: 'Nachtisch',
+    servings: 4,
+    ingredients: ["250g Milchreis", "1L Milch", "Zimt", "Zucker", "Zitronenschale", "Vanille"],
+    steps: '1. Milch, Zitronenschale, Zimt aufkochen. 2. Reis dazu, 25 Min. bei kleiner Hitze rühren. 3. Zucker, Vanille. 4. Mit Zimt und Apfelmus servieren.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-bratkartoffeln',
+    name: 'Knusprige Bratkartoffeln',
+    category: 'Beilage',
+    servings: 4,
+    ingredients: ["1kg Kartoffeln (vorgekocht)", "200g Speck", "2 Zwiebeln", "Butter", "Salz, Pfeffer", "Paprikapulver"],
+    steps: '1. Kartoffeln in Scheiben. 2. Speck, Zwiebeln braten. 3. Kartoffeln dazu, knusprig braten. 4. Salz, Pfeffer, Paprika.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-schnecken',
+    name: 'Blätterteig-Schnecken',
+    category: 'Nachtisch',
+    servings: 8,
+    ingredients: ["1 Rolle Blätterteig", "100g Butter", "100g Zucker", "Zimt", "Mandelsplitter", "Puderzucker"],
+    steps: '1. Blätterteig ausrollen. 2. Butter schmelzen, mit Zucker + Zimt. 3. Auf Teig streichen. 4. Aufrollen, Scheiben schneiden. 5. Mandeln drauf. 6. 20 Min. bei 180°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-gemuese-lasagne',
+    name: 'Julies feine Gemüselasagne',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["Lasagneplatten", "2 Zucchini", "1 Aubergine", "1 Paprika", "400g Tomaten", "200ml Sahne", "100g Feta", "Basilikum"],
+    steps: '1. Gemüse braten. 2. Mit Tomaten, Sahne köcheln. 3. Schichten: Gemüse, Nudeln, Feta. 4. 30 Min. bei 180°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-knoedel',
+    name: 'Sivis Semmelknödel',
+    category: 'Beilage',
+    servings: 4,
+    ingredients: ["5 Semmelwürfel", "250ml Milch", "2 Eier", "1 Zwiebel", "Butter", "Petersilie", "Salz, Muskat"],
+    steps: '1. Semmelwürfel in Milch einweichen. 2. Auspressen, mit Eiern, Zwiebel, Petersilie verkneten. 3. Knödel formen. 4. In Salzwasser 20 Min. garen.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-aperol',
+    name: 'Aperol Spritz',
+    category: 'Getränk',
+    servings: 1,
+    ingredients: ["50ml Aperol", "90ml Prosecco", "Soda", "Eiswürfel", "Orange"],
+    steps: '1. Glas mit Eis füllen. 2. Aperol, Prosecco, Soda. 3. Mit Orangenscheibe.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-chinesisch-nudeln',
+    name: 'Chinesisch gebratene Nudeln',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["400g Udon oder Spätzchen", "2 Hähnchenbrust", "2 Eier", "Paprika", "Erbsen", "Sojasauce", "Sesamöl", "Ingwer", "Knoblauch"],
+    steps: '1. Nudeln kochen. 2. Hähnchen braten. 3. Gemüse dazu, Eier reinrühren. 4. Nudeln, Sojasauce, Sesamöl. 5. Mit Sesam.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-paprika',
+    name: 'Gefüllte Paprika nach Uroma Susanne',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["8 Paprika", "400g Hackfleisch", "200g Reis", "400g Tomaten", "1 Zwiebel", "Käse", "Paprikapulver", "Knoblauch"],
+    steps: '1. Reis kochen. 2. Hack, Zwiebel, Knoblauch anbraten. 3. Mit Reis, Tomaten mischen. 4. Paprika füllen. 5. Käse drauf, 30 Min. bei 180°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-fanta-kuchen',
+    name: 'Fantakuchen mit Mandarinen-Schmand',
+    category: 'Nachtisch',
+    servings: 8,
+    ingredients: ["1 Glas Fanta", "1 Glas Mandarinen", "250g Mehl", "250g Zucker", "200g Butter", "3 Eier", "Backpulver", "200g Schmand"],
+    steps: '1. Fanta + Mandarinen (mit Saft) in eine Schüssel. 2. Butter, Zucker, Eier dazu. 3. Mehl, Backpulver. 4. In Form, 45 Min. bei 180°C. 5. Mit Schmand.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-couscous',
+    name: 'Couscous-Salat lecker würzig',
+    category: 'Salat',
+    servings: 4,
+    ingredients: ["300g Couscous", "400g Tomaten", "1 Gurke", "1 Zitrone", "Feta", "Olivenöl", "Zitronensaft", "Koriander", "Minze"],
+    steps: '1. Couscous mit kochendem Wasser übergießen. 2. Gemüse würfeln. 3. Olivenöl, Zitronensaft, Kräuter mischen. 4. Alles vermengen. 5. Mit Feta.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-schoko-kuchen',
+    name: 'Saftiger Schokokuchen',
+    category: 'Nachtisch',
+    servings: 8,
+    ingredients: ["250g Mehl", "200g Zucker", "100g Kakao", "250g Butter", "4 Eier", "250ml Buttermilch", "Backpulver"],
+    steps: '1. Butter, Zucker schaumig. 2. Eier einzeln. 3. Mehl, Kakao, Backpulver. 4. Buttermilch. 5. 45 Min. bei 180°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-naan',
+    name: 'Naanbrot',
+    category: 'Brot',
+    servings: 8,
+    ingredients: ["250g Mehl", "1 Pck. Trockenhefe", "100ml Joghurt", "1 Ei", "2 EL Öl", "1 TL Zucker", "Butter", "Knoblauch"],
+    steps: '1. Mehl, Hefe, Joghurt, Ei, Öl, Zucker verkneten. 2. 1 Std. gehen lassen. 3. Kleine Fladen formen. 4. In heisser Pfanne goldbraun backen. 5. Mit Knoblauchbutter.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-bruschetta',
+    name: 'Bruschetta mit Tomaten und Knoblauch',
+    category: 'Vorspeise',
+    servings: 4,
+    ingredients: ["1 Baguette", "4 Tomaten", "Knoblauch", "Basilikum", "Olivenöl", " Balsam-Essig", "Salz, Pfeffer"],
+    steps: '1. Baguette scheiben, rösten. 2. Tomaten würfeln, mit Basilikum, Olivenöl, Essig mischen. 3. Knoblauch die Toasts einreiben. 4. Tomatenmix drauf. 5. Basilikumblätter.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-bananenbrot',
+    name: 'Bananenbrot ohne extra Fett',
+    category: 'Nachtisch',
+    servings: 8,
+    ingredients: ["4 reife Bananen", "250g Mehl", "150g Zucker", "2 Eier", "1 Pck. Backpulver", "Zimt"],
+    steps: '1. Bananen zerdrücken. 2. Mit Eiern, Zucker mischen. 3. Mehl, Backpulver, Zimt. 4. In Kastenform. 5. 50 Min. bei 175°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-rouladen',
+    name: 'Rinderrouladen klassisch',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["4 Rinderrouladen", "Senf", "4 Scheiben Speck", "4 Scheiben Käse", "2 Zwiebeln", "6 Gewürzgurken", "400g Tomaten", "Rotwein"],
+    steps: '1. Rouladen bestreichen mit Senf. 2. Mit Speck, Gurke, Käse rollen. 3. Zusammenstecken. 4. Braten. 5. Zwiebeln, Tomaten, Rotwein, 1,5 Std. köcheln.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-frikadellen',
+    name: 'Omas beste Frikadellen',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["500g Hackfleisch", "2 Semmelwürfel", "1 Ei", "1 Zwiebel", "Ketchup", "Senf", "Salz, Pfeffer"],
+    steps: '1. Semmelwürfel in Wasser, auspressen. 2. Mit Hack, Ei, Zwiebel, Gewürzen verkneten. 3. Frikadellen formen. 4. In Butter goldbraun braten. 5. Mit Ketchup, Senf.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-bechamel',
+    name: 'Bechamel-Sauce',
+    category: 'Soße',
+    servings: 4,
+    ingredients: ["50g Butter", "50g Mehl", "500ml Milch", "Muskatnuss", "Salz, Pfeffer"],
+    steps: '1. Butter schmelzen. 2. Mehl einrühren. 3. Milch angießen, dickrühren. 4. Muskat, Salz, Pfeffer.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-nudelsalat',
+    name: 'Bester und leckerster Nudelsalat',
+    category: 'Salat',
+    servings: 6,
+    ingredients: ["500g Nudeln (Rigatoni)", "2 Paprika", "1 Zwiebel", "100g Oliven", "200g Kochschinken", "200ml Sahne", "100ml Essig", "Senf", "Olivenöl"],
+    steps: '1. Nudeln kochen, abkühlen. 2. Gemüse, Schinken, Oliven würfeln. 3. Sahne, Essig, Senf, Öl mischen. 4. Alles vermengen. 5. 2 Std. durchziehen lassen.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-pancakes-amerikanisch',
+    name: 'Amerikanische Pancakes',
+    category: 'Frühstück',
+    servings: 4,
+    ingredients: ["250g Mehl", "2 EL Zucker", "1 Pck. Backpulver", "250ml Milch", "1 Ei", "50g Butter geschmolzen"],
+    steps: '1. Alle Zutaten verrühren. 2. Kleine Pfannkuchen in Butter braten. 3. Mit Ahornsirup, Beeren, Puderzucker.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-guacamole',
+    name: '1a Guacamole-Dip',
+    category: 'Vorspeise',
+    servings: 4,
+    ingredients: ["3 Avocados", "1 Limette", "1 Zwiebel", "1 Tomate", "Koriander", "1 Chilischote", "Salz"],
+    steps: '1. Avocados zerdrücken. 2. Zwiebel, Tomate, Chili klein schneiden. 3. Limette, Koriander, Salz. 4. Alles mischen. 5. Mit Tortilla-Chips.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-huehnersuppe',
+    name: 'Omas Hühnersuppe',
+    category: 'Suppe',
+    servings: 4,
+    ingredients: ["1 Hähnchen", "2 Karotten", "2 Stangen Sellerie", "2 Zwiebeln", "1 Lauch", "Nudeln", "Salz, Pfeffer, Kümmel"],
+    steps: '1. Hähnchen in Wasser kochen. 2. Gemüse rein: Karotten, Sellerie, Zwiebel, Lauch. 3. 45 Min. köcheln. 4. Nudeln dazu. 5. Mit Kümmel, Salz, Pfeffer.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-flammkuchen',
+    name: 'Einfacher Flammkuchen',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["Blätterteig", "250ml Sahne", "4 EL Quark", "2 Zwiebeln", "200g Bacon", "Salz, Pfeffer"],
+    steps: '1. Blätterteig ausrollen. 2. Sahne + Quark mischen, darauf streichen. 3. Zwiebeln, Bacon darauf. 4. 15 Min. bei 220°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-bauerntopf',
+    name: 'Bauerntopf',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["500g Rinderfleisch", "3 Kartoffeln", "3 Karotten", "2 Zwiebeln", "1 Sellerie", "Paprika", "Tomaten", "Brühe", "Paprikapulver"],
+    steps: '1. Fleisch braten. 2. Gemüse würfeln, dazu. 3. Mit Brühe ablöschen. 4. 1 Std. köcheln. 5. Mit Semmelknödel.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-karotten-kuchen',
+    name: 'Karottenkuchen',
+    category: 'Nachtisch',
+    servings: 8,
+    ingredients: ["300g Mehl", "200g Zucker", "200g Butter", "3 Eier", "300g Karotten", "100g Walnüsse", "Backpulver", "Zimt"],
+    steps: '1. Karotten raspeln. 2. Butter, Zucker, Eier schaumig. 3. Mehl, Backpulver, Zimt. 4. Karotten, Walnüsse. 5. 50 Min. bei 180°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-zitronen-kuchen',
+    name: 'Zitronenkuchen',
+    category: 'Nachtisch',
+    servings: 8,
+    ingredients: ["250g Mehl", "200g Butter", "150g Zucker", "3 Eier", "1 Bio-Zitrone", "1 Pck. Backpulver", "Puderzucker"],
+    steps: '1. Alle Zutaten für Boden verkneten. 2. In Form, 20 Min. bei 180°C. 3. Zitronensaft, -schale, Zucker, Eier mischen. 4. Auf Boden, 25 Min. 5. Puderzucker.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-kuerbis-suppe',
+    name: 'Kürbissuppe mit Ingwer und Kokosmilch',
+    category: 'Suppe',
+    servings: 4,
+    ingredients: ["1kg Hokkaido-Kürbis", "1 Zwiebel", "2 Knoblauchzehen", "200ml Kokosmilch", "1 EL Ingwer", "Chili", "Brühe", "Sesam"],
+    steps: '1. Kürbis, Zwiebel, Knoblauch würfeln. 2. Anbraten. 3. Mit Brühe ablöschen, 20 Min. 4. Pürieren. 5. Kokosmilch, Ingwer, Chili. 6. Mit Sesam.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-pizzateig',
+    name: 'Der beste Pizzateig',
+    category: 'Brot',
+    servings: 4,
+    ingredients: ["500g Mehl", "325ml lauwarmes Wasser", "7g Trockenhefe", "10g Salz", "2 EL Olivenöl"],
+    steps: '1. Alle Zutaten verkneten. 2. 1 Std. gehen lassen. 3. Ausrollen. 4. Belag drauf. 5. 25 Min. bei 250°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-kase-lauch',
+    name: 'Käse-Lauch-Suppe mit Hackfleisch',
+    category: 'Suppe',
+    servings: 4,
+    ingredients: ["2 Lauch", "300g Hackfleisch", "100g Käse", "1 Zwiebel", "750ml Brühe", "200ml Sahne", "Muskat"],
+    steps: '1. Lauch, Zwiebel Würfel. 2. Hack dazu, anbraten. 3. Brühe, 15 Min. 4. Sahne, Käse. 5. Muskat, Salz, Pfeffer. 6. Pürieren.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-muffins',
+    name: 'Die schnellsten und besten Muffins',
+    category: 'Nachtisch',
+    servings: 12,
+    ingredients: ["250g Mehl", "200g Zucker", "250ml Buttermilch", "125g Butter", "2 Eier", "1 Pck. Backpulver", "Vanillezucker"],
+    steps: '1. Alle Zutaten verrühren. 2. In Muffinförmchen. 3. 20 Min. bei 180°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-käsekuchen',
+    name: 'Der beste Käsekuchen der Welt',
+    category: 'Nachtisch',
+    servings: 8,
+    ingredients: ["250g Mehl", "125g Butter", "50g Zucker (Boden)", "500g Quark", "200g Sahne", "200g Zucker", "4 Eier", "1 Pck. Puddingpulver"],
+    steps: '1. Boden: Mehl, Butter, Zucker verkneten, in Form. 2. Quark, Sahne, Zucker, Eier, Pudding mischen. 3. Auf Boden. 4. 60 Min. bei 180°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-gnocchi',
+    name: 'Gnocchi mit Tomaten-Sofrito',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["500g mehligkochende Kartoffeln", "150g Mehl", "1 Ei", "Salz", "800g Tomaten", "Knoblauch", "Basilikum", "Olivenöl"],
+    steps: '1. Kartoffeln kochen, zerdrücken. 2. Mit Mehl, Ei verkneten. 3. Röllchen schneiden, Gnocchi drücken. 4. In Salzwasser. 5. Tomaten-Sauce. 6. Basilikum.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-pho',
+    name: 'Vietnamesische Pho-Suppe',
+    category: 'Suppe',
+    servings: 4,
+    ingredients: ["1,5L Rinderbrühe", "500g Rinderfleisch (dünne Scheiben)", "Reisnudeln", "1 Sternanis", "1 Zimtstange", "Fischsauce", "Frühlingszwiebeln", "Limette", "Basilikum", "Sprossen"],
+    steps: '1. Brühe mit Sternanis, Zimt aufkochen. 2. Reisnudeln kochen. 3. Rinder-Scheiben in heiße Brühe legen. 4. Nudeln in Schalen, Brühe dazu. 5. Fischsauce, Frühlingszwiebeln. 6. Limette, Basilikum, Sprossen.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-risotto',
+    name: 'Cremiges Risotto mit Champignons',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["400g Risotto-Reis (Arborio)", "250g Champignons", "1 Zwiebel", "150ml Weißwein", "1L Gemüsebrühe", "80g Parmesan", "Butter", "Olivenöl"],
+    steps: '1. Zwiebel in Olivenöl, anbraten. 2. Reis dazu, glasig rösten. 3. Weißwein, einkochen. 4. Brühe löffelweise dazu, rühren. 5. Champignons dazu. 6. Parmesan, Butter.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-frikadellen-indisch',
+    name: 'Indische Samosas',
+    category: 'Vorspeise',
+    servings: 20,
+    ingredients: ["500g Blätterteig", "4 Kartoffeln", "200g Erbsen", "1 Zwiebel", "1 EL Garam Masala", "1 TL Kurkuma", "1 TL Chili"],
+    steps: '1. Kartoffeln kochen, würfeln. 2. Zwiebel, Erbsen, Gewürze anbraten. 3. Mit Kartoffeln mischen. 4. Blätterteig in Dreiecke schneiden, füllen. 5. Zuklappen, frittieren. 6. Mit Chutney.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-tacos',
+    name: 'Mexikanische Tacos',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["Taco-Schalen", "500g Hackfleisch", "1 Packet Taco-Gewürz", "1 Salat", "1 Tomate", "1 Avocado", "Sour Cream", "Käse gerieben"],
+    steps: '1. Hackfleisch braten, Taco-Gewürz. 2. Salat, Tomate, Avocado würfeln. 3. Taco-Schalen füllen: Hack, Salat, Tomate, Avocado, Sour Cream, Käse.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-gumbo',
+    name: 'Gumbo mit Hühnchen',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["4 Hähnchenbrust", "200g Würstchen", "1 Zwiebel", "1 Paprika", "1 Sellerie", "400g Tomaten", "Hühnerbrühe", "Okra", "Reis", "Cajun-Gewürze"],
+    steps: '1. Hähnchen, Würstchen braten. 2. Zwiebel, Paprika, Sellerie (Holy Trinity). 3. Mit Tomaten, Brühe, Okra. 4. Cajun-Gewürze, 1 Std. köcheln. 5. Mit Reis.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-bolognese-weiss',
+    name: 'Weiße Bolognese',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["400g Tagliatelle", "500g Hackfleisch", "200ml Sahne", "1 Zwiebel", "1 Karotte", "1 Sellerie", "Parmesan", "Butter", "Salz, Pfeffer"],
+    steps: '1. Zwiebel, Karotte, Sellerie würfeln, anbraten. 2. Hack braunbraten. 3. Sahne dazu, 30 Min. köcheln. 4. Tagliatelle kochen, Sauce darüber. 5. Parmesan.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-paella',
+    name: 'Spanische Paella',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["400g Paella-Reis (Bombay)", "300g Garnelen", "200g Chorizo", "1 Paprika", "200g Erbsen", "Safran", "500ml Fischbrühe", "Knoblauch", "Zitronen"],
+    steps: '1. Chorizo, Garnelen anbraten. 2. Paprika, Knoblauch dazu. 3. Reis, Safran, Brühe. 4. 20 Min. ohne Rühren. 5. Garnelen, Erbsen oben drauf. 6. 10 Min. ruhen. 7. Zitrone.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-ratatouille',
+    name: 'Ratatouille',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["1 Zucchini", "1 Aubergine", "2 Paprika", "4 Tomaten", "2 Knoblauchzehen", "1 Zwiebel", "Oregano", "Olivenöl", "Basilikum"],
+    steps: '1. Alle Gemüse in dünne Scheiben. 2. Zwiebel, Knoblauch anbraten. 3. Gemüse schichten, Olivenöl, Oregano. 4. 45 Min. bei 180°C. 5. Basilikum.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-minestrone',
+    name: 'Minestrone',
+    category: 'Suppe',
+    servings: 4,
+    ingredients: ["2 Karotten", "2 Stangen Sellerie", "1 Lauch", "100g Nudeln", "400g Tomaten", "200g Kartoffeln", "200g Bohnen", "Gemüsebrühe", "Parmesan"],
+    steps: '1. Gemüse würfeln, anbraten. 2. Tomaten, Bohnen, Kartoffeln, Brühe. 3. 30 Min. köcheln. 4. Nudeln dazu. 5. Parmesan.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-gazpacho',
+    name: 'Gazpacho Andaluz',
+    category: 'Suppe',
+    servings: 4,
+    ingredients: ["1kg Tomaten", "1 Gurke", "1 Paprika", "1 Knoblauchzehe", "2 EL Olivenöl", "2 EL Essig", "1 Scheibe Brot", "Salz"],
+    steps: '1. Alle Zutaten in Mixer. 2. Pürieren. 3. Olivenöl, Essig, Salz. 4. Kalt stellen. 5. Mit Croûtons, Oliven.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-tomaten-suppe',
+    name: 'Cremige Tomatensuppe',
+    category: 'Suppe',
+    servings: 4,
+    ingredients: ["800g Tomaten", "1 Zwiebel", "2 Knoblauchzehen", "200ml Sahne", "500ml Gemüsebrühe", "Basilikum", "Olivenöl"],
+    steps: '1. Zwiebel, Knoblauch anbraten. 2. Tomaten, Brühe, 20 Min. 3. Pürieren. 4. Sahne dazu. 5. Basilikum, Olivenöl.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-kartoffel-suppe',
+    name: 'Kartoffelsuppe',
+    category: 'Suppe',
+    servings: 4,
+    ingredients: ["1kg Kartoffeln", "2 Zwiebeln", "2 Karotten", "500ml Gemüsebrühe", "200ml Sahne", "Schnittlauch", "Muskat"],
+    steps: '1. Kartoffeln, Zwiebeln, Karotten würfeln. 2. In Brühe, 20 Min. 3. Pürieren. 4. Sahne, Muskat. 5. Schnittlauch.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-moehren-suppe',
+    name: 'Möhrensuppe',
+    category: 'Suppe',
+    servings: 4,
+    ingredients: ["1kg Möhren", "1 Zwiebel", "2 Kartoffeln", "500ml Gemüsebrühe", "200ml Sahne", "Ingwer", "Koriander"],
+    steps: '1. Möhren, Zwiebel, Kartoffeln würfeln. 2. In Brühe, 20 Min. 3. Pürieren. 4. Sahne, Ingwer. 5. Koriander.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-zucchini-suppe',
+    name: 'Zucchinicremesuppe',
+    category: 'Suppe',
+    servings: 4,
+    ingredients: ["1kg Zucchini", "1 Zwiebel", "2 Kartoffeln", "500ml Gemüsebrühe", "100ml Sahne", "Zitronensaft", "Minze"],
+    steps: '1. Zucchini, Zwiebel, Kartoffeln würfeln. 2. In Brühe, 15 Min. 3. Pürieren. 4. Sahne, Zitronensaft. 5. Minze.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-schnitzel',
+    name: 'Wiener Schnitzel',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["4 Schweineschnitzel", "Mehl", "2 Eier", "Paniermehl", "Butter", "Zitronenspiben", "Lemon"],
+    steps: '1. Schnitzel klopfen. 2. Mehl, Eier, Paniermehl. 3. Panieren. 4. In Butter goldbraun frittieren. 5. Mit Zitrone, Petersilerkartoffeln.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-pommes',
+    name: 'Hausgemachte Pommes Frites',
+    category: 'Beilage',
+    servings: 4,
+    ingredients: ["1kg Kartoffeln (festkochend)", "Sonnenblumenöl zum Frittieren", "Salz", "Pfeffer"],
+    steps: '1. Kartoffeln in Stifte schneiden. 2. In Salzwasser 10 Min. blanchieren. 3. Abtrocknen. 4. Bei 160°C 1. Frittieren 10 Min. 5. Bei 190°C 2. Frittieren 5 Min. 6. Salzen.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-dong',
+    name: 'Döner Kebab',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["500g Lamm- oder Rindfleisch", "Döner-Gewürz (Paprika, Kreuzkümmel, Knoblauch)", "Fladenbrot", "Salat", "Tomaten", "Zwiebeln", "Joghurt-Sauce", "Chili-Sauce"],
+    steps: '1. Fleisch würfeln, Gewürze. 2. In Pfanne braten. 3. Fladenbrot erhitzen. 4. Fleisch, Salat, Tomaten, Zwiebeln. 5. Joghurt-Sauce. 6. Chili-Sauce.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-bbq',
+    name: 'BBQ Rippchen',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["1 kg Rippchen", "BBQ-Sauce", "Paprikapulver", "Knoblauchpulver", "Zwiebel-Pulver", "Brauner Zucker", "Salz, Pfeffer"],
+    steps: '1. Rippchen trocken tupfen. 2. Mit Gewürzen einreiben. 3. 2 Std. bei 150°C im Ofen. 4. BBQ-Sauce darauf. 5. Weitere 30 Min. 6. Mit Coleslaw.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-shakshuka',
+    name: 'Shakshuka',
+    category: 'Frühstück',
+    servings: 4,
+    ingredients: ["6 Eier", "400g Tomaten", "1 Paprika", "1 Zwiebel", "2 Knoblauchzehen", "1 TL Kreuzkümmel", "1 TL Paprikapulver", "Feta", "Basilikum"],
+    steps: '1. Zwiebel, Paprika, Knoblauch anbraten. 2. Tomaten, Kreuzkümmel, Paprika. 3. 10 Min. köcheln. 4. 6 Löcher, Eier rein. 5. 5-8 Min. bei kleiner Hitze. 6. Feta, Basilikum.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-hash',
+    name: 'Hashbrowns',
+    category: 'Frühstück',
+    servings: 4,
+    ingredients: ["1kg Kartoffeln", "1 Zwiebel", "2 EL Öl", "Salz, Pfeffer"],
+    steps: '1. Kartoffeln raspeln, auspressen. 2. Zwiebel dazu, Salz, Pfeffer. 3. In Öl flach verteilen. 4. Goldbraun braten, wenden. 5. Mit Ei oder Ketchup.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-fondue',
+    name: 'Käsefondue',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["400g Käse (Gruyère, Vacherin)", "200ml Weißwein", "1 EL Zitronensaft", "1 EL Kornbrand", "1 EL Stärke", "Knoblauch", "Baguette"],
+    steps: '1. Topf mit Knoblauch einreiben. 2. Wein, Zitronensaft, Kornbrand erhitzen. 3. Käse geraspelt, mit Stärke mischen. 4. Nach und nach reinrühren. 5. Mit Baguette, Salzkartoffeln.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-raclette',
+    name: 'Raclette',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["400g Raclette-Käse", "Salzkartoffeln", "Gurken", "Zwiebeln", "Salz, Pfeffer", "Senf"],
+    steps: '1. Kartoffeln kochen. 2. Raclette-Scheiben auf Raclette-Grill. 3. Käse schmelzen lassen. 4. Über Kartoffeln träufeln. 5. Mit Gurken, Zwiebeln.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-sushi',
+    name: 'Sushi-Rollen',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["300g Sushi-Reis", "Reisessig", "Nori-Blätter", "1 Avocado", "1 Gurke", "200g Lachs", "Sojasauce", "Wasabi", "Ingwer"],
+    steps: '1. Reis kochen, mit Reisessig mischen, abkühlen. 2. Nori auf Bambusmatte. 3. Reis darauf verteilen. 4. Lachs, Avocado, Gurke. 5. Aufrollen. 6. Mit Sojasauce, Wasabi.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-ramen',
+    name: 'Tonkotsu Ramen',
+    category: 'Suppe',
+    servings: 4,
+    ingredients: ["Ramen-Nudeln", "1L Ponzu-Soße", "2 EL Miso", "1 EL Sesamöl", "2 Eier", "Chashu-Schwein", "Frühlingszwiebeln", "Noriblätter", "Mais"],
+    steps: '1. Ponzu, Miso, Sesamöl in heiße Brühe. 2. Nudeln kochen. 3. In Schalen, Brühe dazu. 4. Chashu, Ei, Frühlingszwiebeln, Nori, Mais.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-pad-thai',
+    name: 'Pad Thai',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["400g Reispapier-Nudeln", "200g Garnelen", "2 Eier", "100g Erdnüsse", "100g Sojasprossen", "3 EL Pad-Thai-Soße", "1 Limette", "Frühlingszwiebeln"],
+    steps: '1. Nudeln einweichen. 2. Garnelen braten. 3. Eier reinrühren. 4. Nudeln, Pad-Thai-Soße. 5. Sojasprossen, Frühlingszwiebeln. 6. Erdnüsse, Limette.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-biryani',
+    name: 'Hühner-Biryani',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["400g Basmati-Reis", "4 Hähnchenbrust", "200ml Joghurt", "1 EL Garam Masala", "1 TL Kurkuma", "1 TL Chilipulver", "Zwiebeln", "Knoblauch", "Ingwer", "Koriander", "Minze"],
+    steps: '1. Hähnchen mit Joghurt, Gewürzen marinieren. 2. Reis kochen, halb gar. 3. Hähnchen in Schichten mit Reis. 4. 30 Min. bei kleiner Hitze. 5. Koriander, Minze.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-moussaka',
+    name: 'Moussaka',
+    category: 'Hauptgericht',
+    servings: 6,
+    ingredients: ["2 Auberginen", "500g Hackfleisch", "400g Tomaten", "1 Zwiebel", "Bechamel: 50g Butter, 50g Mehl, 500ml Milch", "Parmesan", "Zimt", "Muskat"],
+    steps: '1. Auberginen braten. 2. Hack, Zwiebel, Tomaten, Zimt. 3. Schichten: Auberginen, Hack. 4. Bechamel darüber. 5. 45 Min. bei 180°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-spanakopita',
+    name: 'Spanakopita (Spanakopita)',
+    category: 'Hauptgericht',
+    servings: 6,
+    ingredients: ["Blätterteig", "500g Spinat", "200g Feta", "2 Zwiebeln", "3 Eier", "Dill", "Olivenöl", "Muskat"],
+    steps: '1. Spinat auftauen, ausdrücken. 2. Zwiebeln anbraten. 3. Feta, Eier, Dill mischen. 4. Blätterteig schichten. 5. Füllung drauf. 6. 30 Min. bei 180°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-goulash-suppe',
+    name: 'Ungarisches Gulasch',
+    category: 'Suppe',
+    servings: 4,
+    ingredients: ["600g Rinderfleisch", "2 Zwiebeln", "3 EL Paprikapulver ungarisch", "2 Karotten", "2 Kartoffeln", "1 Paprika", "Brühe", "Knoblauch"],
+    steps: '1. Zwiebeln in viel Butter schwenken. 2. Paprikapulver einrühren. 3. Fleisch braunbraten. 4. Mit Brühe, Gemüse, 1,5 Std. köcheln.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-pho-chicken',
+    name: 'Vietnamesische Hühner-Nudelsuppe (Pho Ga)',
+    category: 'Suppe',
+    servings: 4,
+    ingredients: ["1 Hähnchenschenkel", "Reisnudeln", "1 Zwiebel", "Ingwer", "Sternanis", "Zimt", "Fischsauce", "Frühlingszwiebeln", "Limette", "Basilikum"],
+    steps: '1. Hähnchen, Zwiebel, Ingwer rösten. 2. In Brühe mit Sternanis, Zimt. 3. 1 Std. köcheln. 4. Nudeln kochen. 5. Nudeln in Schalen, Brühe, Hähnchen. 6. Fischsauce, Limette, Basilikum.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-hue-co',
+    name: 'Bun Cha Hanoi',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["400g Hackfleisch", "200g Schweinefleisch", "3 EL Fischsauce", "3 EL Zucker", "2 EL Essig", "Reisnudeln", "Kräuter", "Dip-Sauce: Fischsauce, Zucker, Essig, Chili, Knoblauch, Wasser"],
+    steps: '1. Fleisch würfeln, marinieren. 2. Grillen oder braten. 3. Dip-Sauce: Fischsauce, Zucker, Essig, Chili, Knoblauch, Wasser. 4. Nudeln, Kräuter. 5. Fleisch in Dip-Sauce.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-kek-lon',
+    name: 'Cajun Chicken',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["4 Hähnchenbrust", "2 EL Cajun-Gewürz", "2 EL Olivenöl", "100ml Sauerrahm", "1 TL Knoblauchpulver", "1 TL Paprikapulver"],
+    steps: '1. Hähnchen mit Gewürzen einreiben. 2. In Olivenöl braten. 3. 20 Min. bei 200°C. 4. Mit Sauerrahm, Knoblauch, Paprika.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-caesar-salat',
+    name: 'Caesar-Salat',
+    category: 'Salat',
+    servings: 4,
+    ingredients: ["1 Romainsalat", "100g Croutons", "50g Parmesan", "2 Anchovis", "1 Eigelb", "2 EL Zitronensaft", "1 EL Senf", "2 EL Olivenöl", "Knoblauch"],
+    steps: '1. Croutons backen. 2. Dressing: Eigelb, Anchovis, Zitronensaft, Senf, Olivenöl, Knoblauch pürieren. 3. Salat waschen, trennen. 4. Mit Dressing, Croutons, Parmesan.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-nicoise',
+    name: 'Salat Niçois',
+    category: 'Salat',
+    servings: 4,
+    ingredients: ["1 Salat (Rucola)", "4 Kartoffeln", "200g Thunfisch (Dose)", "4 Eier", "100g Oliven", "100g Green Beans", "2 Tomaten", "2 EL Dijon-Senf", "4 EL Olivenöl", "2 EL Essig"],
+    steps: '1. Kartoffeln, Eier kochen. 2. Bohnen blanchieren. 3. Thunfisch abtropfen. 4. Alles anrichten. 5. Dressing: Senf, Olivenöl, Essig. 6. Oliven darüber.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-caprese',
+    name: 'Caprese-Salat',
+    category: 'Salat',
+    servings: 4,
+    ingredients: ["4 Tomaten", "250g Mozzarella", "Basilikum", "Olivenöl", "Balsam-Creme", "Salz, Pfeffer"],
+    steps: '1. Tomaten, Mozzarella in Scheiben. 2. Abwechselnd auf Teller. 3. Basilikumblätter. 4. Olivenöl, Balsam-Creme. 5. Salz, Pfeffer.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-waldorf',
+    name: 'Waldorf-Salat',
+    category: 'Salat',
+    servings: 4,
+    ingredients: ["2 Äpfel", "1 Sellerie-Stange", "150g Walnüsse", "150g Mayonnaise", "100g Sauerrahm", "2 Stangen Sellerie", "Trauben"],
+    steps: '1. Äpfel, Sellerie würfeln. 2. Trauben halbieren. 3. Mayonnaise, Sauerrahm mischen. 4. Alles vermengen. 5. Walnüsse drauf.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-tabouleh',
+    name: 'Tabouleh',
+    category: 'Salat',
+    servings: 4,
+    ingredients: ["100g Couscous", "300g Petersilie", "100g Minze", "4 Tomaten", "2 Frühlingszwiebeln", "3 EL Zitronensaft", "4 EL Olivenöl", "Salz, Pfeffer"],
+    steps: '1. Couscous mit heißem Wasser übergießen. 2. Petersilie, Minze sehr fein schneiden. 3. Tomaten, Frühlingszwiebeln würfeln. 4. Zitronensaft, Olivenöl. 5. Alles mischen.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-hummus',
+    name: 'Hummus',
+    category: 'Vorspeise',
+    servings: 4,
+    ingredients: ["400g Kichererbsen (Dose)", "3 EL Tahini", "3 EL Zitronensaft", "2 Knoblauchzehen", "3 EL Olivenöl", "1 TL Kreuzkümmel", "Paprika zum Bestäuben"],
+    steps: '1. Kichererbsen abtropfen. 2. Alle Zutaten in Mixer. 3. Pürieren bis cremig. 4. Mit Olivenöl, Paprika servieren. 5. Mit Pita-Brot.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-baba-ganoush',
+    name: 'Baba Ganoush',
+    category: 'Vorspeise',
+    servings: 4,
+    ingredients: ["2 Auberginen", "3 EL Tahini", "2 EL Zitronensaft", "2 Knoblauchzehen", "3 EL Olivenöl", "Koriander", "Paprika"],
+    steps: '1. Auberginen ganz im Ofen rösten (180°C, 45 Min.). 2. Fruchtfleisch herauslöffeln. 3. Mit Tahini, Zitronensaft, Knoblauch mischen. 4. Pürieren. 5. Olivenöl, Koriander, Paprika.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-baklava',
+    name: 'Baklava',
+    category: 'Nachtisch',
+    servings: 12,
+    ingredients: ["500g Blätterteig", "300g Walnüsse", "200g Butter", "200g Zucker", "200ml Wasser", "3 EL Zitronensaft", "1 Stange Zimt"],
+    steps: '1. Blätterteig schichten (10 Schichten). 2. Jede Schicht mit Butter bestreichen. 3. Gehackte Walnüsse dazwischen. 4. In Quadrate schneiden. 5. 30 Min. bei 180°C. 6. Sirup: Zucker, Wasser, Zimt, Zitronensaft, aufheißend über die heißen Baklavas.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-schmalz',
+    name: 'Schmalzgebäck',
+    category: 'Nachtisch',
+    servings: 8,
+    ingredients: ["250g Mehl", "125g Schmalz", "100g Zucker", "3 Eigelb", "100ml Milch", "1 Pck. Backpulver", "Puderzucker"],
+    steps: '1. Alle Zutaten verkneten. 2. 30 Min. ruhen. 3. Ausrollen, Sterne oder andere Formen ausschneiden. 4. 15 Min. bei 180°C. 5. Mit Puderzucker.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-schnecken-gezuckert',
+    name: 'Zimtschnecken',
+    category: 'Nachtisch',
+    servings: 8,
+    ingredients: ["500g Mehl", "250ml Milch", "50g Butter", "50g Zucker", "7g Hefe", "1 Ei", "100g brauner Zucker", "2 EL Zimt", "100g Puderzucker"],
+    steps: '1. Teig aus Mehl, Milch, Butter, Zucker, Hefe, Ei. 2. 1 Std. gehen. 3. Ausrollen, brauner Zucker + Zimt. 4. Aufrollen, Scheiben schneiden. 5. 25 Min. bei 180°C. 6. Puderzucker-Glasur.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-stollen',
+    name: ' Weihnachtsstollen',
+    category: 'Nachtisch',
+    servings: 8,
+    ingredients: ["500g Mehl", "250g Butter", "150g Zucker", "250ml Milch", "7g Hefe", "200g Rosinen", "100g Mandeln", "1 Zitronat", "1 Orange", "Zimt", "Puderzucker"],
+    steps: '1. Hefe in lauwarmer Milch auflösen. 2. Mit Mehl, Butter, Zucker, Milch verkneten. 3. Rosinen, Mandeln, Zitronat, Orange dazu. 4. 2 Std. gehen. 5. Formen. 6. 45 Min. bei 180°C. 7. Warm mit Butter bestreichen, Puderzucker.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-lebkuchen',
+    name: 'Lebkuchen',
+    category: 'Nachtisch',
+    servings: 12,
+    ingredients: ["250g Mehl", "200g Honig", "150g Zucker", "100g Butter", "2 Eier", "1 Pck. Lebkuchengewürz", "50g Mandeln", "50g Rosinen", "Puderzucker-Glasur"],
+    steps: '1. Butter, Honig, Zucker erwärmen. 2. Mit Eiern, Mehl, Gewürz verkneten. 3. Mandeln, Rosinen. 4. 30 Min. ruhen. 5. Formen. 6. 15 Min. bei 180°C. 7. Mit Puderzucker-Glasur.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-marzipen-kartoffel',
+    name: 'Marzipen-Kartoffeln',
+    category: 'Nachtisch',
+    servings: 20,
+    ingredients: ["200g Marzipan", "100g Butter", "50g Kakao", "Puderzucker"],
+    steps: '1. Marzipan mit Butter verkneten. 2. In kleine Bällchen formen. 3. In Kakao wälzen. 4. Mit Gabel Rillen machen (wie Kartoffeln). 5. Mit Puderzucker bestreuen.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-spekulatius',
+    name: 'Spekulatius',
+    category: 'Nachtisch',
+    servings: 12,
+    ingredients: ["250g Mehl", "125g Butter", "100g Zucker", "100g Marzipan", "1 Pck. Spekulatiusgewürz", "1 Ei"],
+    steps: '1. Alle Zutaten verkneten. 2. 1 Std. Kühlschrank. 3. Ausrollen, Formen ausschneiden. 4. 12 Min. bei 180°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-zimtsterne',
+    name: 'Zimtsterne',
+    category: 'Nachtisch',
+    servings: 15,
+    ingredients: ["200g Marzipan", "200g Zucker", "4 Eiklar", "100g gemahlene Mandeln", "2 EL Zimt", "1 Prise Salz"],
+    steps: '1. Marzipan, Zucker, Eiklar, Mandeln, Zimt, Salz verkneten. 2. 1 Std. Kühlschrank. 3. Sterne formen. 4. 10 Min. bei 180°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-pfefferkuchen',
+    name: 'Pfefferkuchen',
+    category: 'Nachtisch',
+    servings: 12,
+    ingredients: ["250g Mehl", "200g Honig", "100g Butter", "100g brauner Zucker", "2 Eier", "1 Pck. Pfefferkuchengewürz", "5g Backpulver"],
+    steps: '1. Butter, Honig, Zucker erwärmen. 2. Mit Eiern, Mehl, Gewürz, Backpulver verkneten. 3. 30 Min. ruhen. 4. Formen. 5. 15 Min. bei 180°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-gluhwein',
+    name: 'Glühwein',
+    category: 'Getränk',
+    servings: 4,
+    ingredients: ["1 Flasche Rotwein", "2 Orangen", "1 Zitrone", "100g Zucker", "3 Sternanis", "2 Zimtstangen", "5 Gewürznelken", "1 EL Brand"],
+    steps: '1. Obst in Scheiben schneiden. 2. Wein, Zucker, Gewürze, Obst in Topf. 3. Nicht kochen lassen (70°C). 4. 10 Min. ziehen. 5. Brand dazu. 6. Mit Zimtstange servieren.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-punsch',
+    name: 'Feuerzangen-Punch',
+    category: 'Getränk',
+    servings: 8,
+    ingredients: ["1 Flasche Rotwein", "500ml Apfelsaft", "100g Zucker", "2 Zimtstangen", "3 Sternanis", "4 Nelken", "1 Zitronat", "1 Orange", "1 Flasche Rum (70%)"],
+    steps: '1. Wein, Apfelsaft, Zucker, Gewürze, Zitronat aufkochen. 2. Zuckerhut auf Sieb über den Topf. 3. Rum über Zuckerhut gießen, anzünden. 4. Rum im Zuckerhut schmelzen lassen, in Punch tropfen lassen.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-kinderschorfe',
+    name: 'Kinderschorle',
+    category: 'Getränk',
+    servings: 1,
+    ingredients: ["100ml Apfelsaft", "100ml Soda", "Eiswürfel"],
+    steps: '1. Glas mit Eis füllen. 2. Apfelsaft, Soda.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-smoothie',
+    name: 'Banane-Spinat Smoothie',
+    category: 'Getränk',
+    servings: 1,
+    ingredients: ["1 Banane", "1 Handvoll Spinat", "200ml Mandelmilch", "1 EL Honig", "Eiswürfel"],
+    steps: '1. Alle Zutaten in Mixer. 2. Pürieren bis smooth.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'ck-guacamole-classic',
+    name: 'Classic Guacamole',
+    category: 'Vorspeise',
+    servings: 4,
+    ingredients: ["3 Avocados", "1 Limette", "1 Zwiebel", "1 Tomate", "Koriander", "1 Chilischote", "Salz"],
+    steps: '1. Avocados zerdrücken. 2. Zwiebel, Tomate, Chili klein schneiden. 3. Limette, Koriander, Salz. 4. Alles mischen. 5. Mit Tortilla-Chips.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-mohrensuppe',
+    name: 'Möhrensuppe aus dem Thermomix',
+    category: 'Suppe',
+    servings: 4,
+    ingredients: ["1kg Möhren", "1 Zwiebel", "2 Kartoffeln", "500ml Gemüsebrühe", "200ml Sahne", "Ingwer", "Koriander"],
+    steps: '1. Möhren, Zwiebel, Kartoffeln würfeln. TM 10 Sek.速度 5. 2. Öl dazu, 5 Min. 120°C速度 1. 3. Brühe, 20 Min. 100°C速度 3. 4. Pürieren 30 Sek.速度 9. 5. Sahne, Ingwer.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-tomaten-suppe',
+    name: 'Tomatensuppe für den Thermomix',
+    category: 'Suppe',
+    servings: 4,
+    ingredients: ["800g Tomaten", "1 Zwiebel", "2 Knoblauchzehen", "200ml Sahne", "500ml Brühe", "Basilikum", "Olivenöl"],
+    steps: '1. Zwiebel, Knoblauch würfeln. TM 5 Sek.速度 5. 2. Öl, 5 Min. 120°C速度 1. 3. Tomaten, Brühe, 20 Min. 100°C速度 3. 4. Pürieren. 5. Sahne, Basilikum.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-kartoffel-suppe',
+    name: 'Kartoffelsuppe im Thermomix',
+    category: 'Suppe',
+    servings: 4,
+    ingredients: ["1kg Kartoffeln", "2 Zwiebeln", "2 Karotten", "500ml Gemüsebrühe", "200ml Sahne", "Schnittlauch", "Muskat"],
+    steps: '1. Kartoffeln, Zwiebeln, Karotten würfeln. TM 5 Sek.速度 5. 2. Brühe, 25 Min. 100°C速度 3. 3. Pürieren. 4. Sahne, Muskat.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-puree',
+    name: 'Kartoffelpüree mit Thermomix',
+    category: 'Beilage',
+    servings: 4,
+    ingredients: ["1kg Kartoffeln", "200ml Sahne", "100g Butter", "Muskatnuss", "Salz, Pfeffer"],
+    steps: '1. Kartoffeln schälen, vierteln. 2. In Thermomix-Einsatz 20 Min. 100°C速度 1. 3. Sahne, Butter dazu. 4. Pürieren 30 Sek.速度 9. 5. Muskat, Salz, Pfeffer.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-kartoffelsalat',
+    name: 'Kartoffelsalat für den Thermomix',
+    category: 'Beilage',
+    servings: 4,
+    ingredients: ["1kg Kartoffeln", "2 Zwiebeln", "200ml Essig", "100ml Öl", "1 EL Senf", "Schnittlauch", "Salz, Pfeffer"],
+    steps: '1. Kartoffeln schälen, vierteln. 2. Einsatz 20 Min. 100°C速度 1. 3. Zwiebel würfeln. TM 5 Sek.速度 5. 4. Essig, Öl, Senf dazu. 5. Kartoffeln, Schnittlauch. 6. Marinieren.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-bolognese',
+    name: 'Weiße Bolognese von Cettina Vicenzino',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["500g Hackfleisch", "1 Zwiebel", "1 Karotte", "1 Sellerie", "200ml Sahne", "400g Tomaten", "Parmesan", "Tagliatelle"],
+    steps: '1. Zwiebel, Karotte, Sellerie würfeln. TM 5 Sek.速度 5. 2. Hack dazu, 5 Min. Varoma速度 1. 3. Sahne, Tomaten, 20 Min. Varoma速度 1. 4. Tagliatelle im Einsatz kochen. 5. Parmesan.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-buttermilch-burger',
+    name: 'Buttermilch Chicken Burger',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["4 Hähnchenbrust", "200ml Buttermilch", "200g Mehl", "2 TL Backpulver", "1 TL Paprikapulver", "Burger-Buns", "Salat", "Tomate"],
+    steps: '1. Hähnchen in Buttermilch marinieren. 2. Mehl, Backpulver, Paprika mischen. 3. Hähnchen panierten. 4. Thermomix: Einsatz, Hähnchen 20 Min. Varoma速度 1. 5. Burger zusammenbauen.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-grießbrei',
+    name: 'Grießbrei mit gebratener Banane',
+    category: 'Nachtisch',
+    servings: 4,
+    ingredients: ["500ml Milch", "100g Grieß", "50g Zucker", "Zimt", "2 Bananen", "Butter"],
+    steps: '1. Milch, Zucker, Zimt. TM 5 Min. 90°C速度 3. 2. Grieß rein, 3 Min. 90°C速度 3. 3. Bananen in Scheiben, in Butter braten. 4. Grießbrei mit Bananen servieren.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-knuspel-joghurt',
+    name: 'Fruchtiger Knusperjoghurt',
+    category: 'Frühstück',
+    servings: 4,
+    ingredients: ["1L Milch", "2 EL Zitronensaft", "200g Joghurt", "100g Haferflocken", "50g Butter", "50g Zucker", "Fruchtgucker"],
+    steps: '1. Milch, Zitronensaft. TM 10 Min. 90°C速度 3. 2. Joghurt dazu, 3 Min. 90°C速度 3. 3. Haferflocken, Butter, Zucker, 10 Min. 120°C速度 1. 4. Früchte dazu.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-apfelauflauf',
+    name: 'Apfelauflauf mit Milchreis',
+    category: 'Nachtisch',
+    servings: 4,
+    ingredients: ["6 Äpfel", "250g Milchreis", "500ml Milch", "50g Zucker", "Zimt", "100g Rosinen", "2 Eier", "50g Butter"],
+    steps: '1. Äpfel schälen, würfeln. 2. Milchreis, Milch, Zucker, Zimt. TM 15 Min. 100°C速度 3. 3. Äpfel, Rosinen, Eier. 4. In Auflaufform, 25 Min. bei 180°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-zucchinicreme',
+    name: 'Zucchinicremesuppe für den Thermomix',
+    category: 'Suppe',
+    servings: 4,
+    ingredients: ["1kg Zucchini", "1 Zwiebel", "2 Kartoffeln", "500ml Gemüsebrühe", "100ml Sahne", "Zitronensaft", "Minze"],
+    steps: '1. Zucchini, Zwiebel, Kartoffeln würfeln. TM 5 Sek.速度 5. 2. Brühe, 20 Min. 100°C速度 3. 3. Pürieren. 4. Sahne, Zitronensaft. 5. Minze.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-paprikahack',
+    name: 'Paprikahackbraten für den Thermomix',
+    category: 'Hauptgericht',
+    servings: 4,
+    ingredients: ["500g Hackfleisch", "1 Paprika", "1 Zwiebel", "1 Ei", "Semmelwürfel", "Paprikapulver", "Knoblauch"],
+    steps: '1. Zwiebel, Paprika würfeln. TM 5 Sek.速度 5. 2. Hack, Ei, Semmelwürfel, Gewürze. 3. Auf Backpapier formen. 4. Thermomix: Einsatz, 30 Min. Varoma速度 1. 5. Mit Bratensauce.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-mandelnutella',
+    name: 'Feiner Mandel-Nutella-Kuchen',
+    category: 'Nachtisch',
+    servings: 8,
+    ingredients: ["250g Mehl", "200g Butter", "200g Zucker", "3 Eier", "200g Nutella", "100g Mandeln", "1 Pck. Backpulver"],
+    steps: '1. Alle Zutaten. TM 5 Min. 50°C速度 4. 2. In Form. 3. Thermomix: Einsatz, 40 Min. Varoma速度 1. 4. Abkühlen lassen.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-karotten-brot',
+    name: 'Karotten-Brotaufstrich für den Thermomix',
+    category: 'Vorspeise',
+    servings: 4,
+    ingredients: ["3 Karotten", "1 Paprika", "1 Zwiebel", "2 EL Tomatenmark", "Olivenöl", "Paprikapulver", "Knoblauch"],
+    steps: '1. Gemüse würfeln. TM 5 Sek.速度 5. 2. Öl, 5 Min. 120°C速度 1. 3. Tomatenmark, Gewürze. 4. Pürieren. 5. Auf Brot.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-toffifee',
+    name: 'Toffifee-Aufstrich für den Thermomix',
+    category: 'Nachtisch',
+    servings: 4,
+    ingredients: ["200g Toffifee", "200ml Sahne", "50g Butter"],
+    steps: '1. Toffifee grob zerkleinern. TM 10 Sek.速度 9. 2. Sahne, Butter. TM 3 Min. 80°C速度 3. 3. Toffifee-Stückchen dazu. 4. Abkühlen lassen.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-frischkaese-spinne',
+    name: 'Frischkäse-Spinnentorte',
+    category: 'Nachtisch',
+    servings: 8,
+    ingredients: ["250g McWhIP", "500g Frischkäse", "200g Sahne", "100g Zucker", "Gelatine", "Fruchtgucker", "Schoko-Beinen"],
+    steps: '1. Gelatine einweichen. TM 3 Min. 80°C速度 3. 2. Frischkäse, Sahne, Zucker, Gelatine. TM 3 Min.速度 4. 3. In Form, 4 Std. Kühlschrank. 4. Mit Fruchtgucker überziehen.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-schoko-dampfnudel',
+    name: 'Schoko-Dampfnudeln für den Thermomix',
+    category: 'Nachtisch',
+    servings: 4,
+    ingredients: ["250g Mehl", "50g Zucker", "50g Butter", "1 Pck. Trockenhefe", "150ml Milch", "50g Kakao", "200ml Sahne", "100g Schokolade"],
+    steps: '1. Alle Teig-Zutaten. TM 3 Min.速度 4. 2. 30 Min. gehen lassen. 3. In Kugeln formen. 4. Einsatz, 20 Min. Varoma速度 1. 5. Sahne, Schokolade. TM 3 Min. 80°C速度 3.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-pfannkuchen',
+    name: 'Pfannkuchen mit Birnenkompott',
+    category: 'Frühstück',
+    servings: 4,
+    ingredients: ["250g Mehl", "3 Eier", "250ml Milch", "125ml Wasser", "1 Prise Salz", "4 Birnen", "50g Zucker", "Zimt"],
+    steps: '1. Pfannkuchenteig. TM 30 Sek.速度 4. 2. Kleine Pfannkuchen braten. 3. Birnen schälen, würfeln. TM 5 Min. 120°C速度 1. 4. Mit Zucker, Zimt. 5. Mit Pfannkuchen.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-moehren-kohlrabi',
+    name: 'Möhren-Kohlrabi-Salat für den Thermomix',
+    category: 'Salat',
+    servings: 4,
+    ingredients: ["3 Möhren", "1 Kohlrabi", "1 Apfel", "2 EL Essig", "3 EL Öl", "1 EL Zucker", "Salz, Pfeffer"],
+    steps: '1. Möhren, Kohlrabi, Apfel raspeln. TM 30 Sek.速度 5. 2. Essig, Öl, Zucker, Salz, Pfeffer. TM 10 Sek.速度 3. 3. 1 Std. marinieren.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-quittengelee',
+    name: 'Quittengelee',
+    category: 'Konfitüre',
+    servings: 8,
+    ingredients: ["1kg Quitten", "800g Zucker", "2 Liter Wasser"],
+    steps: '1. Quitten waschen, vierteln. 2. Mit Wasser aufkochen. 3. 30 Min. köcheln. 4. Durch ein Tuch hängen (über Nacht). 5. Flüssigkeit abmessen, gleiche Menge Zucker. TM 5 Min. 120°C速度 1. 6. In Gläser füllen.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-quittengelee-vanille',
+    name: 'Quittengelee mit Vanille',
+    category: 'Konfitüre',
+    servings: 8,
+    ingredients: ["1kg Quitten", "800g Zucker", "2 Liter Wasser", "1 Vanilleschote"],
+    steps: '1. Quitten waschen, vierteln. 2. Mit Wasser, Vanilleschote aufkochen. 3. 30 Min. köcheln. 4. Durch ein Tuch hängen. 5. Flüssigkeit abmessen, Zucker. TM 5 Min. 120°C速度 1. 6. In Gläser.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-marmorkuchen',
+    name: 'Flaumiger Marmorkuchen aus dem Thermomix',
+    category: 'Nachtisch',
+    servings: 8,
+    ingredients: ["250g Mehl", "200g Zucker", "200g Butter", "4 Eier", "1 Pck. Backpulver", "50g Kakao", "100ml Milch"],
+    steps: '1. Alle Zutaten außer Kakao. TM 5 Min. 50°C速度 4. 2. Hälfte abnehmen, Kakao + 100ml Milch dazu. 3. Helle und dunkle Masse abwechselnd in Form. 4. Mit Messer swirlen. 5. 45 Min. bei 180°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-marmorkuchen-glutenfrei',
+    name: 'Marmorkuchen (glutenfrei) für den Thermomix',
+    category: 'Nachtisch',
+    servings: 8,
+    ingredients: ["250g glutenfreies Mehl", "200g Zucker", "200g Butter", "4 Eier", "1 Pck. Backpulver", "50g Kakao", "100ml Milch"],
+    steps: '1. Alle Zutaten außer Kakao. TM 5 Min. 50°C速度 4. 2. Hälfte abnehmen, Kakao + Milch. 3. Abwechselnd in Form. 4. Swirl. 5. 45 Min. bei 180°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-blauer-marmorkuchen',
+    name: 'Blauer Marmorkuchen für den Thermomix',
+    category: 'Nachtisch',
+    servings: 8,
+    ingredients: ["250g Mehl", "200g Zucker", "200g Butter", "4 Eier", "1 Pck. Backpulver", "1 EL Heidelbeerkonfitüre", "100ml Milch"],
+    steps: '1. Teig. TM 5 Min. 50°C速度 4. 2. Hälfte abnehmen, Heidelbeerkonfitüre + Milch. 3. Abwechselnd in Form. 4. 40 Min. bei 180°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-eierlikor',
+    name: 'Eierlikör-Marmorkuchen',
+    category: 'Nachtisch',
+    servings: 8,
+    ingredients: ["250g Mehl", "200g Zucker", "200g Butter", "4 Eier", "1 Pck. Backpulver", "50g Kakao", "100ml Eierlikör"],
+    steps: '1. Alle Zutaten außer Kakao. TM 5 Min. 50°C速度 4. 2. Hälfte abnehmen, Kakao + Eierlikör. 3. Abwechselnd in Form. 4. Swirl. 5. 45 Min. bei 180°C.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-knoblauch-faltenbrot',
+    name: 'Knoblauch-Faltenbrot',
+    category: 'Brot',
+    servings: 12,
+    ingredients: ["500g Mehl", "250ml Milch", "1 Pck. Trockenhefe", "50g Butter", "1 TL Salz", "1 EL Zucker", "4 Knoblauchzehen", "Petersilie"],
+    steps: '1. Alle Zutaten. TM 3 Min.速度 4. 2. 30 Min. gehen lassen. 3. Ausrollen, Knoblauch, Petersilie. 4. Zu Faltenbroten formen. 5. Thermomix: Einsatz, 25 Min. Varoma速度 1.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-salatsoesse',
+    name: 'Salatsoße auf Vorrat',
+    category: 'Soße',
+    servings: 8,
+    ingredients: ["200ml Essig", "300ml Öl", "2 EL Senf", "2 EL Zucker", "1 TL Salz", "1 TL Pfeffer"],
+    steps: '1. Alle Zutaten. TM 10 Sek.速度 5. 2. In Flaschen füllen.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-quittengelee-uroma',
+    name: 'Quittengelee nach Uromas Art',
+    category: 'Konfitüre',
+    servings: 8,
+    ingredients: ["1kg Quitten", "800g Zucker", "2 Liter Wasser"],
+    steps: '1. Quitten waschen, vierteln. 2. Mit Wasser aufkochen. 3. 30 Min. köcheln. 4. Durch ein Tuch hängen. 5. Flüssigkeit abmessen, Zucker. TM 5 Min. 120°C速度 1. 6. In 4 Gläser à 250 ml.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-sonstiges',
+    name: 'Thermomix Grundrezept: Rührei',
+    category: 'Frühstück',
+    servings: 2,
+    ingredients: ["4 Eier", "2 EL Milch", "Salz, Pfeffer", "20g Butter"],
+    steps: '1. Butter. TM 2 Min. 80°C速度 1. 2. Eier, Milch, Salz, Pfeffer. TM 4 Min. Varoma速度 1. 3. Sofort servieren.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-dampfnudeln',
+    name: 'Dampfnudeln aus dem Thermomix',
+    category: 'Nachtisch',
+    servings: 4,
+    ingredients: ["250g Mehl", "50g Zucker", "50g Butter", "1 Pck. Trockenhefe", "150ml Milch", "2 EL Rum", "Puderzucker"],
+    steps: '1. Alle Zutaten. TM 3 Min.速度 4. 2. 30 Min. gehen lassen. 3. In Kugeln formen. 4. Einsatz, 20 Min. Varoma速度 1. 5. Mit Puderzucker, Vanillesauce.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-apfelsaft',
+    name: 'Frischer Apfelsaft aus dem Thermomix',
+    category: 'Getränk',
+    servings: 4,
+    ingredients: ["1kg Äpfel", "200ml Wasser", "50g Zucker", "Zimt", "1 EL Zitronensaft"],
+    steps: '1. Äpfel vierteln (Kerngehäuse entfernen). 2. Mit Wasser, Zucker, Zimt. TM 15 Min. 100°C速度 3. 3. Durch ein Tuch pressen. 4. Zitronensaft.',
+    dateAdded: new Date().toISOString()
+  },
+  {
+    id: 'tm-karotten-mus',
+    name: 'Karotten-Brotaufstrich für den Thermomix',
+    category: 'Vorspeise',
+    servings: 4,
+    ingredients: ["3 Karotten", "1 Paprika", "1 Zwiebel", "2 EL Tomatenmark", "Olivenöl", "Paprikapulver", "Knoblauch"],
+    steps: '1. Gemüse würfeln. TM 5 Sek.速度 5. 2. Öl, 5 Min. 120°C速度 1. 3. Tomatenmark, Gewürze. 4. Pürieren. 5. Auf Brot.',
     dateAdded: new Date().toISOString()
   },
 ];
