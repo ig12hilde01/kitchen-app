@@ -357,11 +357,11 @@ if (typeof CryptoJS === 'undefined') {
     <div class="btn-group">
       <button class="btn btn-primary btn-full" onclick="saveRecipe()">💾 Speichern</button>
     </div>
-    <div class="btn-group" id="recipeDeleteBtn" style="display:none;">
-      <button class="btn btn-danger btn-full" onclick="deleteRecipe()">🗑️ Löschen</button>
-    </div>
     <div class="btn-group" id="recipeShoppingBtn" style="display:none;">
       <button class="btn btn-secondary btn-full" onclick="addRecipeToShoppingList()">🛒 Zutaten auf Einkaufsliste</button>
+    </div>
+    <div class="btn-group" id="recipeDeleteBtn" style="display:none;">
+      <button class="btn btn-danger btn-full" onclick="deleteRecipe()">🗑️ Löschen</button>
     </div>
   </div>
 </div>
@@ -584,13 +584,7 @@ function editCategory(idx) {
     products.forEach(p => { if (p.category === oldName) p.category = name.trim(); });
     saveData(KEY_CAT, categories);
     saveData(KEY_PRODS, products);
-    renderCategoryList();
-    toast('Aktualisiert ✅');
-  }
-}
-
-/* ===================== RECIPE SEED DATA ===================== */
-var recipes_seed = [
+    // Recipe seed data from Chefkoch Top 50 2025
     recipes_seed = [
   {
     id: 'ck-perf-pancake',
@@ -1808,8 +1802,16 @@ var recipes_seed = [
     dateAdded: new Date().toISOString()
   },
 ];
-];
 
+    if (recipes.length === 0) {
+        recipes = recipes_seed;
+        saveData(KEY_RECIPES, recipes);
+    }
+
+    renderCategoryList();
+    toast('Aktualisiert ✅');
+  }
+}
 
 function deleteCategory(idx) {
   if (!confirm('Kategorie "' + categories[idx] + '" löschen?')) return;
@@ -1830,36 +1832,6 @@ function saveCategory() {
     products.forEach(p => { if (p.category === oldName) p.category = name; });
     saveData(KEY_CAT, categories);
     saveData(KEY_PRODS, products);
-  }
-  
-  // Seed recipes if empty
-  if (recipes.length === 0 && typeof recipes_seed !== 'undefined') {
-    recipes = recipes_seed;
-    saveData(KEY_RECIPES, recipes);
-  }
-  
-  // Seed storage locations if empty
-  if (storages.length === 0) {
-    storages = [
-      { id: 'fridge', name: 'Kühlschrank', icon: '🧊' },
-      { id: 'freezer', name: 'Gefriertruhe', icon: '❄️' },
-      { id: 'pantry', name: 'Vorratskammer', icon: '📦' },
-      { id: 'kitchen', name: 'Küche', icon: '🍽️' },
-      { id: 'balcony', name: 'Balkon', icon: '🏠' },
-      { id: 'basement', name: 'Keller', icon: '🏚️' }
-    ];
-    saveData(KEY_STORE, storages);
-  }
-  
-  // Seed categories if empty (extend defaults)
-  if (categories.length === 0) {
-    categories = ['Lebensmittel','Getränke','Milchprodukte','Fleisch','Kühlung','Konserven','Tiefkühl','Reinigung','Sonstiges'];
-    saveData(KEY_CAT, categories);
-  }
-  
-  // Seed storage products if empty (demo data)
-  if (products.length === 0) {
-    // already seeded above
   } else {
     if (categories.includes(name)) return toast('Existiert schon!');
     categories.push(name);
@@ -2093,9 +2065,11 @@ function openAddRecipe(recipeId) {
       document.getElementById('recipeIngredients').value = r.ingredients.join('\n');
       document.getElementById('recipeSteps').value = r.steps;
       document.getElementById('recipeDeleteBtn').style.display = 'flex';
+      document.getElementById('recipeShoppingBtn').style.display = 'block';
     }
   } else {
     document.getElementById('modalRecipeTitle').textContent = 'Neues Rezept';
+    document.getElementById('recipeShoppingBtn').style.display = 'none';
   }
   openModal('modalRecipe');
 }
@@ -2140,23 +2114,20 @@ function deleteRecipe() {
     toast('Gelöscht 🗑️');
   }
 }
+
 function addRecipeToShoppingList() {
   const recipeId = document.getElementById('recipeId').value;
   if (!recipeId) return;
   const r = recipes.find(x => x.id === recipeId);
   if (!r) return;
   
-  // Get existing shopping items (lowercase names for dedup)
   const existingNames = shoppingList.map(x => x.name.toLowerCase());
   let added = 0;
   
-  // Parse ingredients and add each one
   r.ingredients.forEach(ing => {
     const name = ing.trim();
     if (!name) return;
-    // Skip if already in shopping list
     if (existingNames.some(n => n === name.toLowerCase())) return;
-    
     shoppingList.push({
       id: 'sl_' + Date.now() + '_' + added,
       name: name,
@@ -2177,7 +2148,6 @@ function addRecipeToShoppingList() {
     toast('ℹ️ Alle Zutaten schon auf der Liste');
   }
 }
-
 
 function renderRecipes() {
   const container = document.getElementById('recipeList');
@@ -2638,31 +2608,6 @@ document.addEventListener('DOMContentLoaded', () => {
       { id: 'demo3', name: 'Spülmittel', category: 'Reinigung', storage: 'kitchen', storageName: '🍽️ Küche', quantity: 1, unit: 'Flasche', minQuantity: 1, expiryDate: '', barcode: '', notes: '', dateAdded: new Date().toISOString() },
     ];
     saveData(KEY_PRODS, products);
-  }
-  
-  // Seed recipes if empty
-  if (recipes.length === 0 && typeof recipes_seed !== 'undefined') {
-    recipes = recipes_seed;
-    saveData(KEY_RECIPES, recipes);
-  }
-  
-  // Seed storage locations if empty
-  if (storages.length === 0) {
-    storages = [
-      { id: 'fridge', name: 'Kühlschrank', icon: '🧊' },
-      { id: 'freezer', name: 'Gefriertruhe', icon: '❄️' },
-      { id: 'pantry', name: 'Vorratskammer', icon: '📦' },
-      { id: 'kitchen', name: 'Küche', icon: '🍽️' },
-      { id: 'balcony', name: 'Balkon', icon: '🏠' },
-      { id: 'basement', name: 'Keller', icon: '🏚️' }
-    ];
-    saveData(KEY_STORE, storages);
-  }
-  
-  // Seed categories if empty
-  if (categories.length === 0) {
-    categories = ['Lebensmittel','Getränke','Milchprodukte','Fleisch','Kühlung','Konserven','Tiefkühl','Reinigung','Sonstiges'];
-    saveData(KEY_CAT, categories);
   }
   
   refreshAll();
