@@ -383,13 +383,30 @@ if (typeof CryptoJS === 'undefined') {
 <div class="modal-overlay" id="modalStorage">
   <div class="modal">
     <div class="modal-header">
-      <h3 id="modalStorageTitle">Lagerplatz</h3>
+      <h3 id="modalStorageTitle">Lagerplätze</h3>
       <button class="modal-close" onclick="closeModal('modalStorage')">✕</button>
     </div>
+    <div id="storageList"></div>
+    <hr style="margin:16px 0;border:none;border-top:1px solid var(--border);">
     <div class="form-group"><label>Name</label><input type="text" id="storageName" placeholder="z.B. Kühlschrank"></div>
     <div class="form-group"><label>Icon</label><input type="text" id="storageIcon" placeholder="🧊" maxlength="4"></div>
+    <input type="hidden" id="editStorageId">
     <div class="btn-group">
       <button class="btn btn-primary btn-full" onclick="saveStorage()">💾 Speichern</button>
+    </div>
+  </div>
+</div><div class="modal-overlay" id="modalCategory">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Kategorien</h3>
+      <button class="modal-close" onclick="closeModal('modalCategory')">✕</button>
+    </div>
+    <div id="categoryList"></div>
+    <hr style="margin:16px 0;border:none;border-top:1px solid var(--border);">
+    <div class="form-group"><label>Neue Kategorie</label><input type="text" id="newCategoryName" placeholder="z.B. Gewürze"></div>
+    <input type="hidden" id="editCategoryId">
+    <div class="btn-group">
+      <button class="btn btn-primary btn-full" onclick="saveCategory()">💾 Speichern</button>
     </div>
   </div>
 </div>
@@ -468,52 +485,144 @@ function openModal(id) { document.getElementById(id).classList.add('active'); }
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
 /* ===================== STORAGE / CATEGORIES ===================== */
-function openAddStorage(editId) {
+function openAddStorage() {
   document.getElementById('storageName').value = '';
   document.getElementById('storageIcon').value = '📦';
-  if (editId) {
-    const s = storages.find(x => x.id === editId);
-    document.getElementById('storageName').value = s.name;
-    document.getElementById('storageIcon').value = s.icon;
-    document.getElementById('modalStorageTitle').textContent = 'Lagerplatz bearbeiten';
-    document.getElementById('storageName').dataset.editId = editId;
-  } else {
-    document.getElementById('modalStorageTitle').textContent = 'Neuer Lagerplatz';
-    delete document.getElementById('storageName').dataset.editId;
-  }
+  document.getElementById('editStorageId').value = '';
+  renderStorageList();
   openModal('modalStorage');
+}
+
+function renderStorageList() {
+  const container = document.getElementById('storageList');
+  container.innerHTML = storages.map(s => 
+    `<div class="card" style="margin:8px 0;">
+      <div class="card-row">
+        <div>
+          <div class="card-title">${s.icon} ${s.name}</div>
+          <div class="card-sub">${products.filter(p => p.storage === s.id).length} Produkte</div>
+        </div>
+        <div>
+          <button class="btn btn-sm btn-primary" onclick="editStorage('${s.id}')">✏️</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteStorage('${s.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>`
+  ).join('') || '<div class="empty" style="padding:16px;"><div class="empty-text">Keine Lagerplätze</div></div>';
+}
+
+function editStorage(id) {
+  const s = storages.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById('storageName').value = s.name;
+  document.getElementById('storageIcon').value = s.icon;
+  document.getElementById('editStorageId').value = id;
+  document.getElementById('modalStorageTitle').textContent = 'Lagerplatz bearbeiten';
+}
+
+function deleteStorage(id) {
+  if (!confirm('Lagerplatz löschen?')) return;
+  storages = storages.filter(x => x.id !== id);
+  saveData(KEY_STORE, storages);
+  renderStorageList();
+  toast('Gelöscht 🗑️');
 }
 
 function saveStorage() {
   const name = document.getElementById('storageName').value.trim();
   const icon = document.getElementById('storageIcon').value.trim() || '📦';
-  const editId = document.getElementById('storageName').dataset.editId;
+  const editId = document.getElementById('editStorageId').value;
   if (!name) return toast('Name fehlt!');
   if (editId) {
     const s = storages.find(x => x.id === editId);
     s.name = name; s.icon = icon;
-    delete s.dataset.editId;
   } else {
     storages.push({ id: 's_' + Date.now(), name, icon });
   }
   saveData(KEY_STORE, storages);
-  closeModal('modalStorage');
-  refreshAll();
+  document.getElementById('storageName').value = '';
+  document.getElementById('storageIcon').value = '📦';
+  document.getElementById('editStorageId').value = '';
+  renderStorageList();
   toast('Gespeichert ✅');
 }
 
 function openAddCategory() {
-  const name = prompt('Neue Kategorie:');
+  document.getElementById('newCategoryName').value = '';
+  document.getElementById('editCategoryId').value = '';
+  renderCategoryList();
+  openModal('modalCategory');
+}
+
+function renderCategoryList() {
+  const container = document.getElementById('categoryList');
+  container.innerHTML = categories.map((c, i) => {
+    const count = products.filter(p => p.category === c).length;
+    return `<div class="card" style="margin:8px 0;">
+      <div class="card-row">
+        <div>
+          <div class="card-title">${c}</div>
+          <div class="card-sub">${count} Produkte</div>
+        </div>
+        <div>
+          <button class="btn btn-sm btn-primary" onclick="editCategory(${i})">✏️</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteCategory(${i})">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('') || '<div class="empty" style="padding:16px;"><div class="empty-text">Keine Kategorien</div></div>';
+}
+
+function editCategory(idx) {
+  const name = prompt('Kategorie umbenennen:', categories[idx]);
   if (name && name.trim()) {
-    categories.push(name.trim());
+    const oldName = categories[idx];
+    categories[idx] = name.trim();
+    products.forEach(p => { if (p.category === oldName) p.category = name.trim(); });
     saveData(KEY_CAT, categories);
-    refreshAll();
-    toast('Kategorie erstellt ✅');
+    saveData(KEY_PRODS, products);
+    renderCategoryList();
+    toast('Aktualisiert ✅');
   }
+}
+
+function deleteCategory(idx) {
+  if (!confirm('Kategorie "' + categories[idx] + '" löschen?')) return;
+  categories.splice(idx, 1);
+  saveData(KEY_CAT, categories);
+  renderCategoryList();
+  toast('Gelöscht 🗑️');
+}
+
+function saveCategory() {
+  const name = document.getElementById('newCategoryName').value.trim();
+  const editId = document.getElementById('editCategoryId').value;
+  if (!name) return toast('Name fehlt!');
+  if (editId) {
+    const idx = parseInt(editId);
+    const oldName = categories[idx];
+    categories[idx] = name;
+    products.forEach(p => { if (p.category === oldName) p.category = name; });
+    saveData(KEY_CAT, categories);
+    saveData(KEY_PRODS, products);
+  } else {
+    if (categories.includes(name)) return toast('Existiert schon!');
+    categories.push(name);
+  }
+  saveData(KEY_CAT, categories);
+  document.getElementById('newCategoryName').value = '';
+  document.getElementById('editCategoryId').value = '';
+  renderCategoryList();
+  toast('Gespeichert ✅');
 }
 
 /* ===================== PRODUCTS ===================== */
 function openAddProduct(prodId) {
+  if (!prodId) {
+    renderProductList();
+    openModal('modalProduct');
+    return;
+  }
   document.getElementById('prodId').value = '';
   document.getElementById('prodName').value = '';
   document.getElementById('prodQty').value = '1';
@@ -602,7 +711,9 @@ function filterProducts() {
   renderProductGrid();
 }
 
-function renderProductGrid() {
+
+function renderProductList() {
+  const container = document.getElementById('productGrid');
   const search = document.getElementById('productSearch')?.value?.toLowerCase() || '';
   const activeTab = document.querySelector('#categoryTabs .tab.active');
   const category = activeTab ? activeTab.dataset.cat : '';
@@ -611,13 +722,17 @@ function renderProductGrid() {
   if (category) filtered = filtered.filter(p => p.category === category);
   if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search) || (p.barcode && p.barcode.includes(search)));
   
+  return filtered;
+}
+function renderProductGrid() {
+  const list = renderProductList();
   const grid = document.getElementById('productGrid');
-  if (filtered.length === 0) {
+  if (list.length === 0) {
     grid.innerHTML = '<div class="empty"><div class="empty-icon">📦</div><div class="empty-text">Noch keine Produkte.<br>Tipp "+", um eines hinzuzufügen.</div></div>';
     return;
   }
   
-  grid.innerHTML = filtered.map(p => {
+  grid.innerHTML = list.map(p => {
     const expiryClass = getExpiryClass(p.expiryDate);
     const statusBadge = getStatusBadge(p.expiryDate, p.quantity, p.minQuantity);
     return `<div class="card ${expiryClass}" onclick="openAddProduct('${p.id}')">
@@ -889,7 +1004,7 @@ function renderShoppingList() {
   let filtered = shoppingList;
   if (search) filtered = filtered.filter(item => item.name.toLowerCase().includes(search));
   
-  if (filtered.length === 0) {
+  if (list.length === 0) {
     container.innerHTML = '<div class="empty"><div class="empty-icon">🛒</div><div class="empty-text">Einkaufsliste leer.</div></div>';
     return;
   }
