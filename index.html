@@ -324,10 +324,12 @@ if (typeof CryptoJS === 'undefined') {
     </div>
     <input type="hidden" id="prodId">
     <div class="form-group"><label>Name *</label><input type="text" id="prodName" placeholder="z.B. Milch"></div>
+    <div class="form-group"><label>Hersteller</label><input type="text" id="prodManufacturer" placeholder="z.B. Rewe, Aldi, Davert..."></div>
+    <div class="form-group"><label>Größe / Packungsgröße</label><input type="text" id="prodSize" placeholder="z.B. 1 Liter, 500g, 12 Stück..."></div>
     <div class="form-group"><label>Kategorie</label><select id="prodCategory"></select></div>
     <div class="form-group"><label>Lagerplatz</label><select id="prodStorage"></select></div>
     <div class="form-group"><label>Menge</label><input type="number" id="prodQty" value="1" min="0" step="0.5"></div>
-    <div class="form-group"><label>Einheit</label><select id="prodUnit"><option>Stk</option><option>g</option><option>kg</option><option>ml</option><option>l</option><option>Pack</option><option>Dose</option><option>Flasche</option></select></div>
+    <div class="form-group"><label>Einheit</label><select id="prodUnit"><option>Stk</option><option>g</option><option>kg</option><option>ml</option><option>l</option><option>Pack</option><option>Dose</option><option>Flasche</option><option>Beutel</option><option>Glas</option><option>Tube</option><option>Becher</option><option>Schale</option><option>Rolle</option></select></div>
     <div class="form-group"><label>Mindestmenge</label><input type="number" id="prodMinQty" value="1" min="0" step="0.5" placeholder="Auto-Einkauf bei Unterschreitung"></div>
     <div class="form-group"><label>MHD / Verbrauchen bis</label><input type="date" id="prodExpiry"></div>
     <div class="form-group"><label>Barcode</label><input type="text" id="prodBarcode" placeholder="Optional"></div>
@@ -1852,6 +1854,8 @@ function openAddProduct(prodId) {
   }
   document.getElementById('prodId').value = '';
   document.getElementById('prodName').value = '';
+  document.getElementById('prodManufacturer').value = '';
+  document.getElementById('prodSize').value = '';
   document.getElementById('prodQty').value = '1';
   document.getElementById('prodMinQty').value = '1';
   document.getElementById('prodExpiry').value = '';
@@ -1877,6 +1881,8 @@ function openAddProduct(prodId) {
       document.getElementById('prodExpiry').value = p.expiryDate || '';
       document.getElementById('prodBarcode').value = p.barcode || '';
       document.getElementById('prodNotes').value = p.notes || '';
+      document.getElementById('prodManufacturer').value = p.manufacturer || '';
+      document.getElementById('prodSize').value = p.size || '';
       document.getElementById('prodDeleteBtn').style.display = 'flex';
     }
   } else {
@@ -1897,6 +1903,8 @@ function saveProduct() {
   const prod = {
     id,
     name,
+    manufacturer: document.getElementById('prodManufacturer').value.trim(),
+    size: document.getElementById('prodSize').value.trim(),
     category: document.getElementById('prodCategory').value,
     storage: storageId,
     storageName: storage ? storage.icon + ' ' + storage.name : '',
@@ -2553,7 +2561,58 @@ function openScanResult(code) {
   document.getElementById('prodBarcode').value = code;
   document.getElementById('prodName').value = '';
   document.getElementById('prodQty').value = '1';
+  document.getElementById('prodManufacturer').value = '';
+  document.getElementById('prodSize').value = '';
   openAddProduct();
+  
+  // Try to fetch product info from OpenFoodFacts API
+  if (/^\d{13}$/.test(code) || /^\d{8}$/.test(code)) {
+    fetchProductInfo(code);
+  }
+}
+
+// Fetch product info from OpenFoodFacts
+function fetchProductInfo(code) {
+  const url = `https://world.openfoodfacts.org/api/v2/product/${code}.json`;
+  
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 1 && data.product) {
+        const p = data.product;
+        
+        // Pre-fill fields with API data
+        const nameEl = document.getElementById('prodName');
+        const mfgEl = document.getElementById('prodManufacturer');
+        const sizeEl = document.getElementById('prodSize');
+        
+        if (p.product_name && !nameEl.value) {
+          nameEl.value = p.product_name;
+        }
+        
+        if (p.brands && !mfgEl.value) {
+          mfgEl.value = p.brands.split(',')[0];
+        }
+        
+        if (p.quantity && !sizeEl.value) {
+          sizeEl.value = p.quantity;
+        }
+        
+        toast('ℹ️ Produktinfo geladen ✅');
+      } else {
+        toast('ℹ️ Keine Produktinfo gefunden – bitte manuell ausfüllen');
+      }
+    })
+    .catch(err => {
+      console.error('Barcode API error:', err);
+      toast('ℹ️ API-Fehler – bitte manuell eingeben');
+    });
+}
+
+function scanAndAdd() {
+  // This button triggers the manual add process
+  // The actual scanning happens in openScanner() via Html5Qrcode
+  toast('📷 Kamera sucht nach Barcode – halten Sie den Barcode in den Rahmen');
 }
 
 /* ===================== UTILITIES ===================== */
@@ -2608,6 +2667,31 @@ document.addEventListener('DOMContentLoaded', () => {
       { id: 'demo3', name: 'Spülmittel', category: 'Reinigung', storage: 'kitchen', storageName: '🍽️ Küche', quantity: 1, unit: 'Flasche', minQuantity: 1, expiryDate: '', barcode: '', notes: '', dateAdded: new Date().toISOString() },
     ];
     saveData(KEY_PRODS, products);
+  }
+  
+  // Seed recipes if empty
+  if (typeof recipes_seed !== 'undefined' && recipes.length === 0) {
+    recipes = recipes_seed;
+    saveData(KEY_RECIPES, recipes);
+  }
+  
+  // Seed storage locations if empty
+  if (storages.length === 0) {
+    storages = [
+      { id: 'fridge', name: 'Kühlschrank', icon: '🧊' },
+      { id: 'freezer', name: 'Gefriertruhe', icon: '❄️' },
+      { id: 'pantry', name: 'Vorratskammer', icon: '📦' },
+      { id: 'kitchen', name: 'Küche', icon: '🍽️' },
+      { id: 'balcony', name: 'Balkon', icon: '🏠' },
+      { id: 'basement', name: 'Keller', icon: '🏚️' }
+    ];
+    saveData(KEY_STORE, storages);
+  }
+  
+  // Seed categories if empty
+  if (categories.length === 0) {
+    categories = ['Lebensmittel','Getränke','Milchprodukte','Fleisch','Kühlung','Konserven','Tiefkühl','Reinigung','Sonstiges'];
+    saveData(KEY_CAT, categories);
   }
   
   refreshAll();
