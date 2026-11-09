@@ -4,325 +4,1699 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Kitchen Vorrat</title>
+<link rel="manifest" href="manifest.json">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;510;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f7;color:#1d1d1f;padding-bottom:80px}
-#pw-gate{position:fixed;inset:0;background:linear-gradient(135deg,#1d1d1f,#2d2d2f);display:flex;align-items:center;justify-content:center;z-index:9999}
-#pw-gate input{padding:16px 24px;font-size:18px;border:none;border-radius:12px;width:280px;text-align:center;margin-bottom:12px;background:rgba(255,255,255,0.1);color:#fff}
-#pw-gate input::placeholder{color:rgba(255,255,255,0.5)}
-#pw-gate button{padding:14px 40px;font-size:16px;background:#4A90D9;color:#fff;border:none;border-radius:12px;cursor:pointer;width:100%}
-#pw-error{color:#e74c3c;margin-top:12px;text-align:center}
-.section{display:none;padding:16px}
-.section.active{display:block}
-.card{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
-.card h3{margin-bottom:8px;font-size:18px}
-.btn{padding:10px 20px;border:none;border-radius:10px;font-size:15px;cursor:pointer;font-weight:500}
-.btn-primary{background:#4A90D9;color:#fff}
-.btn-danger{background:#e74c3c;color:#fff}
-.btn-success{background:#27ae60;color:#fff}
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.header h1{font-size:24px}
-.search-box{margin-bottom:16px;padding:12px 16px;border:1px solid #ddd;border-radius:12px;font-size:16px;width:100%;background:#fff}
-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e0e0e0;display:flex;justify-content:space-around;padding:8px 0;z-index:100}
-nav a{text-decoration:none;color:#999;font-size:11px;text-align:center;flex:1;padding:4px;transition:color 0.2s}
-nav a.active{color:#4A90D9}
-nav a span{display:block;font-size:22px;margin-bottom:2px}
-input,select,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:16px;margin-bottom:12px;background:#fff}
-label{font-weight:600;margin-bottom:4px;display:block;font-size:14px}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center}
-.modal.active{display:flex}
-.modal-content{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;padding:20px}
-.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.modal-header h2{font-size:20px}
-.close-btn{background:none;border:none;font-size:28px;cursor:pointer;color:#999}
-.badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600}
-.badge-danger{background:#ffebee;color:#c62828}
-.badge-warning{background:#fff3e0;color:#e65100}
-.badge-success{background:#e8f5e9;color:#2e7d32}
-.shopping-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f0f0f0}
-.qty-btn{width:36px;height:36px;border-radius:50%;border:2px solid #4A90D9;background:#fff;color:#4A90D9;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:bold}
-.scanner-box{width:100%;height:300px;background:#000;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}
+/* ═══════════════════════════════════════════════════════════
+   KITCHEN-APP v3 — Design Tokens (CSS Custom Properties)
+   Hybrid: Apple + Airbnb + Linear
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  /* ── Surfaces ───────────────────────────────────────── */
+  --bg-primary:      #f5f5f7;
+  --bg-surface:      #ffffff;
+  --bg-elevated:     #fafafc;
+  --bg-inverse:      #1d1d1f;
+  --bg-primary-dark: #08090a;
+  --bg-panel-dark:   #0f1011;
+  --bg-surface-dark: #191a1b;
+  --bg-elevated-dark:#28282c;
+
+  /* ── Text ───────────────────────────────────────────── */
+  --text-primary:     #1d1d1f;
+  --text-secondary:   #6a6a6a;
+  --text-tertiary:    #8a8f98;
+  --text-disabled:    rgba(0,0,0,0.24);
+  --text-inverse:     #ffffff;
+  --text-primary-dark:#f7f8f8;
+  --text-secondary-dark:#d0d6e0;
+  --text-tertiary-dark:#8a8f98;
+  --text-muted-dark:  #62666d;
+
+  /* ── Accent (Apple Blue) ────────────────────────────── */
+  --accent-primary:   #0071e3;
+  --accent-hover:     #0077ed;
+  --accent-active:    #005bb7;
+  --accent-subtle:    rgba(0,113,227,0.08);
+
+  /* ── Status ─────────────────────────────────────────── */
+  --status-ok:        #34c759;
+  --status-ok-bg:     rgba(52,199,89,0.12);
+  --status-low:       #ff9500;
+  --status-low-bg:    rgba(255,149,0,0.12);
+  --status-expired:   #ff3b30;
+  --status-expired-bg:rgba(255,59,48,0.12);
+  --status-warning:   #ffcc00;
+  --status-warning-bg:rgba(255,204,0,0.12);
+
+  /* ── Borders ────────────────────────────────────────── */
+  --border-subtle:    rgba(0,0,0,0.04);
+  --border-card:      rgba(0,0,0,0.06);
+  --border-dark:      rgba(255,255,255,0.05);
+  --border-dark-strong:rgba(255,255,255,0.08);
+
+  /* ── Shadows ────────────────────────────────────────── */
+  --shadow-card:
+    rgba(0,0,0,0.02) 0px 0px 0px 1px,
+    rgba(0,0,0,0.04) 0px 2px 6px,
+    rgba(0,0,0,0.10) 0px 4px 8px;
+  --shadow-card-hover: rgba(0,0,0,0.08) 0px 4px 12px;
+  --shadow-sheet:
+    rgba(0,0,0,0.15) 0px -10px 40px,
+    rgba(0,0,0,0.08) 0px 0px 0px 1px;
+  --shadow-button: rgba(0,0,0,0.12) 0px 2px 8px;
+  --shadow-elevated-dark: rgba(0,0,0,0.2) 0px 0px 0px 1px;
+
+  /* ── Typography ─────────────────────────────────────── */
+  --font-primary:    'Inter', system-ui, -apple-system, sans-serif;
+  --font-display:    'DM Sans', system-ui, -apple-system, sans-serif;
+  --fw-light:        300;
+  --fw-regular:      400;
+  --fw-medium:       500;
+  --fw-medium-alt:   510;
+  --fw-semibold:     600;
+  --fw-bold:         700;
+
+  --fs-hero:         32px;  --lh-hero: 1.10;  --tracking-hero: -0.5px;
+  --fs-h1:           28px;  --lh-h1: 1.14;  --tracking-h1: -0.4px;
+  --fs-h2:           22px;  --lh-h2: 1.20;  --tracking-h2: -0.3px;
+  --fs-h3:           20px;  --lh-h3: 1.30;  --tracking-h3: -0.2px;
+  --fs-body:         17px;  --lh-body: 1.47; --tracking-body: -0.3px;
+  --fs-body-em:      17px;  --lh-body-em: 1.24;
+  --fs-ui:           16px;  --lh-ui: 1.25;
+  --fs-caption:      14px;  --lh-caption: 1.43; --tracking-caption: -0.2px;
+  --fs-small:        13px;  --lh-small: 1.30;
+  --fs-micro:        12px;  --lh-micro: 1.33; --tracking-micro: -0.1px;
+
+  /* ── Spacing ────────────────────────────────────────── */
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   20px;
+  --space-6:   24px;
+  --space-8:   32px;
+  --space-10:  40px;
+  --space-12:  48px;
+  --space-16:  64px;
+
+  /* ── Radius ─────────────────────────────────────────── */
+  --radius-sm:    6px;
+  --radius-md:    10px;
+  --radius-lg:    16px;
+  --radius-xl:    20px;
+  --radius-full:  9999px;
+  --radius-circle: 50%;
+
+  /* ── Z-Index ────────────────────────────────────────── */
+  --z-base:    0;
+  --z-nav:     100;
+  --z-overlay: 500;
+  --z-modal:   1000;
+  --z-scanner: 2000;
+  --z-toast:   3000;
+
+  /* ── Transitions ────────────────────────────────────── */
+  --spring-ease:    cubic-bezier(0.32, 0.72, 0, 1);
+  --linear-ease:    cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast:  0.15s;
+  --duration-normal: 0.25s;
+  --duration-slow:  0.35s;
+
+  /* ── Container ──────────────────────────────────────── */
+  --container-max:  1200px;
+  --container-pad:  20px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary:      var(--bg-primary-dark);
+    --bg-surface:      var(--bg-surface-dark);
+    --bg-elevated:     var(--bg-elevated-dark);
+    --bg-inverse:      #f5f5f7;
+    --text-primary:    var(--text-primary-dark);
+    --text-secondary:  var(--text-secondary-dark);
+    --text-tertiary:   var(--text-tertiary-dark);
+    --text-disabled:   rgba(255,255,255,0.24);
+    --text-inverse:    #1d1d1f;
+    --border-subtle:   var(--border-dark);
+    --border-card:     var(--border-dark-strong);
+    --shadow-card:     var(--shadow-elevated-dark);
+    --shadow-card-hover: rgba(0,0,0,0.4) 0px 2px 4px;
+  }
+}
+
+/* ── Base Reset ───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-primary);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  overflow-x: hidden;
+}
+
+/* ── App Shell ────────────────────────────────────────────── */
+.kitchen-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.kitchen-main {
+  flex: 1;
+  padding: var(--space-4);
+  padding-bottom: calc(var(--space-4) + 80px);
+  max-width: var(--container-max);
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Section ──────────────────────────────────────────────── */
+.section { display: none; }
+.section.active {
+  display: block;
+  animation: sectionFadeIn var(--duration-normal) var(--spring-ease);
+}
+@keyframes sectionFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Section Header ───────────────────────────────────────── */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--space-6) var(--space-4) var(--space-3);
+}
+.section-header h1 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h1);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-h1);
+  letter-spacing: var(--tracking-h1);
+  color: var(--text-primary);
+}
+.section-header .header-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+/* ── Scroll Section / Pill Bar ────────────────────────────── */
+.scroll-section {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  scrollbar-width: none;
+}
+.scroll-section::-webkit-scrollbar { display: none; }
+.scroll-section > * { flex-shrink: 0; scroll-snap-align: start; }
+
+/* ── Pills ────────────────────────────────────────────────── */
+.category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  background: var(--bg-elevated);
+  border: 1.5px solid transparent;
+  font-family: var(--font-primary);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all var(--duration-fast) ease;
+}
+.category-pill.active,
+.category-pill:hover {
+  background: var(--accent-subtle);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+/* ── Search ───────────────────────────────────────────────── */
+.search-bar {
+  padding: var(--space-3) var(--space-4) var(--space-3);
+}
+.search-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-elevated);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-size: var(--fs-body);
+  color: var(--text-primary);
+  transition: border-color var(--duration-fast) ease, background var(--duration-fast) ease;
+  outline: none;
+  min-height: 44px;
+}
+.search-input:focus {
+  border-color: var(--accent-primary);
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+.search-input::placeholder { color: var(--text-tertiary); }
+
+/* ── Product Card ─────────────────────────────────────────── */
+.product-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: 0 var(--space-4);
+}
+@media (min-width: 500px) { .product-grid { flex-direction: row; flex-wrap: wrap; }
+  .product-grid .product-card { width: calc(50% - var(--space-1.5)); } }
+@media (min-width: 800px) { .product-grid .product-card { width: calc(33.33% - var(--space-2)); } }
+@media (min-width: 1024px) { .product-grid .product-card { width: calc(25% - var(--space-2.25)); } }
+
+.product-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: transform var(--duration-fast) var(--spring-ease),
+              box-shadow var(--duration-fast) var(--spring-ease);
+}
+.product-card:active { transform: scale(0.98); }
+.product-card:hover  { box-shadow: var(--shadow-card-hover); }
+.product-card + .product-card { margin-top: 0; }
+
+.product-card-body { padding: 16px; }
+.product-card-name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+.product-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0;
+}
+.product-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-medium);
+  line-height: 1;
+}
+.product-tag.manufacturer { background: var(--bg-elevated); color: var(--text-secondary); }
+.product-tag.size { background: var(--bg-elevated); color: var(--text-secondary); }
+.product-tag.category { background: var(--accent-subtle); color: var(--accent-primary); }
+.product-tag.storage { background: rgba(123,31,162,0.08); color: #7b1fa2; }
+
+.product-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px 4px 6px;
+  border-radius: var(--radius-full);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-medium-alt);
+  letter-spacing: var(--tracking-micro);
+}
+.product-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-circle);
+  flex-shrink: 0;
+}
+.product-status-dot.ok       { background: var(--status-ok); box-shadow: 0 0 6px var(--status-ok); }
+.product-status-dot.low      { background: var(--status-low); }
+.product-status-dot.expired  { background: var(--status-expired); animation: statusPulse 1.5s ease-in-out infinite; }
+.product-status-dot.warning  { background: var(--status-warning); }
+
+.product-badge.ok       { background: var(--status-ok-bg); color: var(--status-ok); }
+.product-badge.low      { background: var(--status-low-bg); color: var(--status-low); }
+.product-badge.expired  { background: var(--status-expired-bg); color: var(--status-expired); }
+.product-badge.warning  { background: var(--status-warning-bg); color: var(--status-warning); }
+
+.product-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* ── Quantity Stepper ─────────────────────────────────────── */
+.qty-stepper {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+.qty-stepper button {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: var(--bg-elevated);
+  font-size: 18px;
+  font-weight: var(--fw-bold);
+  color: var(--accent-primary);
+  cursor: pointer;
+  transition: background var(--duration-fast) ease;
+}
+.qty-stepper button:active { background: var(--accent-subtle); }
+.qty-stepper .qty-value {
+  width: 48px;
+  text-align: center;
+  font-size: var(--fs-ui);
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+  background: var(--bg-surface);
+}
+
+/* ── Buttons ──────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-size: var(--fs-ui);
+  font-weight: var(--fw-medium-alt);
+  line-height: var(--lh-ui);
+  cursor: pointer;
+  transition: background var(--duration-fast) ease, transform var(--duration-fast) var(--spring-ease);
+  min-height: 44px;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--accent-primary);
+  color: var(--text-inverse);
+}
+.btn-primary:hover  { background: var(--accent-hover); }
+.btn-primary:active { background: var(--accent-active); }
+
+.btn-danger {
+  background: var(--status-expired-bg);
+  color: var(--status-expired);
+}
+.btn-danger:hover  { background: var(--status-expired); color: #fff; }
+.btn-danger:active { background: var(--status-expired); }
+
+.btn-success {
+  background: var(--status-ok-bg);
+  color: var(--status-ok);
+}
+.btn-success:hover  { background: var(--status-ok); color: #fff; }
+.btn-success:active { background: #2da84e; }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.04);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-primary);
+  font-size: var(--fs-ui);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  transition: all var(--duration-fast) ease;
+}
+.btn-ghost:hover { background: var(--bg-elevated); }
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-circle);
+  background: var(--bg-elevated);
+  border: none;
+  cursor: pointer;
+  transition: background var(--duration-fast) ease;
+  font-size: 18px;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-icon:hover  { background: var(--bg-elevated-dark); }
+.btn-icon:active { transform: scale(0.92); }
+
+.btn-sm { padding: 8px 12px; font-size: var(--fs-caption); min-height: 32px; border-radius: var(--radius-sm); }
+
+/* ── Card (legacy fallback) ───────────────────────────────── */
+.card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+/* ── Inputs ───────────────────────────────────────────────── */
+.kitchen-input, .kitchen-input-field {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-elevated);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-size: var(--fs-body);
+  color: var(--text-primary);
+  transition: border-color var(--duration-fast) ease, background var(--duration-fast) ease;
+  outline: none;
+  min-height: 44px;
+}
+.kitchen-input:focus, .kitchen-input-field:focus {
+  border-color: var(--accent-primary);
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+.kitchen-input::placeholder, .kitchen-input-field::placeholder { color: var(--text-tertiary); }
+
+.kitchen-select {
+  width: 100%;
+  appearance: none;
+  padding: 12px 40px 12px 16px;
+  background: var(--bg-elevated) url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a8f98' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") no-repeat right 14px center;
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  font-family: var(--font-primary);
+  font-size: var(--fs-body);
+  color: var(--text-primary);
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.label {
+  font-weight: 600;
+  margin-bottom: 4px;
+  display: block;
+  font-size: var(--fs-small);
+  color: var(--text-secondary);
+}
+
+/* ── Bottom Nav ───────────────────────────────────────────── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  height: 80px;
+  padding-top: 8px;
+  padding-bottom: env(safe-area-inset-bottom, 8px);
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  z-index: var(--z-nav);
+}
+@media (prefers-color-scheme: dark) {
+  .bottom-nav {
+    background: rgba(15, 16, 17, 0.85);
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  font-family: var(--font-primary);
+  font-size: var(--fs-micro);
+  font-weight: var(--fw-medium);
+  transition: color var(--duration-fast) ease;
+  -webkit-tap-highlight-color: transparent;
+  text-decoration: none;
+}
+.nav-item.active { color: var(--accent-primary); }
+.nav-item:active .nav-icon { transform: scale(0.85); }
+.nav-icon {
+  font-size: 22px;
+  line-height: 1;
+  transition: transform var(--duration-fast) var(--spring-ease);
+}
+
+/* ── Modal / Bottom Sheet ─────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: saturate(180%) blur(8px);
+  -webkit-backdrop-filter: saturate(180%) blur(8px);
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: var(--z-modal);
+}
+.modal-overlay.active { display: flex; }
+
+.modal-sheet {
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--bg-surface);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: var(--shadow-sheet);
+  animation: sheetSlideUp 0.3s var(--spring-ease);
+}
+@keyframes sheetSlideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+@keyframes fadeOverlay {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 8px;
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky;
+  top: 0;
+  background: var(--bg-surface);
+  z-index: 1;
+}
+.sheet-handle {
+  width: 36px;
+  height: 5px;
+  background: var(--border-card);
+  border-radius: 3px;
+  margin: 12px auto 0;
+  flex-shrink: 0;
+}
+.sheet-title {
+  font-family: var(--font-display);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+}
+.sheet-body { padding: 20px; }
+
+.sheet-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-circle);
+}
+.sheet-close:hover { background: var(--bg-elevated); }
+
+/* ── Form Groups ──────────────────────────────────────────── */
+.form-group { margin-bottom: 16px; }
+.form-row { display: flex; gap: 12px; }
+.form-row > * { flex: 1; }
+
+/* ── Empty State ──────────────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  text-align: center;
+}
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 24px;
+  background: var(--accent-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  font-size: 36px;
+}
+.empty-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: var(--fw-semibold);
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.empty-desc {
+  font-size: var(--fs-body);
+  color: var(--text-secondary);
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+/* ── Settings ─────────────────────────────────────────────── */
+.settings-group {
+  margin: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+.settings-group + .settings-group { margin-top: var(--space-6); }
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background var(--duration-fast) ease;
+}
+.settings-item:last-child { border-bottom: none; }
+.settings-item:active { background: var(--bg-elevated); }
+.settings-item-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--accent-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.settings-item-text { flex: 1; font-size: var(--fs-body); color: var(--text-primary); }
+.settings-item-arrow { color: var(--text-tertiary); font-size: 14px; }
+
+/* ── Shopping List ────────────────────────────────────────── */
+.shopping-list { list-style: none; }
+.shopping-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background var(--duration-fast) ease;
+}
+.shopping-item:active { background: var(--bg-elevated); }
+.shopping-checkbox {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-circle);
+  border: 2px solid var(--border-card);
+  flex-shrink: 0;
+  transition: all var(--duration-fast) ease;
+  position: relative;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--bg-elevated);
+}
+.shopping-checkbox:checked {
+  background: var(--status-ok);
+  border-color: var(--status-ok);
+}
+.shopping-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+}
+.shopping-item.checked .shopping-name {
+  text-decoration: line-through;
+  color: var(--text-tertiary);
+}
+.shopping-name { flex: 1; cursor: pointer; }
+.shopping-qty {
+  font-size: var(--fs-caption);
+  color: var(--text-secondary);
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+}
+
+/* ── Scanner ──────────────────────────────────────────────── */
+.scanner-overlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: var(--z-scanner);
+  display: none;
+  flex-direction: column;
+}
+.scanner-overlay.active { display: flex; }
+.scanner-viewfinder {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.scanner-frame {
+  width: 280px;
+  height: 280px;
+  border: 2px solid rgba(255,255,255,0.6);
+  border-radius: 24px;
+  position: relative;
+}
+.scanner-line {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  background: var(--accent-primary);
+  animation: scanPulse 2s ease-in-out infinite;
+  border-radius: 1px;
+}
+@keyframes scanPulse {
+  0%, 100% { top: 8px; opacity: 0.3; }
+  50%      { top: calc(100% - 10px); opacity: 1; }
+}
+.scanner-controls {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-8);
+  padding: var(--space-8) 0 calc(var(--space-8) + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
+}
+.camera-toggle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.camera-close {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.scanner-result {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-medium);
+  white-space: nowrap;
+}
+
+/* ── Week Plan ────────────────────────────────────────────── */
+.week-cards { display: flex; flex-direction: column; gap: var(--space-3); padding: 0 var(--space-4); }
+.week-day-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  border-left: 4px solid var(--status-ok);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--duration-fast) var(--spring-ease);
+}
+.week-day-card:hover { box-shadow: var(--shadow-card-hover); }
+.week-day-card.active { border-left-color: var(--accent-primary); background: var(--accent-subtle); }
+.week-day-name-sm { font-size: var(--fs-small); font-weight: var(--fw-medium); color: var(--text-secondary); min-width: 90px; }
+.week-day-meal { flex: 1; font-size: var(--fs-body); color: var(--text-primary); }
+.week-day-meal.none { color: var(--text-tertiary); font-style: italic; }
+
+/* ── Recipe Card ──────────────────────────────────────────── */
+.recipe-card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 16px;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--spring-ease), box-shadow var(--duration-fast) var(--spring-ease);
+}
+.recipe-card:active { transform: scale(0.98); }
+.recipe-card:hover { box-shadow: var(--shadow-card-hover); }
+.recipe-card-name { font-family: var(--font-display); font-size: 17px; font-weight: var(--fw-semibold); color: var(--text-primary); }
+.recipe-card-meta { font-size: var(--fs-caption); color: var(--text-secondary); margin-top: 4px; }
+
+/* ── Toast ────────────────────────────────────────────────── */
+.kitchen-toast {
+  position: fixed;
+  top: calc(20px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: var(--bg-inverse);
+  color: var(--text-inverse);
+  padding: 14px 24px;
+  border-radius: var(--radius-md);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-medium);
+  z-index: var(--z-toast);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  animation: toastSlideIn var(--duration-normal) var(--spring-ease) forwards;
+  pointer-events: none;
+}
+@keyframes toastSlideIn {
+  to { transform: translateX(-50%) translateY(0); }
+}
+
+/* ── Password Gate ────────────────────────────────────────── */
+#pw-gate {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #1d1d1f 0%, #2d2d30 50%, #1d1d1f 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.pw-card {
+  text-align: center;
+  max-width: 320px;
+  padding: 40px 24px;
+}
+.pw-logo { font-size: 60px; margin-bottom: 16px; }
+.pw-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: var(--fw-bold);
+  color: #fff;
+  margin-bottom: 8px;
+}
+.pw-subtitle { color: rgba(255,255,255,0.5); margin-bottom: 24px; font-size: var(--fs-body); }
+.pw-input {
+  padding: 14px 20px;
+  font-size: 18px;
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-md);
+  width: 100%;
+  text-align: center;
+  margin-bottom: 12px;
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-family: var(--font-primary);
+  outline: none;
+  transition: border-color var(--duration-fast) ease, background var(--duration-fast) ease;
+}
+.pw-input:focus {
+  border-color: var(--accent-primary);
+  background: rgba(255,255,255,0.12);
+}
+.pw-input::placeholder { color: rgba(255,255,255,0.4); }
+.pw-btn {
+  padding: 14px 40px;
+  font-size: 16px;
+  background: var(--accent-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  width: 100%;
+  font-family: var(--font-primary);
+  font-weight: var(--fw-medium-alt);
+  transition: background var(--duration-fast) ease, transform var(--duration-fast) var(--spring-ease);
+}
+.pw-btn:hover { background: var(--accent-hover); }
+.pw-btn:active { background: var(--accent-active); transform: scale(0.97); }
+.pw-error { color: var(--status-expired); margin-top: 12px; text-align: center; font-size: var(--fs-small); }
+
+/* ── Dark Mode Scrollbar ──────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  .modal-sheet::-webkit-scrollbar { width: 6px; }
+  .modal-sheet::-webkit-scrollbar-track { background: transparent; }
+  .modal-sheet::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+}
+
+/* ── Recipe Detail ────────────────────────────────────────── */
+.recipe-detail h2 { font-family: var(--font-display); font-size: 22px; font-weight: var(--fw-semibold); color: var(--text-primary); margin-bottom: 4px; }
+.recipe-detail .recipe-meta { color: var(--text-secondary); font-size: var(--fs-caption); margin-bottom: 16px; }
+.recipe-detail h3 { font-size: var(--fs-h3); font-weight: var(--fw-semibold); margin-bottom: 8px; }
+.recipe-detail ul, .recipe-detail ol { padding-left: 20px; margin-bottom: 16px; }
+.recipe-detail li { padding: 4px 0; color: var(--text-primary); font-size: var(--fs-body); }
+.recipe-detail li::marker { color: var(--accent-primary); }
 </style>
 </head>
 <body>
 <div id="pw-gate">
-<div style="text-align:center;max-width:320px;padding:20px">
-<div style="font-size:60px;margin-bottom:16px">🍽️</div>
-<h1 style="color:#fff;margin-bottom:8px">Kitchen Vorrat</h1>
-<p style="color:#aaa;margin-bottom:24px">Passwort eingeben</p>
-<input type="password" id="pw-input" placeholder="Passwort" onkeypress="if(event.key==='Enter')checkPassword()">
-<button onclick="checkPassword()">Anmelden</button>
-<p id="pw-error" style="display:none;margin-top:12px">❌ Falsches Passwort</p>
+<div class="pw-card">
+<div class="pw-logo">🍽️</div>
+<div class="pw-title">Kitchen Vorrat</div>
+<div class="pw-subtitle">Passwort eingeben</div>
+<input class="pw-input" id="pw-input" placeholder="Passwort" onkeypress="if(event.key==='Enter')checkPassword()">
+<button class="pw-btn" onclick="checkPassword()">Anmelden</button>
+<p id="pw-error" class="pw-error" style="display:none">❌ Falsches Passwort</p>
 </div>
 </div>
+
 <div id="app" style="display:none">
+<div class="kitchen-app">
+<main class="kitchen-main">
+
+<!-- ═══ VORRAT ═══ -->
 <div id="sec-vorrat" class="section active">
-<div class="header"><h1>📦 Vorrat</h1><button class="btn btn-primary" onclick="openAddProduct()">+ Hinzufügen</button></div>
-<input class="search-box" type="text" placeholder="🔍 Suche..." id="search-input" oninput="filterProducts(this.value)">
-<div id="products-list"></div>
+  <div class="section-header">
+    <h1>Vorrat</h1>
+    <div class="header-actions">
+      <button class="btn btn-primary" onclick="openAddProduct()">
+        <span style="font-size:18px;line-height:1">+</span> Hinzufügen
+      </button>
+    </div>
+  </div>
+  <div class="scroll-section" id="category-pills"></div>
+  <div class="search-bar">
+    <input class="search-input" type="text" placeholder="🔍 Produkte suchen..." id="search-input" oninput="filterProducts(this.value)">
+  </div>
+  <div class="product-grid" id="products-list"></div>
 </div>
+
+<!-- ═══ REZEPTE ═══ -->
 <div id="sec-rezepte" class="section">
-<div class="header"><h1>📖 Rezepte</h1><button class="btn btn-primary" onclick="openAddRecipe()">+ Rezept</button></div>
-<div id="recipes-list"></div>
+  <div class="section-header">
+    <h1>Rezepte</h1>
+    <button class="btn btn-primary" onclick="openAddRecipe()">
+      <span style="font-size:18px;line-height:1">+</span> Rezept
+    </button>
+  </div>
+  <div id="recipes-list"></div>
 </div>
+
+<!-- ═══ EINKAUF ═══ -->
 <div id="sec-einkauf" class="section">
-<div class="header"><h1>🛒 Einkaufsliste</h1><div><button class="btn btn-danger" onclick="clearShopping()">Leeren</button> <button class="btn btn-primary" onclick="openAddShoppingItem()">+</button></div></div>
-<div id="shopping-list"></div>
+  <div class="section-header">
+    <h1>Einkaufsliste</h1>
+    <div class="header-actions">
+      <button class="btn btn-danger btn-sm" onclick="clearShopping()">Leeren</button>
+      <button class="btn btn-primary" onclick="openAddShoppingItem()">+</button>
+    </div>
+  </div>
+  <div class="shopping-list" id="shopping-list"></div>
 </div>
+
+<!-- ═══ PLAN ═══ -->
 <div id="sec-plan" class="section">
-<div class="header"><h1>📅 Wochenplan</h1><button class="btn btn-success" onclick="genShoppingFromPlan()">🛒 Liste erstellen</button></div>
-<div id="week-plan"></div>
+  <div class="section-header">
+    <h1>Wochenplan</h1>
+    <button class="btn btn-success btn-sm" onclick="genShoppingFromPlan()">🛒 Liste erstellen</button>
+  </div>
+  <div class="week-cards" id="week-plan"></div>
 </div>
+
+<!-- ═══ EINSTELLUNGEN ═══ -->
 <div id="sec-einstellungen" class="section">
-<div class="header"><h1>⚙️ Einstellungen</h1></div>
-<div class="card"><h3>📍 Lagerplätze</h3>
-<div style="display:flex;gap:8px;margin-top:8px"><input id="new-storage" placeholder="Neuer Lagerplatz" style="margin-bottom:0"><button class="btn btn-primary" onclick="addStorage()">+</button></div>
-<div id="storage-list" style="margin-top:8px"></div></div>
-<div class="card" style="margin-top:12px"><h3>🏷️ Kategorien</h3>
-<div style="display:flex;gap:8px;margin-top:8px"><input id="new-cat" placeholder="Neue Kategorie" style="margin-bottom:0"><button class="btn btn-primary" onclick="addCategory()">+</button></div>
-<div id="category-list" style="margin-top:8px"></div></div>
-<div class="card" style="margin-top:12px"><h3>💾 Daten</h3>
-<button class="btn btn-primary" onclick="exportData()" style="width:100%;margin-bottom:8px">📤 Exportieren (JSON)</button>
-<button class="btn btn-success" onclick="document.getElementById('import-file').click()" style="width:100%">📥 Importieren</button>
-<input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)"></div>
-<div class="card" style="margin-top:12px"><button class="btn btn-danger" onclick="logout()" style="width:100%">🔒 Abmelden</button></div>
-</div>
-</div>
-<nav id="bottom-nav">
-<a href="#" class="active" onclick="showSection('vorrat',this);return false"><span>📦</span>Vorrat</a>
-<a href="#" onclick="showSection('rezepte',this);return false"><span>📖</span>Rezepte</a>
-<a href="#" onclick="showSection('einkauf',this);return false"><span>🛒</span>Einkauf</a>
-<a href="#" onclick="showSection('plan',this);return false"><span>📅</span>Plan</a>
-<a href="#" onclick="showSection('einstellungen',this);return false"><span>⚙️</span>Setups</a>
+  <div class="section-header">
+    <h1>Einstellungen</h1>
+  </div>
+  <div class="settings-group">
+    <div style="padding:12px 16px;font-size:var(--fs-small);font-weight:var(--fw-medium);color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">📍 Lagerplätze</div>
+    <div id="storage-list"></div>
+  </div>
+  <div class="settings-group">
+    <div style="padding:12px 16px;font-size:var(--fs-small);font-weight:var(--fw-medium);color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">🏷️ Kategorien</div>
+    <div id="category-list"></div>
+  </div>
+  <div class="settings-group">
+    <div style="padding:12px 16px;font-size:var(--fs-small);font-weight:var(--fw-medium);color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;">💾 Daten</div>
+    <div class="settings-item" onclick="exportData()">
+      <div class="settings-item-icon">📤</div>
+      <span class="settings-item-text">Exportieren (JSON)</span>
+      <span class="settings-item-arrow">›</span>
+    </div>
+    <div class="settings-item" onclick="document.getElementById('import-file').click()">
+      <div class="settings-item-icon">📥</div>
+      <span class="settings-item-text">Importieren</span>
+      <span class="settings-item-arrow">›</span>
+    </div>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)">
+  </div>
+  <div class="settings-group" style="margin-bottom:calc(var(--space-4) + 80px)">
+    <div class="settings-item" onclick="logout()">
+      <div class="settings-item-icon" style="background:var(--status-expired-bg)">🔒</div>
+      <span class="settings-item-text">Abmelden</span>
+      <span class="settings-item-arrow">›</span>
+    </div>
+  </div>
+</main>
+
+<!-- ═══ BOTTOM NAV ═══ -->
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="showSection('vorrat',this)">
+    <span class="nav-icon">📦</span>
+    <span>Vorrat</span>
+  </button>
+  <button class="nav-item" onclick="showSection('rezepte',this)">
+    <span class="nav-icon">📖</span>
+    <span>Rezepte</span>
+  </button>
+  <button class="nav-item" onclick="showSection('einkauf',this)">
+    <span class="nav-icon">🛒</span>
+    <span>Einkauf</span>
+  </button>
+  <button class="nav-item" onclick="showSection('plan',this)">
+    <span class="nav-icon">📅</span>
+    <span>Plan</span>
+  </button>
+  <button class="nav-item" onclick="showSection('einstellungen',this)">
+    <span class="nav-icon">⚙️</span>
+    <span>Mehr</span>
+  </button>
 </nav>
-<div id="modalProduct" class="modal" onclick="if(event.target===this)closeModal('modalProduct')">
-<div class="modal-content">
-<div class="modal-header"><h2 id="mpTitle">Produkt</h2><button class="close-btn" onclick="closeModal('modalProduct')">&times;</button></div>
-<label>Name *</label><input id="prodName" placeholder="Produktname">
-<label>Hersteller</label><input id="prodManufacturer" placeholder="Hersteller">
-<label>Größe / Packungsgröße</label><input id="prodSize" placeholder="z.B. 500ml, 200g">
-<label>Kategorie</label><select id="prodCategory"></select>
-<label>Lagerplatz</label><select id="prodStorage"></select>
-<div style="display:flex;gap:12px"><div style="flex:1"><label>Menge</label><input type="number" id="prodQty" value="1" min="0" step="0.1"></div>
-<div style="flex:1"><label>Einheit</label><select id="prodUnit"><option>Stk</option><option>ml</option><option>l</option><option>g</option><option>kg</option><option>Beutel</option><option>Glas</option><option>Tube</option><option>Becher</option><option>Dose</option><option>Schale</option><option>Rolle</option><option>Packung</option></select></div></div>
-<label>Mindestmenge</label><input type="number" id="prodMinQty" value="1" min="0">
-<label>MHD</label><input type="date" id="prodExpiry">
-<label>Barcode</label><input id="prodBarcode" placeholder="Barcode">
-<label>Notizen</label><textarea id="prodNotes" rows="2"></textarea>
-<button class="btn btn-primary" onclick="saveProduct()" style="width:100%;margin-bottom:8px">💾 Speichern</button>
-<button class="btn btn-danger" id="deleteProdBtn" onclick="deleteProduct()" style="width:100%;display:none">🗑️ Löschen</button>
-</div></div>
-<div id="modalShopping" class="modal" onclick="if(event.target===this)closeModal('modalShopping')">
-<div class="modal-content">
-<div class="modal-header"><h2>Einkauf hinzufügen</h2><button class="close-btn" onclick="closeModal('modalShopping')">&times;</button></div>
-<label>Produkt</label><input id="shopName" placeholder="Produktname">
-<div style="display:flex;gap:12px"><div style="flex:1"><label>Menge</label><input type="number" id="shopQty" value="1" min="1"></div>
-<div style="flex:1"><label>Einheit</label><select id="shopUnit"><option>Stk</option><option>ml</option><option>l</option><option>g</option><option>kg</option><option>Beutel</option><option>Glas</option><option>Dose</option></select></div></div>
-<button class="btn btn-primary" onclick="addShoppingItem()" style="width:100%">Hinzufügen</button>
-</div></div>
-<div id="modalScanner" class="modal" onclick="if(event.target===this)closeModal('modalScanner')">
-<div class="modal-content">
-<div class="modal-header"><h2>📷 Barcode Scannen</h2><button class="close-btn" onclick="closeScanner()">&times;</button></div>
-<div id="scanner-box" class="scanner-box">Scanner wird geladen...</div>
-<p id="scanResult" style="text-align:center;margin-top:12px;font-weight:600"></p>
-</div></div>
-<div id="modalRecipe" class="modal" onclick="if(event.target===this)closeModal('modalRecipe')">
-<div class="modal-content"><div class="modal-header"><h2>Rezept</h2><button class="close-btn" onclick="closeModal('modalRecipe')">&times;</button></div><div id="recipe-detail"></div></div>
 </div>
-<div id="modalRecipePick" class="modal" onclick="if(event.target===this)closeModal('modalRecipePick')">
-<div class="modal-content">
-<div class="modal-header"><h2>Rezept auswählen</h2><button class="close-btn" onclick="closeModal('modalRecipePick')">&times;</button></div>
-<div id="recipe-pick-list"></div>
-<button class="btn btn-primary" onclick="saveDayPlan()" style="width:100%;margin-top:12px">Speichern</button>
-</div></div>
-<div id="modalNewRecipe" class="modal" onclick="if(event.target===this)closeModal('modalNewRecipe')">
-<div class="modal-content">
-<div class="modal-header"><h2>Neues Rezept</h2><button class="close-btn" onclick="closeModal('modalNewRecipe')">&times;</button></div>
-<label>Name</label><input id="recName" placeholder="Rezeptname">
-<label>Kategorie</label><select id="recCategory"><option>Hauptgerichte</option><option>Beilagen</option><option>Suppen</option><option>Salate</option><option>Desserts</option><option>Snacks</option><option>Getränke</option></select>
-<label>Portionen</label><input type="number" id="recPortions" value="4" min="1">
-<label>Zutaten (eine pro Zeile: Menge Einheit Name)</label><textarea id="recIngredients" rows="6" placeholder="400g Spaghetti&#10;200g Speck&#10;4 Eier"></textarea>
-<label>Schritte (eine pro Zeile)</label><textarea id="recSteps" rows="6" placeholder="Spaghetti kochen&#10;Speck würfeln und braten"></textarea>
-<button class="btn btn-primary" onclick="saveNewRecipe()" style="width:100%">💾 Speichern</button>
-</div></div>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- Product Modal -->
+<div id="modalProduct" class="modal-overlay" onclick="if(event.target===this)closeModal('modalProduct')">
+<div class="modal-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title" id="mpTitle">Produkt hinzufügen</span>
+    <button class="sheet-close" onclick="closeModal('modalProduct')">×</button>
+  </div>
+  <div class="sheet-body">
+    <div class="form-group">
+      <label class="label">Name *</label>
+      <input class="kitchen-input" id="prodName" placeholder="Produktname">
+    </div>
+    <div class="form-group">
+      <label class="label">Hersteller</label>
+      <input class="kitchen-input" id="prodManufacturer" placeholder="Hersteller">
+    </div>
+    <div class="form-group">
+      <label class="label">Größe / Packungsgröße</label>
+      <input class="kitchen-input" id="prodSize" placeholder="z.B. 500ml, 200g">
+    </div>
+    <div class="form-group">
+      <label class="label">Kategorie</label>
+      <select class="kitchen-select" id="prodCategory"></select>
+    </div>
+    <div class="form-group">
+      <label class="label">Lagerplatz</label>
+      <select class="kitchen-select" id="prodStorage"></select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="label">Menge</label>
+        <input type="number" class="kitchen-input" id="prodQty" value="1" min="0" step="0.1">
+      </div>
+      <div class="form-group">
+        <label class="label">Einheit</label>
+        <select class="kitchen-select" id="prodUnit">
+          <option>Stk</option><option>ml</option><option>l</option><option>g</option><option>kg</option><option>Beutel</option><option>Glas</option><option>Tube</option><option>Becher</option><option>Dose</option><option>Schale</option><option>Rolle</option><option>Packung</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="label">Mindestmenge</label>
+      <input type="number" class="kitchen-input" id="prodMinQty" value="1" min="0">
+    </div>
+    <div class="form-group">
+      <label class="label">MHD</label>
+      <input type="date" class="kitchen-input" id="prodExpiry">
+    </div>
+    <div class="form-group">
+      <label class="label">Barcode</label>
+      <input class="kitchen-input" id="prodBarcode" placeholder="Barcode" onkeypress="if(event.key==='Enter'){event.preventDefault();saveProduct();}">
+    </div>
+    <div class="form-group">
+      <label class="label">Notizen</label>
+      <textarea class="kitchen-input" id="prodNotes" rows="2" style="resize:vertical;min-height:80px"></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="saveProduct()" style="width:100%;margin-bottom:8px">💾 Speichern</button>
+    <button class="btn btn-danger" id="deleteProdBtn" onclick="deleteProduct()" style="width:100%;display:none">🗑️ Löschen</button>
+  </div>
+</div>
+</div>
+
+<!-- Shopping Item Modal -->
+<div id="modalShopping" class="modal-overlay" onclick="if(event.target===this)closeModal('modalShopping')">
+<div class="modal-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">Einkaufen</span>
+    <button class="sheet-close" onclick="closeModal('modalShopping')">×</button>
+  </div>
+  <div class="sheet-body">
+    <div class="form-group">
+      <label class="label">Produkt</label>
+      <input class="kitchen-input" id="shopName" placeholder="Produktname">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="label">Menge</label>
+        <input type="number" class="kitchen-input" id="shopQty" value="1" min="1">
+      </div>
+      <div class="form-group">
+        <label class="label">Einheit</label>
+        <select class="kitchen-select" id="shopUnit">
+          <option>Stk</option><option>ml</option><option>l</option><option>g</option><option>kg</option><option>Beutel</option><option>Glas</option><option>Dose</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="addShoppingItem()" style="width:100%">Hinzufügen</button>
+  </div>
+</div>
+</div>
+
+<!-- Scanner Modal -->
+<div id="modalScanner" class="modal-overlay" onclick="if(event.target===this)closeModal('modalScanner')">
+<div class="modal-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">📷 Scannen</span>
+    <button class="sheet-close" onclick="closeScanner()">×</button>
+  </div>
+  <div class="sheet-body">
+    <div id="scanner-box" style="width:100%;height:280px;background:var(--bg-elevated);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;color:var(--text-tertiary);font-size:16px">Scanner wird geladen...</div>
+    <p id="scanResult" style="text-align:center;margin-top:12px;font-weight:600;color:var(--text-primary)"></p>
+  </div>
+</div>
+</div>
+
+<!-- Recipe Detail Modal -->
+<div id="modalRecipe" class="modal-overlay" onclick="if(event.target===this)closeModal('modalRecipe')">
+<div class="modal-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">Rezept</span>
+    <button class="sheet-close" onclick="closeModal('modalRecipe')">×</button>
+  </div>
+  <div class="sheet-body" id="recipe-detail"></div>
+</div>
+</div>
+
+<!-- Recipe Pick Modal -->
+<div id="modalRecipePick" class="modal-overlay" onclick="if(event.target===this)closeModal('modalRecipePick')">
+<div class="modal-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">Rezept auswählen</span>
+    <button class="sheet-close" onclick="closeModal('modalRecipePick')">×</button>
+  </div>
+  <div class="sheet-body">
+    <div id="recipe-pick-list"></div>
+    <button class="btn btn-primary" onclick="saveDayPlan()" style="width:100%;margin-top:12px">Speichern</button>
+  </div>
+</div>
+</div>
+
+<!-- New Recipe Modal -->
+<div id="modalNewRecipe" class="modal-overlay" onclick="if(event.target===this)closeModal('modalNewRecipe')">
+<div class="modal-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <span class="sheet-title">Neues Rezept</span>
+    <button class="sheet-close" onclick="closeModal('modalNewRecipe')">×</button>
+  </div>
+  <div class="sheet-body">
+    <div class="form-group">
+      <label class="label">Name</label>
+      <input class="kitchen-input" id="recName" placeholder="Rezeptname">
+    </div>
+    <div class="form-group">
+      <label class="label">Kategorie</label>
+      <select class="kitchen-select" id="recCategory">
+        <option>Hauptgerichte</option><option>Beilagen</option><option>Suppen</option><option>Salate</option><option>Desserts</option><option>Snacks</option><option>Getränke</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="label">Portionen</label>
+      <input type="number" class="kitchen-input" id="recPortions" value="4" min="1">
+    </div>
+    <div class="form-group">
+      <label class="label">Zutaten (eine pro Zeile: Menge Einheit Name)</label>
+      <textarea class="kitchen-input" id="recIngredients" rows="6" placeholder="400g Spaghetti&#10;200g Speck&#10;4 Eier" style="resize:vertical;min-height:120px"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="label">Schritte (eine pro Zeile)</label>
+      <textarea class="kitchen-input" id="recSteps" rows="6" placeholder="Spaghetti kochen&#10;Speck würfeln und braten" style="resize:vertical;min-height:120px"></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="saveNewRecipe()" style="width:100%">💾 Speichern</button>
+  </div>
+</div>
+</div>
+
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
 const K={P:'kv_p',R:'kv_r',C:'kv_c',S:'kv_s',SH:'kv_sh',W:'kv_w'},gw='338faf1c8b72fdf1a102a1c0e4122a1d0d32f1235c235ede9b4a63505bf08990';
-let PD=[],RC=[],CA=[],ST=[],SH=[],WP=[],editId=null,scan=null,curCam=null;
+let PD=[],RC=[],CA=[],ST=[],SH=[],WP=[],editId=null,scan=null,curCam=null,activeCategory='';
+
 function gd(k){try{return JSON.parse(localStorage.getItem(k))||[]}catch(e){return[]}}
 function sd(k,d){localStorage.setItem(k,JSON.stringify(d))}
+
 function seed(){
-if(!CA.length)CA=['Lebensmittel','Getränke','Milchprodukte','Fleisch','Kühlung','Konserven','Tiefkühl','Reinigung','Sonstiges'];
-if(!ST.length)ST=[{id:'f',n:'Kühlschrank',i:'🧊'},{id:'fr',n:'Gefriertruhe',i:'❄️'},{id:'p',n:'Vorratskammer',i:'📦'},{id:'k',n:'Küche',i:'🍽️'},{id:'b',n:'Balkon',i:'🏠'},{id:'bl',n:'Keller',i:'🏚️'}];
-if(RC.length)return;
-RC=[{id:'c1',n:'Spaghetti Carbonara',c:'Hauptgerichte',p:4,ing:[{a:400,u:'g',n:'Spaghetti'},{a:200,u:'g',n:'Speck'},{a:4,u:'Stk',n:'Eier'},{a:100,u:'g',n:'Parmesan'},{a:1,u:'Prise',n:'Schwarzer Pfeffer'}],st:['Spaghetti al dente kochen','Speck in Würfel schneiden und knusprig braten','Eier mit geriebenem Parmesan verquirlen','Nudeln abgießen','Speck unter Nudeln rühren','Eiermischung unterrühren (nicht zu heiß!)','Mit viel schwarzem Pfeffer servieren']},
-{id:'c2',n:'Lasagne Bolognese',c:'Hauptgerichte',p:6,ing:[{a:12,u:'Stk',n:'Lasagneplatten'},{a:500,u:'g',n:'Rinderhack'},{a:400,u:'g',n:'Tomaten (Stückig)'},{a:1,u:'Stk',n:'Zwiebel'},{a:1,u:'Stk',n:'Karotte'},{a:80,u:'g',n:'Parmesan'},{a:200,u:'g',n:'Mozzarella'},{a:500,u:'ml',n:'Sahne'}],st:['Zwiebel, Karotte fein würfeln','In Öl anbraten, Hack dazu','Tomaten und Sahne, 30min köcheln','Béchamel: Butter, Mehl, Milch','Schichten: Sofrito, Nudeln, Béchamel, Käse','Wiederholen, mit Käse bedecken','180°C 30-35min backen']},
-{id:'c3',n:'Chili con Carne',c:'Hauptgerichte',p:4,ing:[{a:600,u:'g',n:'Rinderhack'},{a:2,u:'Dose',n:'Kidneybohnen'},{a:400,u:'g',n:'Tomaten (Stückig)'},{a:2,u:'Stk',n:'Paprika'},{a:2,u:'Stk',n:'Zwiebel'},{a:3,u:'Zehen',n:'Knoblauch'},{a:2,u:'EL',n:'Chiliflocken'}],st:['Fleinsel krümelig anbraten','Gemüse würfeln, mitbraten','Knoblauch und Chili','Tomaten und Bohnen (abgetropft)','30min köcheln lassen','Mit Reis, Sauerrahm und tortilla chips']},
-{id:'c4',n:'Wiener Schnitzel',c:'Hauptgerichte',p:4,ing:[{a:4,u:'Stk',n:'Schnitzel (Kalb oder Schwein)'},{a:100,u:'g',n:'Mehl'},{a:2,u:'Stk',n:'Eier'},{a:150,u:'g',n:'Semmelbrösel'},{a:100,u:'g',n:'Butter'}],st:['Schnitzel auf ca. 5mm dicke klopfen','Salzen und pfeffern','Mehl, verquirlte Eier, Brösel auf 3 Tellern','Panieren: Mehl - Ei - Brösel','In Butter/Oil goldbraun schwimmen lassen','Mit Zitrone, Petersilkartoffeln und Preiselbeeren']},
-{id:'c5',n:'Gulasch',c:'Hauptgerichte',p:6,ing:[{a:800,u:'g',n:'Rindfleisch (Geschmortes)'},{a:3,u:'Stk',n:'Zwiebel'},{a:3,u:'Stk',n:'Paprika'},{a:600,u:'g',n:'Kartoffeln'},{a:2,u:'EL',n:'Paprikamark'}],st:['Zwiebeln grob würfeln','Fleinsel in großen Klumpen anbraten','Zwiebeln und Paprikamark','Paprika und Kartoffeln in Stücken','Mit Brühe auffüllen','1,5-2 Std. köcheln','Mit Semmelknödel und Salat']},
-{id:'c6',n:'Pizza Margherita',c:'Hauptgerichte',p:2,ing:[{a:300,u:'g',n:'Mehl (Tipo 00)'},{a:7,u:'g',n:'Hefe (Trocken)'},{a:180,u:'ml',n:'Laufwasser'},{a:3,u:'EL',n:'Olivenöl'},{a:200,u:'ml',n:'Tomatensoße'},{a:200,u:'g',n:'Mozzarella'},{a:1,u:'Bund',n:'Basilikum'}],st:['Teig: Mehl, Hefe, Wasser, Öl verkneten','1 Std. gehen lassen','Ausrollen (dünner Rand)','Tomatensoße darauf','Mozzarella in Scheiben','250°C 8-10min backen','Mit Basilikum und Olivenöl']},
-{id:'c7',n:'Tomatensuppe',c:'Suppen',p:4,ing:[{a:800,u:'g',n:'Tomaten'},{a:1,u:'Stk',n:'Zwiebel'},{a:2,u:'Zehen',n:'Knoblauch'},{a:3,u:'EL',n:'Olivenöl'},{a:100,u:'ml',n:'Sahne'}],st:['Zwiebel und Knoblauch fein hacken','In Olivenöl anbraten','Tomaten dazu, 15min köcheln','Mit Pürierstab pürieren','Sahne unterrühren','Mit Croutons und Basilikum']},
-{id:'c8',n:'Rührkuchen mit Schokostreuseln',c:'Desserts',p:8,ing:[{a:250,u:'g',n:'Butter'},{a:250,u:'g',n:'Zucker'},{a:4,u:'Stk',n:'Eier'},{a:250,u:'g',n:'Mehl'},{a:100,u:'g',n:'Schokostreusel'},{a:1,u:'Pkt',n:'Backpulver'}],st:['Butter und Zucker cremig rühren','Eier einzeln unterrühren','Mehl und Backpulver sieben','Schokostreusel unterheben','In Kastenform','180°C 45-50min backen']},
-{id:'c9',n:'Apfelstrudel',c:'Desserts',p:6,ing:[{a:1,u:'Paket',n:'Blätterteig'},{a:6,u:'Stk',n:'Äpfel (Winer Wächter)'},{a:100,u:'g',n:'Zucker'},{a:2,u:'TL',n:'Zimt'},{a:50,u:'g',n:'Semmelbrösel'},{a:200,u:'ml',n:'Vanillesoße'}],st:['Äpfel schälen, in Streifen schneiden','Zucker und Zimt mischen','Blätterteig ausrollen','Apfelstück darauf verteilen','Aufrollen, mit Butter beträufeln','180°C 30min backen','Mit Vanillesoße']},
-{id:'c10',n:'Nudelsalat mit Feta',c:'Salate',p:4,ing:[{a:400,u:'g',n:'Spiralnudeln'},{a:200,u:'g',n:'Feta'},{a:1,u:'Stk',n:'Gurke'},{a:200,u:'g',n:'Kirschtomaten'},{a:100,u:'g',n:'Oliven'},{a:4,u:'EL',n:'Olivenöl'}],st:['Nudeln kochen, abkühlen','Gurke und Tomaten würfeln','Feta in Würfel','Oliven halbiert','Alles vermengen','Dressing: Olivenöl, Zitronensaft, Oregano']},
-{id:'c11',n:'Bäuerlicher Kartoffelsalat',c:'Salate',p:6,ing:[{a:1000,u:'g',n:'Kartoffeln (festkochend)'},{a:2,u:'Stk',n:'Zwiebel'},{a:200,u:'ml',n:'Rinderbrühe'},{a:3,u:'EL',n:'Essig'},{a:1,u:'EL',n:'Senf'},{a:100,u:'g',n:'Sonnentrockentomaten'}],st:['Kartoffeln in Schalen kochen','Zwiebel fein würfeln','Brühe mit Essig und Senf aufkochen','Heiß über die warmen Kartoffeln','Tomaten und Schnittlauch','Warm servieren!']},
-{id:'c12',n:'Crepes mit Nutella',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Mehl'},{a:3,u:'Stk',n:'Eier'},{a:500,u:'ml',n:'Milch'},{a:2,u:'EL',n:'Zucker'},{a:2,u:'EL',n:'Butter'},{a:200,u:'g',n:'Nutella'}],st:['Mehl, Eier, Milch, Zucker verrühren','15min ruhen lassen','In beschichteter Pfanne hauchdünn backen','Mit Nutella bestreichen','Zusammenklappen','Mit Puderzucker']},
-{id:'c13',n:'Flammkuchen',c:'Hauptgerichte',p:4,ing:[{a:300,u:'g',n:'Mehl'},{a:200,u:'g',n:'Joghurt'},{a:200,u:'ml',n:'Sahne'},{a:200,u:'g',n:'Quark'},{a:150,u:'g',n:'Speck'},{a:2,u:'Stk',n:'Zwiebeln'}],st:['Teig: Mehl, Joghurt, Ei, Salz','Dünn ausrollen','Sahne, Quark, Ei verquirlen','Darauf verteilen','Speckwürfel und Zwiebelringel','250°C 10min']},
-{id:'c14',n:'Bratreis',c:'Hauptgerichte',p:2,ing:[{a:400,u:'g',n:'gekochter Reis (vom Vortag)'},{a:2,u:'Stk',n:'Eier'},{a:100,u:'g',n:'Erbsen'},{a:1,u:'Stk',n:'Karotte'},{a:3,u:'EL',n:'Sojasoße'},{a:1,u:'EL',n:'Sesamöl'}],st:['Reis vom Vortag verwenden','Gemüse klein schneiden','Eier verquirlt, in Wok braten','Gemüse hinzufügen','Reis dazu, alles woken','Sojasoße und Sesamöl']},
-{id:'c15',n:'Pancakes',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Mehl'},{a:300,u:'ml',n:'Milch'},{a:2,u:'Stk',n:'Eier'},{a:2,u:'EL',n:'Zucker'},{a:2,u:'TL',n:'Backpulver'},{a:100,u:'ml',n:'Ahornsirup'}],st:['Trockene Zutaten mischen','Milch und Eier dazu','Nur kurz rühren (Knöckel ok!)','In Butter goldbraun backen','Mit Ahornsirup und Beeren']},
-{id:'c16',n:'Thunfisch-Pasta',c:'Hauptgerichte',p:2,ing:[{a:250,u:'g',n:'Pasta'},{a:1,u:'Dose',n:'Thunfisch'},{a:200,u:'g',n:'Kirschtomaten'},{a:2,u:'Zehen',n:'Knoblauch'},{a:3,u:'EL',n:'Olivenöl'},{a:1,u:'EL',n:'Zitronensaft'}],st:['Pasta kochen','Knoblauch dünn schneiden','In Olivenöl anbraten','Thunfisch und Tomaten','Pasta ins Öl','Zitronensaft, Parmesan']},
-{id:'c17',n:'Quiche Lorraine',c:'Hauptgerichte',p:6,ing:[{a:1,u:'Paket',n:'Mürbeteig'},{a:200,u:'g',n:'Speck'},{a:4,u:'Stk',n:'Eier'},{a:300,u:'ml',n:'Sahne'},{a:100,u:'g',n:'Emmentaler'},{a:1,u:'Prise',n:'Muskatnuss'}],st:['Teig auslegen','Speck würfeln, braten','Eier mit Sahne verquirlen','Muskat, Salz, Pfeffer','Speck und Käse','180°C 35min']},
-{id:'c18',n:'Milchreis mit Zimt',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Milchreis'},{a:1,u:'L',n:'Vollmilch'},{a:1,u:'Stk',n:'Zitrone'},{a:60,u:'g',n:'Zucker'},{a:1,u:'Stange',n:'Zimt'}],st:['Alle Zutaten Topf','50min bei kleiner Hitze','Ständig rühren','In Förmchen verteilen','Kalt stellen','Mit Zimt und Rosinen']},
-{id:'c19',n:'Belgische Waffeln',c:'Desserts',p:4,ing:[{a:250,u:'g',n:'Mehl'},{a:300,u:'ml',n:'Milch'},{a:125,u:'g',n:'Butter'},{a:4,u:'Stk',n:'Eier'},{a:3,u:'EL',n:'Zucker'},{a:50,u:'g',n:'Puderzucker'}],st:['Butter schmelzen und abkühlen','Mehl, Milch, Eigelb, Zucker','Eischnee unterheben','Waffeleisen vorheizen','Waffeln backen','Mit Puderzucker und Beeren']},
-{id:'c20',n:'Knoblauchbrot',c:'Snacks',p:4,ing:[{a:1,u:'Laib',n:'Ciabatta'},{a:100,u:'g',n:'Butter'},{a:4,u:'Zehen',n:'Knoblauch'},{a:1,u:'Bund',n:'Petersilie'},{a:50,u:'g',n:'Parmesan'}],st:['Butter mit Knoblauch und Petersilie','Ciabatta aufschneiden','Butter darauf','Parmesan darüber','180°C 10min backen']},
-{id:'c21',n:'Gyros mit Pita',c:'Hauptgerichte',p:4,ing:[{a:500,u:'g',n:'Schweinefleisch'},{a:4,u:'Stk',n:'Pita-Brot'},{a:200,u:'g',n:'Joghurt'},{a:1,u:'Stk',n:'Gurke'},{a:2,u:'Stk',n:'Tomate'},{a:1,u:'Stk',n:'Zwiebel'}],st:['Fleinsel würfeln, griechisch würzen','Grillen oder in der Pfanne','Joghurt-Sauce mit Knoblauch','Gemüse schneiden','Pita erhitzen','Alles zusammen']},
-{id:'c22',n:'Kartoffelgratin',c:'Beilagen',p:6,ing:[{a:1000,u:'g',n:'Kartoffeln'},{a:300,u:'ml',n:'Sahne'},{a:3,u:'Zehen',n:'Knoblauch'},{a:150,u:'g',n:'Gruyère oder Emmentaler'},{a:1,u:'Prise',n:'Muskatnuss'}],st:['Kartoffeln dünn schneiden','Auflaufform knoblen','Schichten: Kartoffeln, Sahne, Käse','Wiederholen','180°C 45min, goldbraun']},
-{id:'c23',n:'Selbstgemachte Spätzle',c:'Beilagen',p:4,ing:[{a:300,u:'g',n:'Mehl'},{a:3,u:'Stk',n:'Eier'},{a:100,u:'ml',n:'Wasser'},{a:1,u:'Prise',n:'Salz'},{a:50,u:'g',n:'Butter'}],st:['Teig: Mehl, Eier, Wasser, Salz','15min ruhen','Spätzlepresse oder Reibe','In Salzwasser kochen','Aufschwimmend heraus','Mit Butter und Schnittlauch']},
-{id:'c24',n:'Kaiserschmarrn',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Mehl'},{a:4,u:'Stk',n:'Eier'},{a:300,u:'ml',n:'Milch'},{a:3,u:'EL',n:'Zucker'},{a:1,u:'Stk',n:'Zitrone'}],st:['Teig: Mehl, Eier, Milch, Zucker','In beschichteter Pfanne','Wenn Blasen Aufsteigen -> in Stücke reißen','In Butter ausbacken','Mit Apfelmost oder Zwetschgenröster']},
-{id:'c25',n:'Dampfnudeln',c:'Desserts',p:4,ing:[{a:300,u:'g',n:'Mehl'},{a:250,u:'ml',n:'Milch lauwarm'},{a:42,u:'g',n:'Hefe'},{a:50,u:'g',n:'Zucker'},{a:50,u:'g',n:'Butter'}],st:['Teig: Mehl, Milch, Hefe, Zucker','2 Std. gehen lassen','Formen, weitere 50min','In Butterschmalz goldbraun','Mit Vanillesoße und Puderzucker']},
-{id:'c26',n:'Wok-Gemüse mit Hähnchen',c:'Hauptgerichte',p:4,ing:[{a:500,u:'g',n:'Hähnchenbrust'},{a:2,u:'Stk',n:'Paprika'},{a:1,u:'Stk',n:'Zucchini'},{a:200,u:'g',n:'Champignons'},{a:150,u:'g',n:'Zuckerschoten'},{a:4,u:'EL',n:'Sojasoße'}],st:['Wok sehr heiß machen','Hähnchen würfeln, braten','Gemüse in Streifen','Nacheinander in Wok','Sojasoße','Mit Basmatireis']},
-{id:'c27',n:'Gebratener Lachs',c:'Hauptgerichte',p:4,ing:[{a:4,u:'Stk',n:'Lachsfilet'},{a:2,u:'Stk',n:'Zitrone'},{a:1,u:'Bund',n:'Dill'},{a:200,u:'ml',n:'Sahne'},{a:600,u:'g',n:'Kartoffeln'}],st:['Lachs salzen, pfeffern','In Pfanne von einer Seite 4min','Wenden, 3min','Sahne mit Dill und Zitrone','Kartoffeln kochen','Mit Sauce']},
-{id:'c28',n:'Hummus',c:'Snacks',p:4,ing:[{a:2,u:'Dose',n:'Kichererbsen'},{a:4,u:'EL',n:'Tahini'},{a:1,u:'Stk',n:'Zitrone'},{a:2,u:'Zehen',n:'Knoblauch'},{a:3,u:'EL',n:'Olivenöl'}],st:['Kichererbsen abtropfen','Alle Zutaten Mixer','Cremig mixen','Mit Olivenöl und Paprika','Mit Pita-Brot']},
-{id:'c29',n:'Gemüsesuppe',c:'Suppen',p:6,ing:[{a:300,u:'g',n:'Karotten'},{a:1,u:'Stk',n:'Sellerie'},{a:400,u:'g',n:'Kartoffeln'},{a:200,u:'g',n:'Erbsen'},{a:1.5,u:'L',n:'Brühe'}],st:['Gemüse klein schneiden','In Brühe','25min köcheln','Mit Kräutern','Mit Brot']},
-{id:'c30',n:'Birchermüslí',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Haferflocken'},{a:300,u:'g',n:'Joghurt'},{a:2,u:'Stk',n:'Äpfel'},{a:50,u:'g',n:'Nüsse'},{a:2,u:'EL',n:'Zitronensaft'}],st:['Flocken mit Joghurt','Äpfel reiben, Zitronensaft','Nüsse hacken','Vermengen','Kalt stellen','Mit Obst und Honig']},
-{id:'c31',n:'Pasta Aglio e Olio',c:'Hauptgerichte',p:2,ing:[{a:200,u:'g',n:'Spaghetti'},{a:6,u:'Zehen',n:'Knoblauch'},{a:4,u:'EL',n:'Olivenöl'},{a:1,u:'TL',n:'Chili-Flocken'},{a:1,u:'Bund',n:'Petersilie'}],st:['Pasta kochen','Knoblauch dünn','In Öl goldbraun','Chili','Pasta ins Öl','Petersilie, Pasta-Wasser']},
-{id:'c32',n:'Pasta Cacio e Pepe',c:'Hauptgerichte',p:2,ing:[{a:200,u:'g',n:'Spaghetti'},{a:100,u:'g',n:'Pecorino Romano'},{a:2,u:'TL',n:'Schwarzer Pfeffer'}],st:['Pfeffer rösten','Pasta kochen','Pasta-Wasser aufheben','Pecorino gerieben','Pasta + Pfefferswasser + Käse','Schnell vermengen, cremig']},
-{id:'c33',n:'Deutsche Pfannkuchen',c:'Desserts',p:4,ing:[{a:250,u:'g',n:'Mehl'},{a:500,u:'ml',n:'Milch'},{a:3,u:'Stk',n:'Eier'},{a:2,u:'EL',n:'Zucker'},{a:2,u:'EL',n:'Butter'}],st:['Teig: Mehl, Milch, Eier, Zucker','15min ruhen','In Butter backen','Mit Zitronensaft und Zucker','Mit Apfelmus']},
-{id:'c34',n:'Reispfanne mit Gemüse',c:'Hauptgerichte',p:4,ing:[{a:300,u:'g',n:'Basmati-Reis'},{a:2,u:'Stk',n:'Paprika'},{a:1,u:'Stk',n:'Zucchini'},{a:300,u:'g',n:'Kürbis'},{a:2,u:'TL',n:'Curry'}],st:['Reis kochen','Gemüse würfeln','In Öl anbraten','Curry und Kokosmilch','Reis dazu','Mit Koriander']},
-{id:'c35',n:'Bananenbrot',c:'Desserts',p:8,ing:[{a:4,u:'Stk',n:'Bananen (reif)'},{a:250,u:'g',n:'Mehl'},{a:150,u:'g',n:'Zucker'},{a:2,u:'Stk',n:'Eier'},{a:75,u:'g',n:'Butter'}],st:['Bananen zerdrücken','Butter schmelzen','Alle Zutaten','Kastenform','180°C 50min','Abkühlen']},
-{id:'c36',n:'Grüner Smoothie',c:'Getränke',p:2,ing:[{a:100,u:'g',n:'Spinat'},{a:2,u:'Stk',n:'Banane'},{a:1,u:'Stk',n:'Apfel'},{a:1,u:'Stück',n:'Ingwer'},{a:300,u:'ml',n:'Wasser'}],st:['Alle Zutaten Mixer','Höchste Stufe','Sofort trinken']},
-{id:'c37',n:'Omelett mit Gemüse',c:'Hauptgerichte',p:2,ing:[{a:4,u:'Stk',n:'Eier'},{a:1,u:'Stk',n:'Paprika'},{a:0.5,u:'Stk',n:'Zwiebel'},{a:150,u:'g',n:'Champignons'},{a:50,u:'g',n:'Käse'}],st:['Gemüse klein','Eier verquirlt','Pfanne heiß','Gemüse anbraten','Eierdrang darüber','Käse, falten']},
-{id:'c38',n:'Kürbissuppe',c:'Suppen',p:4,ing:[{a:800,u:'g',n:'Kürbis (Hokkaido)'},{a:1,u:'Stk',n:'Zwiebel'},{a:1,u:'Stk',n:'Kartoffel'},{a:500,u:'ml',n:'Brühe'},{a:100,u:'ml',n:'Sahne'}],st:['Kürbis würfeln','Zwiebel anbraten','Kürbis und Kartoffel','Brühe dazu','20min','Pürieren, Sahne']},
-{id:'c39',n:'Linsensuppe',c:'Suppen',p:6,ing:[{a:300,u:'g',n:'Rote Linsen'},{a:1,u:'Stk',n:'Zwiebel'},{a:2,u:'Stk',n:'Karotten'},{a:400,u:'g',n:'Tomaten'},{a:1.5,u:'L',n:'Brühe'}],st:['Zwiebel, Karotten','Linsen, Tomaten','Brühe','20min','Mit Zitrone und Brot']},
-{id:'c40',n:'Spaghetti Bolognese',c:'Hauptgerichte',p:4,ing:[{a:400,u:'g',n:'Spaghetti'},{a:400,u:'g',n:'Rinderhack'},{a:400,u:'g',n:'Tomaten'},{a:1,u:'Stk',n:'Zwiebel'},{a:2,u:'Zehen',n:'Knoblauch'}],st:['Zwiebel, Knoblauch','Hack braten','Tomaten','1Std köcheln','Pasta','Parmesan']},
-{id:'c41',n:'Currywurst',c:'Hauptgerichte',p:4,ing:[{a:4,u:'Stk',n:'Currywurst'},{a:400,u:'g',n:'Ketchup'},{a:2,u:'EL',n:'Tomatenmark'},{a:2,u:'TL',n:'Currypulver'},{a:2,u:'Stk',n:'Brötchen'}],st:['Wurst braten oder grillen','Ketchup, Tomatenmark, Curry','Sauce 10min','Wurst schneiden','Über Sauce','Mit Pommes']},
-{id:'c42',n:'Kartoffelpuffer',c:'Hauptgerichte',p:4,ing:[{a:800,u:'g',n:'Kartoffeln'},{a:2,u:'Stk',n:'Eier'},{a:3,u:'EL',n:'Mehl'},{a:1,u:'TL',n:'Muskatnuss'},{a:50,u:'ml',n:'Wasser'}],st:['Kartoffeln reiben','Wasser auspressen','Eier, Mehl, Muskat','In Öl ausbacken','Mit Apfelmus oder Sauerrahm']},
-{id:'c43',n:'Gemüse-Curry',c:'Hauptgerichte',p:4,ing:[{a:1,u:'Kürbis',n:'Kürbis (Hokkaido)'},{a:2,u:'Stk',n:'Süße Kartoffel'},{a:1,u:'Dose',n:'Kokosmilch'},{a:3,u:'EL',n:'Currypaste (gelb)'},{a:2,u:'Stk',n:'Paprika'}],st:['Gemüse würfeln','Currypaste in Öl','Gemüse, Kokosmilch','30min','Mit Reis, Koriander']},
-{id:'c44',n:'Griechischer Salat',c:'Salate',p:4,ing:[{a:4,u:'Stk',n:'Tomaten'},{a:1,u:'Stk',n:'Gurke'},{a:1,u:'Stk',n:'Paprika'},{a:200,u:'g',n:'Feta'},{a:100,u:'g',n:'Oliven'},{a:4,u:'EL',n:'Olivenöl'}],st:['Groß würfeln','Feta in Block darauf','Oliven','Olivenöl, Oregano']},
-{id:'c45',n:'Schoko-Kuchen (1 Schüssel)',c:'Desserts',p:8,ing:[{a:200,u:'g',n:'Mehl'},{a:200,u:'g',n:'Zucker'},{a:75,u:'g',n:'Kakao'},{a:3,u:'Stk',n:'Eier'},{a:200,u:'ml',n:'Öl'},{a:200,u:'ml',n:'Buttermilch'}],st:['Alle Zutaten Schüssel','Rühren','Form','180°C 35min','Mit Puderzucker']},
-{id:'c46',n:'Pommes aus dem Ofen',c:'Beilagen',p:4,ing:[{a:1000,u:'g',n:'Kartoffeln'},{a:3,u:'EL',n:'Olivenöl'},{a:1,u:'TL',n:'Paprikapulver'},{a:1,u:'TL',n:'Salz'}],st:['Kartoffeln in Stifte','Einbacken, Öl, Gewürz','220°C 25-30min','Wenden nach 15min']},
-{id:'c47',n:'Müsli selbstgemacht',c:'Snacks',p:4,ing:[{a:200,u:'g',n:'Haferflocken'},{a:100,u:'g',n:'Nüsse'},{a:50,u:'g',n:'Rosinen'},{a:3,u:'EL',n:'Honig'},{a:2,u:'EL',n:'Olivenöl'}],st:['Flocken, Nüsse, Rosinen','Honig, Öl','Vermengen','150°C 20min','Abkühlen','Mit Joghurt und Obst']},
-{id:'c48',n:'Panna Cotta',c:'Desserts',p:4,ing:[{a:500,u:'ml',n:'Sahne'},{a:100,u:'g',n:'Zucker'},{a:1,u:'Pkt',n:'Vanille'},{a:10,u:'g',n:'Gelatine'},{a:200,u:'g',n:'Beeren'}],st:['Gelatine einweichen','Sahne, Zucker, Vanille','Erhitzen, Gelatine','In Förmchen','4Std kühl','Mit Beeren']},
-{id:'c49',n:'Falafel',c:'Hauptgerichte',p:4,ing:[{a:400,u:'g',n:'Kichererbsen (getrocknet)'},{a:1,u:'Stk',n:'Zwiebel'},{a:3,u:'Zehen',n:'Knoblauch'},{a:2,u:'TL',n:'Krepput'},{a:1,u:'TL',n:'Kümmel'}],st:['Kichererbsen über Nacht einweichen','Alle Zutaten Mixer','Formen, 30min ruhen','180°C 20min oder frittieren','Mit Tahini-Sauce und Salat']},
-{id:'c50',n:'Vanillepudding',c:'Desserts',p:4,ing:[{a:500,u:'ml',n:'Vollmilch'},{a:1,u:'Schote',n:'Vanille'},{a:4,u:'Eigelb'},{a:80,u:'g',n:'Zucker'},{a:40,u:'g',n:'Speisestärke'}],st:['Milch und Vanille erhitzen','Eigelb, Zucker, Stärke','Unter Rühren aufkochen','In Förmchen','Kühl']},
-{id:'c51',n:'Biergarten-Bratwurst',c:'Hauptgerichte',p:4,ing:[{a:8,u:'Stk',n:'Bratwürste'},{a:4,u:'Stk',n:'Brötchen'},{a:1,u:'Glas',n:'Senf'},{a:1,u:'Glas',n:'Ketchup'},{a:300,u:'g',n:'Krautsalat'}],st:['Bratwürste braten','Brötchen aufbacken','Senf, Ketchup','Krautsalat','Zusammen']},
-{id:'c52',n:'Thailändische Tom Yam Soup',c:'Suppen',p:4,ing:[{a:300,u:'g',n:'Garnelen'},{a:200,u:'ml',n:'Kokosmilch'},{a:3,u:'Stk',n:'Zitronengras'},{a:3,u:'Stk',n:'Kaffirlimetten-Blätter'},{a:3,u:'Stück',n:'Chili'}],st:['Brühe mit Zitronengras','Kokosmilch','Pilze und Garnelen','Limettensaft, Chili','Fischsauce, Palmzucker']},
-{id:'c53',n:'Fladenbrot mit Tomaten',c:'Hauptgerichte',p:4,ing:[{a:300,u:'g',n:'Fladenbrot (Fertig)'},{a:200,u:'g',n:'Creme Fraiche'},{a:4,u:'Stk',n:'Tomaten'},{a:150,u:'g',n:'Mozzarella'},{a:1,u:'Bund',n:'Basilikum'}],st:['Brot belegen','Creme Fraiche','Tomaten, Mozzarella','200°C 10min','Basilikum']},
-{id:'c54',n:'Magerquark mit Obst',c:'Desserts',p:2,ing:[{a:250,u:'g',n:'Magerquark'},{a:2,u:'EL',n:'Honig'},{a:200,u:'ml',n:'Vollmilch'},{a:1,u:'Stk',n:'Banane'},{a:100,u:'g',n:'Beeren'}],st:['Quark mit Milch glattrühren','Honig','Obst darauf','Mit Müsli']},
-{id:'c55',n:'Ofenlachs mit Kartoffeln',c:'Hauptgerichte',p:4,ing:[{a:4,u:'Stk',n:'Lachsfilet'},{a:800,u:'g',n:'Kartoffeln'},{a:2,u:'Stk',n:'Zitrone'},{a:1,u:'Bund',n:'Dill'}],st:['Kartoffeln schneiden','Lachs darauf','Zitrone, Dill, Olivenöl','200°C 25min']},
-{id:'c56',n:'Kartoffel-Waffeln',c:'Hauptgerichte',p:4,ing:[{a:600,u:'g',n:'Kartoffeln (gekocht)'},{a:2,u:'Stk',n:'Eier'},{a:100,u:'g',n:'Mehl'},{a:1,u:'TL',n:'Backpulver'}],st:['Kartoffeln zerdrücken','Eier, Mehl, BP','Ausbacken','Mit Sauerrahm und Schnittlauch']},
-{id:'c57',n:'Baguette mit Belag',c:'Snacks',p:4,ing:[{a:2,u:'Stk',n:'Baguette'},{a:200,u:'g',n:'Tomaten'},{a:200,u:'g',n:'Mozzarella'},{a:1,u:'Bund',n:'Basilikum'},{a:3,u:'EL',n:'Olivenöl'}],st:['Baguette aufschneiden','Tomaten, Mozzarella','Basilikum','200°C 8min','Olivenöl']},
-{id:'c58',n:'Zwiebelkuchen',c:'Hauptgerichte',p:6,ing:[{a:1,u:'Paket',n:'Mürbeteig'},{a:6,u:'Stk',n:'Zwiebeln'},{a:200,u:'ml',n:'Sahne'},{a:200,u:'g',n:'Quark'},{a:150,u:'g',n:'Speck'}],st:['Teig auslegen','Zwiebeln karamellisieren','Sahne, Quark, Ei','Speck darauf','180°C 30min']},
-{id:'c59',n:'Sahnepfannkuchen (süß)',c:'Desserts',p:4,ing:[{a:250,u:'g',n:'Mehl'},{a:500,u:'ml',n:'Milch'},{a:3,u:'Stk',n:'Eier'},{a:2,u:'EL',n:'Zucker'},{a:50,u:'g',n:'Butter'}],st:['Teig rühren','Pfannkuchen backen','Schlagsahne','Mit Zitrone und Zucker','Apfelmus']},
-{id:'c60',n:'Gemüse-Wok Orientalisch',c:'Hauptgerichte',p:4,ing:[{a:500,u:'g',n:'Hähnchen'},{a:300,u:'g',n:'Basmati'},{a:1,u:'Dose',n:'Kichererbsen'},{a:200,u:'ml',n:'Kokosmilch'},{a:2,u:'TL',n:'Krepput'}],st:['Reis kochen','Hähnchen würfeln, braten','Kichererbsen, Kokosmilch','Krepput','Mit Reis, Rosinen, Mandeln']},
-{id:'c61',n:'Kürbis-Kartoffel-Suppe',c:'Suppen',p:6,ing:[{a:800,u:'g',n:'Kürbis'},{a:400,u:'g',n:'Kartoffeln'},{a:1,u:'Stk',n:'Zwiebel'},{a:1,u:'L',n:'Brühe'},{a:100,u:'ml',n:'Sahne'}],st:['Zwiebel, Kürbis, Kartoffel','Brühe, 25min','Pürieren','Sahne','Mit Kürbiskernen']},
-{id:'c62',n:'Gebratene Nudeln',c:'Hauptgerichte',p:4,ing:[{a:400,u:'g',n:'Eiernudeln'},{a:2,u:'Stk',n:'Eier'},{a:3,u:'EL',n:'Sojasoße'},{a:1,u:'Bund',n:'Frühlingszwiebeln'}],st:['Nudeln kochen','Eier verquirlt','Wok heiß','Nudeln, Sojasoße','Frühlingszwiebeln']},
-{id:'c63',n:'Apfelmus',c:'Desserts',p:4,ing:[{a:1,u:'kg',n:'Äpfel (Wikinger)'},{a:100,u:'g',n:'Zucker'},{a:1,u:'TL',n:'Zimt'}],st:['Äpfel schälen, würfeln','Mit wenig Wasser','30min köcheln','Zucker, Zimt','Pürieren oder stumpf']},
-{id:'c64',n:'Quark-Sahne-Torte',c:'Desserts',p:8,ing:[{a:250,u:'g',n:'Mürbeteig'},{a:500,u:'g',n:'Quark'},{a:200,u:'g',n:'Sahne'},{a:100,u:'g',n:'Zucker'},{a:2,u:'Pkt',n:'Sahnesteif'}],st:['Teig auslegen','Quark, Sahne, Zucker, Sahnesteif','Auftragen','2Std kühl','Mit Obst']},
-{id:'c65',n:'Sahnepudding',c:'Desserts',p:4,ing:[{a:500,u:'ml',n:'Vollmilch'},{a:2,u:'Pkt',n:'Sahnepuddingpulver'},{a:100,u:'ml',n:'Schlagobers'},{a:2,u:'EL',n:'Zucker'}],st:['Milch aufkochen','Pudding einrühren','Schlagobers unterheben','In Förmchen','Kühl']},
-{id:'c66',n:'Bratkartoffeln mit Ei',c:'Hauptgerichte',p:4,ing:[{a:800,u:'g',n:'Kartoffeln (festkochend)'},{a:150,u:'g',n:'Speck'},{a:1,u:'Stk',n:'Zwiebel'},{a:4,u:'Stk',n:'Eier'},{a:100,u:'ml',n:'Sahne'}],st:['Kartoffeln kochen und schneiden','Speck würfeln und braten','Zwiebeln dazu','Kartoffeln dazu','Sahne und Eier','Beißen goldbraun']},
-{id:'c67',n:'Tomaten-Mozzarella',c:'Salate',p:4,ing:[{a:6,u:'Stk',n:'Tomaten'},{a:250,u:'g',n:'Mozzarella'},{a:1,u:'Bund',n:'Basilikum'},{a:3,u:'EL',n:'Olivenöl'},{a:1,u:'EL',n:'Balsamico'}],st:['Tomaten und Mozzarella in Scheiben','Abwechselnd anrichten','Basilikumblätter','Olivenöl, Balsamico','Salz, Pfeffer']},
-{id:'c68',n:'Spätzle mit Käseüberzug',c:'Hauptgerichte',p:4,ing:[{a:300,u:'g',n:'Spätzle (selbst gemacht oder fertig)'},{a:200,u:'g',n:'Emmentaler'},{a:50,u:'g',n:'Butter'},{a:2,u:'Stk',n:'Zwiebeln'}],st:['Spätzle kochen','Zwiebeln karamellisieren','Auflaufform mit Spätzlen','Käse darüber','180°C 15min überbacken']},
-{id:'c69',n:'Milchreis mit Zimt und Zucker',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Milchreis'},{a:1,u:'L',n:'Vollmilch'},{a:60,u:'g',n:'Zucker'},{a:1,u:'Stange',n:'Zimt'},{a:1,u:'Stk',n:'Zitrone (Abrieb)'}],st:['Milch, Reis, Zimt, Zitronenabrieb','50min bei kleiner Hitze','Ständig rühren','In Förmchen verteilen','Mit Zimt und Zucker']},
-{id:'c70',n:'Pute mit Preiselbeeren',c:'Hauptgerichte',p:4,ing:[{a:500,u:'g',n:'Putenbrust'},{a:100,u:'g',n:'Preiselbeeren'},{a:1,u:'Stk',n:'Zwiebel'},{a:200,u:'ml',n:'Brühe'},{a:1,u:'TL',n:'Senf'}],st:['Pute braten','Zwiebeln dazu','Preiselbeeren, Brühe','Senf','Scheiben, Sauce']},
-{id:'c71',n:'Ravioli mit Salbeibutter',c:'Hauptgerichte',p:4,ing:[{a:500,u:'g',n:'Ravioli (Käse oder Fleisch)'},{a:100,u:'g',n:'Butter'},{a:1,u:'Bund',n:'Salbei'},{a:50,u:'g',n:'Parmesan'}],st:['Ravioli kochen','Butter braun machen','Salbdblätter hinein','Ravioli in Butter','Parmesan darauf']},
-{id:'c72',n:'Ofenkartoffel mit Kräuterquark',c:'Hauptgerichte',p:4,ing:[{a:800,u:'g',n:'Kartoffeln (groß)'},{a:250,u:'g',n:'Quark'},{a:1,u:'Bund',n:'Schnittlauch'},{a:1,u:'Bund',n:'Sauerampfer'},{a:2,u:'EL',n:'Sauercreme'}],st:['Kartoffeln waschen, einwickeln','200°C 60-90min','Quark, Kräuter, Sauercreme','Kartoffeln aufschneiden','Mit Quark servieren']},
-{id:'c73',n:'Rouladen mit Senf',c:'Hauptgerichte',p:4,ing:[{a:4,u:'Stck',n:'Rouladenspieß (Oberschicht)'},{a:4,u:'Stck',n:'Speck'},{a:4,u:'Stck',n:'Cornichons'},{a:4,u:'Stck',n:'Senf'},{a:4,u:'Stck',n:'Salz und Pfeffer'}],st:['Fleinsel breit klopfen','Senf, Speck, Cornichon','Aufrollen, zusammenbinden','Anbraten, ablöschen','Mit Brühe 1,5Std','Mit Rotkohl und Klößen']},
-{id:'c74',n:'Blini mit Sauerrahm',c:'Hauptgerichte',p:4,ing:[{a:250,u:'ml',n:'Milch'},{a:2,u:'Stk',n:'Eier'},{a:150,u:'g',n:'Mehl'},{a:1,u:'TL',n:'Zucker'},{a:200,u:'ml',n:'Sauerrahm'}],st:['Teig: Milch, Eier, Mehl, Zucker','15min ruhen','In Butter kleine Pfannkuchen','Mit Sauerrahm','Mit Lachs oder Kaviar']},
-{id:'c75',n:'Schnell-Pasta Pesto',c:'Hauptgerichte',p:2,ing:[{a:200,u:'g',n:'Pasta'},{a:4,u:'EL',n:'Pesto gen'},{a:100,u:'g',n:'Kirschtomaten'},{a:50,u:'g',n:'Kichererbsen'},{a:3,u:'EL',n:'Parmesan'}],st:['Pasta kochen','Tomaten halbieren','Kichererbsen abtropfen','Pesto unterrühren','Parmesan']},
-{id:'c76',n:'Kartoffelknödel',c:'Beilagen',p:4,ing:[{a:500,u:'g',n:'Semmelbrösel (alt)'},{a:250,u:'ml',n:'Milch'},{a:2,u:'Stk',n:'Eier'},{a:1,u:'TL',n:'Muskatnuss'}],st:['Brösel mit warmer Milch','Eier, Muskat','30min quellen','Knödel formen','In Salzwasser 15min (nicht kochen!)']},
-{id:'c77',n:'Zucchinipfanne',c:'Hauptgerichte',p:4,ing:[{a:3,u:'Stk',n:'Zucchini'},{a:2,u:'Stk',n:'Paprika'},{a:1,u:'Stk',n:'Zwiebel'},{a:200,u:'g',n:'Feta'},{a:3,u:'EL',n:'Olivenöl'}],st:['Zucchini in Scheiben','Paprika, Zwiebel','In Öl braten','Feta darüber','Mit Fladenbrot']},
-{id:'c78',n:'Schokokuss-Torte',c:'Desserts',p:8,ing:[{a:200,u:'g',n:'Schokolade (Zartbitter)'},{a:200,u:'g',n:'Butter'},{a:200,u:'g',n:'Zucker'},{a:4,u:'Stk',n:'Eier'},{a:50,u:'g',n:'Mehl'}],st:['Schokolade und Butter schmelzen','Eier und Zucker','Mehl','Kuchenform','180°C 25min','Abkühlen, mit Puderzucker']},
-{id:'c79',n:'Eintopf',c:'Suppen',p:6,ing:[{a:500,u:'g',n:'Kartoffeln'},{a:300,u:'g',n:'Karotten'},{a:2,u:'Stk',n:'Wurst'},{a:1,u:'Dose',n:'Tomaten'},{a:1,u:'L',n:'Brühe'}],st:['Alles klein schneiden','Brühe dazu','45min köcheln','Mit Brot']},
-{id:'c80',n:'Apfel-Walnuss-Salat',c:'Salate',p:4,ing:[{a:4,u:'Stk',n:'Äpfel'},{a:100,u:'g',n:'Walnüsse'},{a:100,u:'g',n:'Rucola'},{a:50,u:'ml',n:'Essig'},{a:3,u:'EL',n:'Olivenöl'}],st:['Äpfel in Stifte','Walnüsse rösten','Rucola','Dressing: Essig, Öl, Senf','Walnüsse darauf']}];
-sd(K.R,RC);
+  if(!CA.length)CA=['Lebensmittel','Getränke','Milchprodukte','Fleisch','Kühlung','Konserven','Tiefkühl','Reinigung','Sonstiges'];
+  if(!ST.length)ST=[{id:'f',n:'Kühlschrank',i:'🧊'},{id:'fr',n:'Gefriertruhe',i:'❄️'},{id:'p',n:'Vorratskammer',i:'📦'},{id:'k',n:'Küche',i:'🍽️'},{id:'b',n:'Balkon',i:'🏠'},{id:'bl',n:'Keller',i:'🏚️'}];
+  if(RC.length)return;
+  RC=[{id:'c1',n:'Spaghetti Carbonara',c:'Hauptgerichte',p:4,ing:[{a:400,u:'g',n:'Spaghetti'},{a:200,u:'g',n:'Speck'},{a:4,u:'Stk',n:'Eier'},{a:100,u:'g',n:'Parmesan'},{a:1,u:'Prise',n:'Schwarzer Pfeffer'}],st:['Spaghetti al dente kochen','Speck in Würfel schneiden und knusprig braten','Eier mit geriebenem Parmesan verquirlen','Nudeln abgießen','Speck unter Nudeln rühren','Eiermischung unterrühren (nicht zu heiß!)','Mit viel schwarzem Pfeffer servieren']},
+  {id:'c2',n:'Lasagne Bolognese',c:'Hauptgerichte',p:6,ing:[{a:12,u:'Stk',n:'Lasagneplatten'},{a:500,u:'g',n:'Rinderhack'},{a:400,u:'g',n:'Tomaten (Stückig)'},{a:1,u:'Stk',n:'Zwiebel'},{a:1,u:'Stk',n:'Karotte'},{a:80,u:'g',n:'Parmesan'},{a:200,u:'g',n:'Mozzarella'},{a:500,u:'ml',n:'Sahne'}],st:['Zwiebel, Karotte fein würfeln','In Öl anbraten, Hack dazu','Tomaten und Sahne, 30min köcheln','Béchamel: Butter, Mehl, Milch','Schichten: Sofrito, Nudeln, Béchamel, Käse','Wiederholen, mit Käse bedecken','180°C 30-35min backen']},
+  {id:'c3',n:'Chili con Carne',c:'Hauptgerichte',p:4,ing:[{a:600,u:'g',n:'Rinderhack'},{a:2,u:'Dose',n:'Kidneybohnen'},{a:400,u:'g',n:'Tomaten (Stückig)'},{a:2,u:'Stk',n:'Paprika'},{a:2,u:'Stk',n:'Zwiebel'},{a:3,u:'Zehen',n:'Knoblauch'},{a:2,u:'EL',n:'Chiliflocken'}],st:['Fleinsel krümelig anbraten','Gemüse würfeln, mitbraten','Knoblauch und Chili','Tomaten und Bohnen (abgetropft)','30min köcheln lassen','Mit Reis, Sauerrahm und tortilla chips']},
+  {id:'c4',n:'Wiener Schnitzel',c:'Hauptgerichte',p:4,ing:[{a:4,u:'Stk',n:'Schnitzel (Kalb oder Schwein)'},{a:100,u:'g',n:'Mehl'},{a:2,u:'Stk',n:'Eier'},{a:150,u:'g',n:'Semmelbrösel'},{a:100,u:'g',n:'Butter'}],st:['Schnitzel auf ca. 5mm dicke klopfen','Salzen und pfeffern','Mehl, verquirlte Eier, Brösel auf 3 Tellern','Panieren: Mehl - Ei - Brösel','In Butter/Oil goldbraun schwimmen lassen','Mit Zitrone, Petersilkartoffeln und Preiselbeeren']},
+  {id:'c5',n:'Gulasch',c:'Hauptgerichte',p:6,ing:[{a:800,u:'g',n:'Rindfleisch (Geschmortes)'},{a:3,u:'Stk',n:'Zwiebel'},{a:3,u:'Stk',n:'Paprika'},{a:600,u:'g',n:'Kartoffeln'},{a:2,u:'EL',n:'Paprikamark'}],st:['Zwiebeln grob würfeln','Fleinsel in großen Klumpen anbraten','Zwiebeln und Paprikamark','Paprika und Kartoffeln in Stücken','Mit Brühe auffüllen','1,5-2 Std. köcheln','Mit Semmelknödel und Salat']},
+  {id:'c6',n:'Pizza Margherita',c:'Hauptgerichte',p:2,ing:[{a:300,u:'g',n:'Mehl (Tipo 00)'},{a:7,u:'g',n:'Hefe (Trocken)'},{a:180,u:'ml',n:'Laufwasser'},{a:3,u:'EL',n:'Olivenöl'},{a:200,u:'ml',n:'Tomatensoße'},{a:200,u:'g',n:'Mozzarella'},{a:1,u:'Bund',n:'Basilikum'}],st:['Teig: Mehl, Hefe, Wasser, Öl verkneten','1 Std. gehen lassen','Ausrollen (dünner Rand)','Tomatensoße darauf','Mozzarella in Scheiben','250°C 8-10min backen','Mit Basilikum und Olivenöl']},
+  {id:'c7',n:'Tomatensuppe',c:'Suppen',p:4,ing:[{a:800,u:'g',n:'Tomaten'},{a:1,u:'Stk',n:'Zwiebel'},{a:2,u:'Zehen',n:'Knoblauch'},{a:3,u:'EL',n:'Olivenöl'},{a:100,u:'ml',n:'Sahne'}],st:['Zwiebel und Knoblauch fein hacken','In Olivenöl anbraten','Tomaten dazu, 15min köcheln','Mit Pürierstab pürieren','Sahne unterrühren','Mit Croutons und Basilikum']},
+  {id:'c8',n:'Rührkuchen mit Schokostreuseln',c:'Desserts',p:8,ing:[{a:250,u:'g',n:'Butter'},{a:250,u:'g',n:'Zucker'},{a:4,u:'Stk',n:'Eier'},{a:250,u:'g',n:'Mehl'},{a:100,u:'g',n:'Schokostreusel'},{a:1,u:'Pkt',n:'Backpulver'}],st:['Butter und Zucker cremig rühren','Eier einzeln unterrühren','Mehl und Backpulver sieben','Schokostreusel unterheben','In Kastenform','180°C 45-50min backen']},
+  {id:'c9',n:'Apfelstrudel',c:'Desserts',p:6,ing:[{a:1,u:'Paket',n:'Blätterteig'},{a:6,u:'Stk',n:'Äpfel (Winer Wächter)'},{a:100,u:'g',n:'Zucker'},{a:2,u:'TL',n:'Zimt'},{a:50,u:'g',n:'Semmelbrösel'},{a:200,u:'ml',n:'Vanillesoße'}],st:['Äpfel schälen, in Streifen schneiden','Zucker und Zimt mischen','Blätterteig ausrollen','Apfelstück darauf verteilen','Aufrollen, mit Butter beträufeln','180°C 30min backen','Mit Vanillesoße']},
+  {id:'c10',n:'Nudelsalat mit Feta',c:'Salate',p:4,ing:[{a:400,u:'g',n:'Spiralnudeln'},{a:200,u:'g',n:'Feta'},{a:1,u:'Stk',n:'Gurke'},{a:200,u:'g',n:'Kirschtomaten'},{a:100,u:'g',n:'Oliven'},{a:4,u:'EL',n:'Olivenöl'}],st:['Nudeln kochen, abkühlen','Gurke und Tomaten würfeln','Feta in Würfel','Oliven halbiert','Alles vermengen','Dressing: Olivenöl, Zitronensaft, Oregano']},
+  {id:'c11',n:'Bäuerlicher Kartoffelsalat',c:'Salate',p:6,ing:[{a:1000,u:'g',n:'Kartoffeln (festkochend)'},{a:2,u:'Stk',n:'Zwiebel'},{a:200,u:'ml',n:'Rinderbrühe'},{a:3,u:'EL',n:'Essig'},{a:1,u:'EL',n:'Senf'},{a:100,u:'g',n:'Sonnentrockentomaten'}],st:['Kartoffeln in Schalen kochen','Zwiebel fein würfeln','Brühe mit Essig und Senf aufkochen','Heiß über die warmen Kartoffeln','Tomaten und Schnittlauch','Warm servieren!']},
+  {id:'c12',n:'Crepes mit Nutella',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Mehl'},{a:3,u:'Stk',n:'Eier'},{a:500,u:'ml',n:'Milch'},{a:2,u:'EL',n:'Zucker'},{a:2,u:'EL',n:'Butter'},{a:200,u:'g',n:'Nutella'}],st:['Mehl, Eier, Milch, Zucker verrühren','15min ruhen lassen','In beschichteter Pfanne hauchdünn backen','Mit Nutella bestreichen','Zusammenklappen','Mit Puderzucker']},
+  {id:'c13',n:'Flammkuchen',c:'Hauptgerichte',p:4,ing:[{a:300,u:'g',n:'Mehl'},{a:200,u:'g',n:'Joghurt'},{a:200,u:'ml',n:'Sahne'},{a:200,u:'g',n:'Quark'},{a:150,u:'g',n:'Speck'},{a:2,u:'Stk',n:'Zwiebeln'}],st:['Teig: Mehl, Joghurt, Ei, Salz','Dünn ausrollen','Sahne, Quark, Ei verquirlen','Darauf verteilen','Speckwürfel und Zwiebelringel','250°C 10min']},
+  {id:'c14',n:'Bratreis',c:'Hauptgerichte',p:2,ing:[{a:400,u:'g',n:'gekochter Reis (vom Vortag)'},{a:2,u:'Stk',n:'Eier'},{a:100,u:'g',n:'Erbsen'},{a:1,u:'Stk',n:'Karotte'},{a:3,u:'EL',n:'Sojasoße'},{a:1,u:'EL',n:'Sesamöl'}],st:['Reis vom Vortag verwenden','Gemüse klein schneiden','Eier verquirlt, in Wok braten','Gemüse hinzufügen','Reis dazu, alles woken','Sojasoße und Sesamöl']},
+  {id:'c15',n:'Pancakes',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Mehl'},{a:300,u:'ml',n:'Milch'},{a:2,u:'Stk',n:'Eier'},{a:2,u:'EL',n:'Zucker'},{a:2,u:'TL',n:'Backpulver'},{a:100,u:'ml',n:'Ahornsirup'}],st:['Trockene Zutaten mischen','Milch und Eier dazu','Nur kurz rühren (Knöckel ok!)','In Butter goldbraun backen','Mit Ahornsirup und Beeren']},
+  {id:'c16',n:'Thunfisch-Pasta',c:'Hauptgerichte',p:2,ing:[{a:250,u:'g',n:'Pasta'},{a:1,u:'Dose',n:'Thunfisch'},{a:200,u:'g',n:'Kirschtomaten'},{a:2,u:'Zehen',n:'Knoblauch'},{a:3,u:'EL',n:'Olivenöl'},{a:1,u:'EL',n:'Zitronensaft'}],st:['Pasta kochen','Knoblauch dünn schneiden','In Olivenöl anbraten','Thunfisch und Tomaten','Pasta ins Öl','Zitronensaft, Parmesan']},
+  {id:'c17',n:'Quiche Lorraine',c:'Hauptgerichte',p:6,ing:[{a:1,u:'Paket',n:'Mürbeteig'},{a:200,u:'g',n:'Speck'},{a:4,u:'Stk',n:'Eier'},{a:300,u:'ml',n:'Sahne'},{a:100,u:'g',n:'Emmentaler'},{a:1,u:'Prise',n:'Muskatnuss'}],st:['Teig auslegen','Speck würfeln, braten','Eier mit Sahne verquirlen','Muskat, Salz, Pfeffer','Speck und Käse','180°C 35min']},
+  {id:'c18',n:'Milchreis mit Zimt',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Milchreis'},{a:1,u:'L',n:'Vollmilch'},{a:1,u:'Stk',n:'Zitrone'},{a:60,u:'g',n:'Zucker'},{a:1,u:'Stange',n:'Zimt'}],st:['Alle Zutaten Topf','50min bei kleiner Hitze','Ständig rühren','In Förmchen verteilen','Kalt stellen','Mit Zimt und Rosinen']},
+  {id:'c19',n:'Belgische Waffeln',c:'Desserts',p:4,ing:[{a:250,u:'g',n:'Mehl'},{a:300,u:'ml',n:'Milch'},{a:125,u:'g',n:'Butter'},{a:4,u:'Stk',n:'Eier'},{a:3,u:'EL',n:'Zucker'},{a:50,u:'g',n:'Puderzucker'}],st:['Butter schmelzen und abkühlen','Mehl, Milch, Eigelb, Zucker','Eischnee unterheben','Waffeleisen vorheizen','Waffeln backen','Mit Puderzucker und Beeren']},
+  {id:'c20',n:'Knoblauchbrot',c:'Snacks',p:4,ing:[{a:1,u:'Laib',n:'Ciabatta'},{a:100,u:'g',n:'Butter'},{a:4,u:'Zehen',n:'Knoblauch'},{a:1,u:'Bund',n:'Petersilie'},{a:50,u:'g',n:'Parmesan'}],st:['Butter mit Knoblauch und Petersilie','Ciabatta aufschneiden','Butter darauf','Parmesan darüber','180°C 10min backen']},
+  {id:'c21',n:'Gyros mit Pita',c:'Hauptgerichte',p:4,ing:[{a:500,u:'g',n:'Schweinefleisch'},{a:4,u:'Stk',n:'Pita-Brot'},{a:200,u:'g',n:'Joghurt'},{a:1,u:'Stk',n:'Gurke'},{a:2,u:'Stk',n:'Tomate'},{a:1,u:'Stk',n:'Zwiebel'}],st:['Fleinsel würfeln, griechisch würzen','Grillen oder in der Pfanne','Joghurt-Sauce mit Knoblauch','Gemüse schneiden','Pita erhitzen','Alles zusammen']},
+  {id:'c22',n:'Kartoffelgratin',c:'Beilagen',p:6,ing:[{a:1000,u:'g',n:'Kartoffeln'},{a:300,u:'ml',n:'Sahne'},{a:3,u:'Zehen',n:'Knoblauch'},{a:150,u:'g',n:'Gruyère oder Emmentaler'},{a:1,u:'Prise',n:'Muskatnuss'}],st:['Kartoffeln dünn schneiden','Auflaufform knoblen','Schichten: Kartoffeln, Sahne, Käse','Wiederholen','180°C 45min, goldbraun']},
+  {id:'c23',n:'Selbstgemachte Spätzle',c:'Beilagen',p:4,ing:[{a:300,u:'g',n:'Mehl'},{a:3,u:'Stk',n:'Eier'},{a:100,u:'ml',n:'Wasser'},{a:1,u:'Prise',n:'Salz'},{a:50,u:'g',n:'Butter'}],st:['Teig: Mehl, Eier, Wasser, Salz','15min ruhen','Spätzlepresse oder Reibe','In Salzwasser kochen','Aufschwimmend heraus','Mit Butter und Schnittlauch']},
+  {id:'c24',n:'Kaiserschmarrn',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Mehl'},{a:4,u:'Stk',n:'Eier'},{a:300,u:'ml',n:'Milch'},{a:3,u:'EL',n:'Zucker'},{a:1,u:'Stk',n:'Zitrone'}],st:['Teig: Mehl, Eier, Milch, Zucker','In beschichteter Pfanne','Wenn Blasen Aufsteigen -> in Stücke reißen','In Butter ausbacken','Mit Apfelmost oder Zwetschgenröster']},
+  {id:'c25',n:'Dampfnudeln',c:'Desserts',p:4,ing:[{a:300,u:'g',n:'Mehl'},{a:250,u:'ml',n:'Milch lauwarm'},{a:42,u:'g',n:'Hefe'},{a:50,u:'g',n:'Zucker'},{a:50,u:'g',n:'Butter'}],st:['Teig: Mehl, Milch, Hefe, Zucker','2 Std. gehen lassen','Formen, weitere 50min','In Butterschmalz goldbraun','Mit Vanillesoße und Puderzucker']},
+  {id:'c26',n:'Wok-Gemüse mit Hähnchen',c:'Hauptgerichte',p:4,ing:[{a:500,u:'g',n:'Hähnchenbrust'},{a:2,u:'Stk',n:'Paprika'},{a:1,u:'Stk',n:'Zucchini'},{a:200,u:'g',n:'Champignons'},{a:150,u:'g',n:'Zuckerschoten'},{a:4,u:'EL',n:'Sojasoße'}],st:['Wok sehr heiß machen','Hähnchen würfeln, braten','Gemüse in Streifen','Nacheinander in Wok','Sojasoße','Mit Basmatireis']},
+  {id:'c27',n:'Gebratener Lachs',c:'Hauptgerichte',p:4,ing:[{a:4,u:'Stk',n:'Lachsfilet'},{a:2,u:'Stk',n:'Zitrone'},{a:1,u:'Bund',n:'Dill'},{a:200,u:'ml',n:'Sahne'},{a:600,u:'g',n:'Kartoffeln'}],st:['Lachs salzen, pfeffern','In Pfanne von einer Seite 4min','Wenden, 3min','Sahne mit Dill und Zitrone','Kartoffeln kochen','Mit Sauce']},
+  {id:'c28',n:'Hummus',c:'Snacks',p:4,ing:[{a:2,u:'Dose',n:'Kichererbsen'},{a:4,u:'EL',n:'Tahini'},{a:1,u:'Stk',n:'Zitrone'},{a:2,u:'Zehen',n:'Knoblauch'},{a:3,u:'EL',n:'Olivenöl'}],st:['Kichererbsen abtropfen','Alle Zutaten Mixer','Cremig mixen','Mit Olivenöl und Paprika','Mit Pita-Brot']},
+  {id:'c29',n:'Gemüsesuppe',c:'Suppen',p:6,ing:[{a:300,u:'g',n:'Karotten'},{a:1,u:'Stk',n:'Sellerie'},{a:400,u:'g',n:'Kartoffeln'},{a:200,u:'g',n:'Erbsen'},{a:1.5,u:'L',n:'Brühe'}],st:['Gemüse klein schneiden','In Brühe','25min köcheln','Mit Kräutern','Mit Brot']},
+  {id:'c30',n:'Birchermüslí',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Haferflocken'},{a:300,u:'g',n:'Joghurt'},{a:2,u:'Stk',n:'Äpfel'},{a:50,u:'g',n:'Nüsse'},{a:2,u:'EL',n:'Zitronensaft'}],st:['Flocken mit Joghurt','Äpfel reiben, Zitronensaft','Nüsse hacken','Vermengen','Kalt stellen','Mit Obst und Honig']},
+  {id:'c31',n:'Pasta Aglio e Olio',c:'Hauptgerichte',p:2,ing:[{a:200,u:'g',n:'Spaghetti'},{a:6,u:'Zehen',n:'Knoblauch'},{a:4,u:'EL',n:'Olivenöl'},{a:1,u:'TL',n:'Chili-Flocken'},{a:1,u:'Bund',n:'Petersilie'}],st:['Pasta kochen','Knoblauch dünn','In Öl goldbraun','Chili','Pasta ins Öl','Petersilie, Pasta-Wasser']},
+  {id:'c32',n:'Pasta Cacio e Pepe',c:'Hauptgerichte',p:2,ing:[{a:200,u:'g',n:'Spaghetti'},{a:100,u:'g',n:'Pecorino Romano'},{a:2,u:'TL',n:'Schwarzer Pfeffer'}],st:['Pfeffer rösten','Pasta kochen','Pasta-Wasser aufheben','Pecorino gerieben','Pasta + Pfefferswasser + Käse','Schnell vermengen, cremig']},
+  {id:'c33',n:'Deutsche Pfannkuchen',c:'Desserts',p:4,ing:[{a:250,u:'g',n:'Mehl'},{a:500,u:'ml',n:'Milch'},{a:3,u:'Stk',n:'Eier'},{a:2,u:'EL',n:'Zucker'},{a:2,u:'EL',n:'Butter'}],st:['Teig: Mehl, Milch, Eier, Zucker','15min ruhen','In Butter backen','Mit Zitronensaft und Zucker','Mit Apfelmus']},
+  {id:'c34',n:'Reispfanne mit Gemüse',c:'Hauptgerichte',p:4,ing:[{a:300,u:'g',n:'Basmati-Reis'},{a:2,u:'Stk',n:'Paprika'},{a:1,u:'Stk',n:'Zucchini'},{a:300,u:'g',n:'Kürbis'},{a:2,u:'TL',n:'Curry'}],st:['Reis kochen','Gemüse würfeln','In Öl anbraten','Curry und Kokosmilch','Reis dazu','Mit Koriander']},
+  {id:'c35',n:'Bananenbrot',c:'Desserts',p:8,ing:[{a:4,u:'Stk',n:'Bananen (reif)'},{a:250,u:'g',n:'Mehl'},{a:150,u:'g',n:'Zucker'},{a:2,u:'Stk',n:'Eier'},{a:75,u:'g',n:'Butter'}],st:['Bananen zerdrücken','Butter schmelzen','Alle Zutaten','Kastenform','180°C 50min','Abkühlen']},
+  {id:'c36',n:'Grüner Smoothie',c:'Getränke',p:2,ing:[{a:100,u:'g',n:'Spinat'},{a:2,u:'Stk',n:'Banane'},{a:1,u:'Stk',n:'Apfel'},{a:1,u:'Stück',n:'Ingwer'},{a:300,u:'ml',n:'Wasser'}],st:['Alle Zutaten Mixer','Höchste Stufe','Sofort trinken']},
+  {id:'c37',n:'Omelett mit Gemüse',c:'Hauptgerichte',p:2,ing:[{a:4,u:'Stk',n:'Eier'},{a:1,u:'Stk',n:'Paprika'},{a:0.5,u:'Stk',n:'Zwiebel'},{a:150,u:'g',n:'Champignons'},{a:50,u:'g',n:'Käse'}],st:['Gemüse klein','Eier verquirlt','Pfanne heiß','Gemüse anbraten','Eierdrang darüber','Käse, falten']},
+  {id:'c38',n:'Kürbissuppe',c:'Suppen',p:4,ing:[{a:800,u:'g',n:'Kürbis (Hokkaido)'},{a:1,u:'Stk',n:'Zwiebel'},{a:1,u:'Stk',n:'Kartoffel'},{a:500,u:'ml',n:'Brühe'},{a:100,u:'ml',n:'Sahne'}],st:['Kürbis würfeln','Zwiebel anbraten','Kürbis und Kartoffel','Brühe dazu','20min','Pürieren, Sahne']},
+  {id:'c39',n:'Linsensuppe',c:'Suppen',p:6,ing:[{a:300,u:'g',n:'Rote Linsen'},{a:1,u:'Stk',n:'Zwiebel'},{a:2,u:'Stk',n:'Karotten'},{a:400,u:'g',n:'Tomaten'},{a:1.5,u:'L',n:'Brühe'}],st:['Zwiebel, Karotten','Linsen, Tomaten','Brühe','20min','Mit Zitrone und Brot']},
+  {id:'c40',n:'Spaghetti Bolognese',c:'Hauptgerichte',p:4,ing:[{a:400,u:'g',n:'Spaghetti'},{a:400,u:'g',n:'Rinderhack'},{a:400,u:'g',n:'Tomaten'},{a:1,u:'Stk',n:'Zwiebel'},{a:2,u:'Zehen',n:'Knoblauch'}],st:['Zwiebel, Knoblauch','Hack braten','Tomaten','1Std köcheln','Pasta','Parmesan']},
+  {id:'c41',n:'Currywurst',c:'Hauptgerichte',p:4,ing:[{a:4,u:'Stk',n:'Currywurst'},{a:400,u:'g',n:'Ketchup'},{a:2,u:'EL',n:'Tomatenmark'},{a:2,u:'TL',n:'Currypulver'},{a:2,u:'Stk',n:'Brötchen'}],st:['Wurst braten oder grillen','Ketchup, Tomatenmark, Curry','Sauce 10min','Wurst schneiden','Über Sauce','Mit Pommes']},
+  {id:'c42',n:'Kartoffelpuffer',c:'Hauptgerichte',p:4,ing:[{a:800,u:'g',n:'Kartoffeln'},{a:2,u:'Stk',n:'Eier'},{a:3,u:'EL',n:'Mehl'},{a:1,u:'TL',n:'Muskatnuss'},{a:50,u:'ml',n:'Wasser'}],st:['Kartoffeln reiben','Wasser auspressen','Eier, Mehl, Muskat','In Öl ausbacken','Mit Apfelmus oder Sauerrahm']},
+  {id:'c43',n:'Gemüse-Curry',c:'Hauptgerichte',p:4,ing:[{a:1,u:'Kürbis',n:'Kürbis (Hokkaido)'},{a:2,u:'Stk',n:'Süße Kartoffel'},{a:1,u:'Dose',n:'Kokosmilch'},{a:3,u:'EL',n:'Currypaste (gelb)'},{a:2,u:'Stk',n:'Paprika'}],st:['Gemüse würfeln','Currypaste in Öl','Gemüse, Kokosmilch','30min','Mit Reis, Koriander']},
+  {id:'c44',n:'Griechischer Salat',c:'Salate',p:4,ing:[{a:4,u:'Stk',n:'Tomaten'},{a:1,u:'Stk',n:'Gurke'},{a:1,u:'Stk',n:'Paprika'},{a:200,u:'g',n:'Feta'},{a:100,u:'g',n:'Oliven'},{a:4,u:'EL',n:'Olivenöl'}],st:['Groß würfeln','Feta in Block darauf','Oliven','Olivenöl, Oregano']},
+  {id:'c45',n:'Schoko-Kuchen (1 Schüssel)',c:'Desserts',p:8,ing:[{a:200,u:'g',n:'Mehl'},{a:200,u:'g',n:'Zucker'},{a:75,u:'g',n:'Kakao'},{a:3,u:'Stk',n:'Eier'},{a:200,u:'ml',n:'Öl'},{a:200,u:'ml',n:'Buttermilch'}],st:['Alle Zutaten Schüssel','Rühren','Form','180°C 35min','Mit Puderzucker']},
+  {id:'c46',n:'Pommes aus dem Ofen',c:'Beilagen',p:4,ing:[{a:1000,u:'g',n:'Kartoffeln'},{a:3,u:'EL',n:'Olivenöl'},{a:1,u:'TL',n:'Paprikapulver'},{a:1,u:'TL',n:'Salz'}],st:['Kartoffeln in Stifte','Einbacken, Öl, Gewürz','220°C 25-30min','Wenden nach 15min']},
+  {id:'c47',n:'Müsli selbstgemacht',c:'Snacks',p:4,ing:[{a:200,u:'g',n:'Haferflocken'},{a:100,u:'g',n:'Nüsse'},{a:50,u:'g',n:'Rosinen'},{a:3,u:'EL',n:'Honig'},{a:2,u:'EL',n:'Olivenöl'}],st:['Flocken, Nüsse, Rosinen','Honig, Öl','Vermengen','150°C 20min','Abkühlen','Mit Joghurt und Obst']},
+  {id:'c48',n:'Panna Cotta',c:'Desserts',p:4,ing:[{a:500,u:'ml',n:'Sahne'},{a:100,u:'g',n:'Zucker'},{a:1,u:'Pkt',n:'Vanille'},{a:10,u:'g',n:'Gelatine'},{a:200,u:'g',n:'Beeren'}],st:['Gelatine einweichen','Sahne, Zucker, Vanille','Erhitzen, Gelatine','In Förmchen','4Std kühl','Mit Beeren']},
+  {id:'c49',n:'Falafel',c:'Hauptgerichte',p:4,ing:[{a:400,u:'g',n:'Kichererbsen (getrocknet)'},{a:1,u:'Stk',n:'Zwiebel'},{a:3,u:'Zehen',n:'Knoblauch'},{a:2,u:'TL',n:'Krepput'},{a:1,u:'TL',n:'Kümmel'}],st:['Kichererbsen über Nacht einweichen','Alle Zutaten Mixer','Formen, 30min ruhen','180°C 20min oder frittieren','Mit Tahini-Sauce und Salat']},
+  {id:'c50',n:'Vanillepudding',c:'Desserts',p:4,ing:[{a:500,u:'ml',n:'Vollmilch'},{a:1,u:'Schote',n:'Vanille'},{a:4,u:'Eigelb'},{a:80,u:'g',n:'Zucker'},{a:40,u:'g',n:'Speisestärke'}],st:['Milch und Vanille erhitzen','Eigelb, Zucker, Stärke','Unter Rühren aufkochen','In Förmchen','Kühl']},
+  {id:'c51',n:'Biergarten-Bratwurst',c:'Hauptgerichte',p:4,ing:[{a:8,u:'Stk',n:'Bratwürste'},{a:4,u:'Stk',n:'Brötchen'},{a:1,u:'Glas',n:'Senf'},{a:1,u:'Glas',n:'Ketchup'},{a:300,u:'g',n:'Krautsalat'}],st:['Bratwürste braten','Brötchen aufbacken','Senf, Ketchup','Krautsalat','Zusammen']},
+  {id:'c52',n:'Thailändische Tom Yam Soup',c:'Suppen',p:4,ing:[{a:300,u:'g',n:'Garnelen'},{a:200,u:'ml',n:'Kokosmilch'},{a:3,u:'Stk',n:'Zitronengras'},{a:3,u:'Stk',n:'Kaffirlimetten-Blätter'},{a:3,u:'Stück',n:'Chili'}],st:['Brühe mit Zitronengras','Kokosmilch','Pilze und Garnelen','Limettensaft, Chili','Fischsauce, Palmzucker']},
+  {id:'c53',n:'Fladenbrot mit Tomaten',c:'Hauptgerichte',p:4,ing:[{a:300,u:'g',n:'Fladenbrot (Fertig)'},{a:200,u:'g',n:'Creme Fraiche'},{a:4,u:'Stk',n:'Tomaten'},{a:150,u:'g',n:'Mozzarella'},{a:1,u:'Bund',n:'Basilikum'}],st:['Brot belegen','Creme Fraiche','Tomaten, Mozzarella','200°C 10min','Basilikum']},
+  {id:'c54',n:'Magerquark mit Obst',c:'Desserts',p:2,ing:[{a:250,u:'g',n:'Magerquark'},{a:2,u:'EL',n:'Honig'},{a:200,u:'ml',n:'Vollmilch'},{a:1,u:'Stk',n:'Banane'},{a:100,u:'g',n:'Beeren'}],st:['Quark mit Milch glattrühren','Honig','Obst darauf','Mit Müsli']},
+  {id:'c55',n:'Ofenlachs mit Kartoffeln',c:'Hauptgerichte',p:4,ing:[{a:4,u:'Stk',n:'Lachsfilet'},{a:800,u:'g',n:'Kartoffeln'},{a:2,u:'Stk',n:'Zitrone'},{a:1,u:'Bund',n:'Dill'}],st:['Kartoffeln schneiden','Lachs darauf','Zitrone, Dill, Olivenöl','200°C 25min']},
+  {id:'c56',n:'Kartoffel-Waffeln',c:'Hauptgerichte',p:4,ing:[{a:600,u:'g',n:'Kartoffeln (gekocht)'},{a:2,u:'Stk',n:'Eier'},{a:100,u:'g',n:'Mehl'},{a:1,u:'TL',n:'Backpulver'}],st:['Kartoffeln zerdrücken','Eier, Mehl, BP','Ausbacken','Mit Sauerrahm und Schnittlauch']},
+  {id:'c57',n:'Baguette mit Belag',c:'Snacks',p:4,ing:[{a:2,u:'Stk',n:'Baguette'},{a:200,u:'g',n:'Tomaten'},{a:200,u:'g',n:'Mozzarella'},{a:1,u:'Bund',n:'Basilikum'},{a:3,u:'EL',n:'Olivenöl'}],st:['Baguette aufschneiden','Tomaten, Mozzarella','Basilikum','200°C 8min','Olivenöl']},
+  {id:'c58',n:'Zwiebelkuchen',c:'Hauptgerichte',p:6,ing:[{a:1,u:'Paket',n:'Mürbeteig'},{a:6,u:'Stk',n:'Zwiebeln'},{a:200,u:'ml',n:'Sahne'},{a:200,u:'g',n:'Quark'},{a:150,u:'g',n:'Speck'}],st:['Teig auslegen','Zwiebeln karamellisieren','Sahne, Quark, Ei','Speck darauf','180°C 30min']},
+  {id:'c59',n:'Sahnepfannkuchen (süß)',c:'Desserts',p:4,ing:[{a:250,u:'g',n:'Mehl'},{a:500,u:'ml',n:'Milch'},{a:3,u:'Stk',n:'Eier'},{a:2,u:'EL',n:'Zucker'},{a:50,u:'g',n:'Butter'}],st:['Teig rühren','Pfannkuchen backen','Schlagsahne','Mit Zitrone und Zucker','Apfelmus']},
+  {id:'c60',n:'Gemüse-Wok Orientalisch',c:'Hauptgerichte',p:4,ing:[{a:500,u:'g',n:'Hähnchen'},{a:300,u:'g',n:'Basmati'},{a:1,u:'Dose',n:'Kichererbsen'},{a:200,u:'ml',n:'Kokosmilch'},{a:2,u:'TL',n:'Krepput'}],st:['Reis kochen','Hähnchen würfeln, braten','Kichererbsen, Kokosmilch','Krepput','Mit Reis, Rosinen, Mandeln']},
+  {id:'c61',n:'Kürbis-Kartoffel-Suppe',c:'Suppen',p:6,ing:[{a:800,u:'g',n:'Kürbis'},{a:400,u:'g',n:'Kartoffeln'},{a:1,u:'Stk',n:'Zwiebel'},{a:1,u:'L',n:'Brühe'},{a:100,u:'ml',n:'Sahne'}],st:['Zwiebel, Kürbis, Kartoffel','Brühe, 25min','Pürieren','Sahne','Mit Kürbiskernen']},
+  {id:'c62',n:'Gebratene Nudeln',c:'Hauptgerichte',p:4,ing:[{a:400,u:'g',n:'Eiernudeln'},{a:2,u:'Stk',n:'Eier'},{a:3,u:'EL',n:'Sojasoße'},{a:1,u:'Bund',n:'Frühlingszwiebeln'}],st:['Nudeln kochen','Eier verquirlt','Wok heiß','Nudeln, Sojasoße','Frühlingszwiebeln']},
+  {id:'c63',n:'Apfelmus',c:'Desserts',p:4,ing:[{a:1,u:'kg',n:'Äpfel (Wikinger)'},{a:100,u:'g',n:'Zucker'},{a:1,u:'TL',n:'Zimt'}],st:['Äpfel schälen, würfeln','Mit wenig Wasser','30min köcheln','Zucker, Zimt','Pürieren oder stumpf']},
+  {id:'c64',n:'Quark-Sahne-Torte',c:'Desserts',p:8,ing:[{a:250,u:'g',n:'Mürbeteig'},{a:500,u:'g',n:'Quark'},{a:200,u:'g',n:'Sahne'},{a:100,u:'g',n:'Zucker'},{a:2,u:'Pkt',n:'Sahnesteif'}],st:['Teig auslegen','Quark, Sahne, Zucker, Sahnesteif','Auftragen','2Std kühl','Mit Obst']},
+  {id:'c65',n:'Sahnepudding',c:'Desserts',p:4,ing:[{a:500,u:'ml',n:'Vollmilch'},{a:2,u:'Pkt',n:'Sahnepuddingpulver'},{a:100,u:'ml',n:'Schlagobers'},{a:2,u:'EL',n:'Zucker'}],st:['Milch aufkochen','Pudding einrühren','Schlagobers unterheben','In Förmchen','Kühl']},
+  {id:'c66',n:'Bratkartoffeln mit Ei',c:'Hauptgerichte',p:4,ing:[{a:800,u:'g',n:'Kartoffeln (festkochend)'},{a:150,u:'g',n:'Speck'},{a:1,u:'Stk',n:'Zwiebel'},{a:4,u:'Stk',n:'Eier'},{a:100,u:'ml',n:'Sahne'}],st:['Kartoffeln kochen und schneiden','Speck würfeln und braten','Zwiebeln dazu','Kartoffeln dazu','Sahne und Eier','Beißen goldbraun']},
+  {id:'c67',n:'Tomaten-Mozzarella',c:'Salate',p:4,ing:[{a:6,u:'Stk',n:'Tomaten'},{a:250,u:'g',n:'Mozzarella'},{a:1,u:'Bund',n:'Basilikum'},{a:3,u:'EL',n:'Olivenöl'},{a:1,u:'EL',n:'Balsamico'}],st:['Tomaten und Mozzarella in Scheiben','Abwechselnd anrichten','Basilikumblätter','Olivenöl, Balsamico','Salz, Pfeffer']},
+  {id:'c68',n:'Spätzle mit Käseüberzug',c:'Hauptgerichte',p:4,ing:[{a:300,u:'g',n:'Spätzle (selbst gemacht oder fertig)'},{a:200,u:'g',n:'Emmentaler'},{a:50,u:'g',n:'Butter'},{a:2,u:'Stk',n:'Zwiebeln'}],st:['Spätzle kochen','Zwiebeln karamellisieren','Auflaufform mit Spätzlen','Käse darüber','180°C 15min überbacken']},
+  {id:'c69',n:'Milchreis mit Zimt und Zucker',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Milchreis'},{a:1,u:'L',n:'Vollmilch'},{a:60,u:'g',n:'Zucker'},{a:1,u:'Stange',n:'Zimt'},{a:1,u:'Stk',n:'Zitrone (Abrieb)'}],st:['Milch, Reis, Zimt, Zitronenabrieb','50min bei kleiner Hitze','Ständig rühren','In Förmchen verteilen','Mit Zimt und Zucker']},
+  {id:'c70',n:'Pute mit Preiselbeeren',c:'Hauptgerichte',p:4,ing:[{a:500,u:'g',n:'Putenbrust'},{a:100,u:'g',n:'Preiselbeeren'},{a:1,u:'Stk',n:'Zwiebel'},{a:200,u:'ml',n:'Brühe'},{a:1,u:'TL',n:'Senf'}],st:['Pute braten','Zwiebeln dazu','Preiselbeeren, Brühe','Senf','Scheiben, Sauce']},
+  {id:'c71',n:'Ravioli mit Salbeibutter',c:'Hauptgerichte',p:4,ing:[{a:500,u:'g',n:'Ravioli (Käse oder Fleisch)'},{a:100,u:'g',n:'Butter'},{a:1,u:'Bund',n:'Salbei'},{a:50,u:'g',n:'Parmesan'}],st:['Ravioli kochen','Butter braun machen','Salbdblätter hinein','Ravioli in Butter','Parmesan darauf']},
+  {id:'c72',n:'Ofenkartoffel mit Kräuterquark',c:'Hauptgerichte',p:4,ing:[{a:800,u:'g',n:'Kartoffeln (groß)'},{a:250,u:'g',n:'Quark'},{a:1,u:'Bund',n:'Schnittlauch'},{a:1,u:'Bund',n:'Sauerampfer'},{a:2,u:'EL',n:'Sauercreme'}],st:['Kartoffeln waschen, einwickeln','200°C 60-90min','Quark, Kräuter, Sauercreme','Kartoffeln aufschneiden','Mit Quark servieren']},
+  {id:'c73',n:'Rouladen mit Senf',c:'Hauptgerichte',p:4,ing:[{a:4,u:'Stck',n:'Rouladenspieß (Oberschicht)'},{a:4,u:'Stck',n:'Speck'},{a:4,u:'Stck',n:'Cornichons'},{a:4,u:'Stck',n:'Senf'},{a:4,u:'Stck',n:'Salz und Pfeffer'}],st:['Fleinsel breit klopfen','Senf, Speck, Cornichon','Aufrollen, zusammenbinden','Anbraten, ablöschen','Mit Brühe 1,5Std','Mit Rotkohl und Klößen']},
+  {id:'c74',n:'Blini mit Sauerrahm',c:'Hauptgerichte',p:4,ing:[{a:250,u:'ml',n:'Milch'},{a:2,u:'Stk',n:'Eier'},{a:150,u:'g',n:'Mehl'},{a:1,u:'TL',n:'Zucker'},{a:200,u:'ml',n:'Sauerrahm'}],st:['Teig: Milch, Eier, Mehl, Zucker','15min ruhen','In Butter kleine Pfannkuchen','Mit Sauerrahm','Mit Lachs oder Kaviar']},
+  {id:'c75',n:'Schnell-Pasta Pesto',c:'Hauptgerichte',p:2,ing:[{a:200,u:'g',n:'Pasta'},{a:4,u:'EL',n:'Pesto gen'},{a:100,u:'g',n:'Kirschtomaten'},{a:50,u:'g',n:'Kichererbsen'},{a:3,u:'EL',n:'Parmesan'}],st:['Pasta kochen','Tomaten halbieren','Kichererbsen abtropfen','Pesto unterrühren','Parmesan']},
+  {id:'c76',n:'Kartoffelknödel',c:'Beilagen',p:4,ing:[{a:500,u:'g',n:'Semmelbrösel (alt)'},{a:250,u:'ml',n:'Milch'},{a:2,u:'Stk',n:'Eier'},{a:1,u:'TL',n:'Muskatnuss'}],st:['Brösel mit warmer Milch','Eier, Muskat','30min quellen','Knödel formen','In Salzwasser 15min (nicht kochen!)']},
+  {id:'c77',n:'Zucchinipfanne',c:'Hauptgerichte',p:4,ing:[{a:3,u:'Stk',n:'Zucchini'},{a:2,u:'Stk',n:'Paprika'},{a:1,u:'Stk',n:'Zwiebel'},{a:200,u:'g',n:'Feta'},{a:3,u:'EL',n:'Olivenöl'}],st:['Zucchini in Scheiben','Paprika, Zwiebel','In Öl braten','Feta darüber','Mit Fladenbrot']},
+  {id:'c78',n:'Schokokuss-Torte',c:'Desserts',p:8,ing:[{a:200,u:'g',n:'Schokolade (Zartbitter)'},{a:200,u:'g',n:'Butter'},{a:200,u:'g',n:'Zucker'},{a:4,u:'Stk',n:'Eier'},{a:50,u:'g',n:'Mehl'}],st:['Schokolade und Butter schmelzen','Eier und Zucker','Mehl','Kuchenform','180°C 25min','Abkühlen, mit Puderzucker']},
+  {id:'c79',n:'Eintopf',c:'Suppen',p:6,ing:[{a:500,u:'g',n:'Kartoffeln'},{a:300,u:'g',n:'Karotten'},{a:2,u:'Stk',n:'Wurst'},{a:1,u:'Dose',n:'Tomaten'},{a:1,u:'L',n:'Brühe'}],st:['Alles klein schneiden','Brühe dazu','45min köcheln','Mit Brot']},
+  {id:'c80',n:'Apfel-Walnuss-Salat',c:'Salate',p:4,ing:[{a:4,u:'Stk',n:'Äpfel'},{a:100,u:'g',n:'Walnüsse'},{a:100,u:'g',n:'Rucola'},{a:50,u:'ml',n:'Essig'},{a:3,u:'EL',n:'Olivenöl'}],st:['Äpfel in Stifte','Walnüsse rösten','Rucola','Dressing: Essig, Öl, Senf','Walnüsse darauf']}];
+  sd(K.R,RC);
 }
+
 function checkPassword(){
-const pw=document.getElementById('pw-input').value;
-const hash=CryptoJS.SHA256(pw).toString();
-if(hash===gw){document.getElementById('pw-gate').style.display='none';document.getElementById('app').style.display='block';localStorage.setItem('kv_auth','1');refreshAll();}
-else{document.getElementById('pw-error').style.display='block';}}
-if(localStorage.getItem('kv_auth')==='1'){document.getElementById('pw-gate').style.display='none';document.getElementById('app').style.display='block';setTimeout(refreshAll,100);}
+  const pw=document.getElementById('pw-input').value;
+  const hash=CryptoJS.SHA256(pw).toString();
+  if(hash===gw){
+    document.getElementById('pw-gate').style.display='none';
+    document.getElementById('app').style.display='block';
+    localStorage.setItem('kv_auth','1');
+    refreshAll();
+  } else {
+    document.getElementById('pw-error').style.display='block';
+  }
+}
+if(localStorage.getItem('kv_auth')==='1'){
+  document.getElementById('pw-gate').style.display='none';
+  document.getElementById('app').style.display='block';
+  setTimeout(refreshAll,100);
+}
 function logout(){localStorage.removeItem('kv_auth');location.reload();}
+
+function showToast(msg){
+  const t=document.createElement('div');
+  t.className='kitchen-toast';
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2500);
+}
+
 function showSection(name,el){
-document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-document.getElementById('sec-'+name).classList.add('active');
-document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'));
-if(el)el.classList.add('active');else document.querySelector('nav a:first-child').classList.add('active');
-if(name==='vorrat')renderProducts();if(name==='rezepte')renderRecipes();if(name==='einkauf')renderShoppingList();if(name==='plan')renderWeekPlan();if(name==='einstellungen')renderSettings();}
-function openAddProduct(){
-editId=null;document.getElementById('mpTitle').textContent='Produkt hinzufügen';document.getElementById('deleteProdBtn').style.display='none';
-['prodName','prodManufacturer','prodSize','prodMinQty','prodExpiry','prodBarcode','prodNotes'].forEach(id=>document.getElementById(id).value='');
-document.getElementById('prodQty').value='1';document.getElementById('prodUnit').value='Stk';populateSelects();openModal('modalProduct');}
-function editProduct(id){const p=PD.find(x=>x.id===id);if(!p)return;editId=id;
-document.getElementById('mpTitle').textContent='Produkt bearbeiten';document.getElementById('deleteProdBtn').style.display='block';
-document.getElementById('prodName').value=p.name||'';document.getElementById('prodManufacturer').value=p.manufacturer||'';
-document.getElementById('prodSize').value=p.size||'';document.getElementById('prodQty').value=p.qty||1;
-document.getElementById('prodUnit').value=p.unit||'Stk';document.getElementById('prodMinQty').value=p.minQty||1;
-document.getElementById('prodExpiry').value=p.expiry||'';document.getElementById('prodBarcode').value=p.barcode||'';
-document.getElementById('prodNotes').value=p.notes||'';populateSelects();
-document.getElementById('prodCategory').value=p.category||'';document.getElementById('prodStorage').value=p.storage||'';openModal('modalProduct');}
-function saveProduct(){
-const name=document.getElementById('prodName').value.trim();if(!name){alert('Bitte Name eingeben');return;}
-const obj={id:editId||'p'+Date.now(),name:name,manufacturer:document.getElementById('prodManufacturer').value.trim(),size:document.getElementById('prodSize').value.trim(),category:document.getElementById('prodCategory').value,storage:document.getElementById('prodStorage').value,qty:parseFloat(document.getElementById('prodQty').value)||1,unit:document.getElementById('prodUnit').value,minQty:parseFloat(document.getElementById('prodMinQty').value)||1,expiry:document.getElementById('prodExpiry').value,barcode:document.getElementById('prodBarcode').value.trim(),notes:document.getElementById('prodNotes').value.trim()};
-if(editId){const i=PD.findIndex(x=>x.id===editId);if(i>=0)PD[i]=obj;}else PD.push(obj);
-sd(K.P,PD);closeModal('modalProduct');renderProducts();}
-function deleteProduct(){if(!editId)return;if(!confirm('Löschen?'))return;PD=PD.filter(x=>x.id!==editId);sd(K.P,PD);closeModal('modalProduct');renderProducts();}
-function incQty(id){const p=PD.find(x=>x.id===id);if(p){p.qty++;sd(K.P,PD);renderProducts();}}
-function decQty(id){const p=PD.find(x=>x.id===id);if(p&&p.qty>0){p.qty--;sd(K.P,PD);renderProducts();}}
-function expiryBadge(date){if(!date)return'';const d=new Date(date),n=new Date(),diff=(d-n)/(864e5);if(diff<0)return'<span class="badge badge-danger">❌ Abgelaufen</span>';if(diff<=7)return'<span class="badge badge-warning">⚠️ '+Math.ceil(diff)+'d</span>';return'<span class="badge badge-success">✅ '+Math.ceil(diff)+'d</span>';}
-function filterProducts(q){renderProducts(q?.toLowerCase()||'');}
-function renderProducts(q){q=q||'';const list=PD.filter(p=>!q||p.name.toLowerCase().includes(q)||(p.manufacturer&&p.manufacturer.toLowerCase().includes(q)));
-document.getElementById('products-list').innerHTML=list.length?list.map(p=>{const s=ST.find(x=>x.id===p.storage);const c=CA.find(x=>x===p.category);
-return`<div class="card"><div style="display:flex;justify-content:space-between;align-items:start;gap:12px"><div style="flex:1;min-width:0"><h3>${p.name}</h3><div style="display:flex;gap:6px;flex-wrap:wrap;margin:4px 0">${p.manufacturer?'<span class="badge" style="background:#f0f0f0;">'+p.manufacturer+'</span>':''}${p.size?'<span class="badge" style="background:#f0f0f0;">'+p.size+'</span>':''}${c?'<span class="badge" style="background:#e3f2fd;color:#1565c0;">'+c+'</span>':''}${s?'<span class="badge" style="background:#f3e5f5;color:#7b1fa2;">'+s.i+' '+s.n+'</span>':''}${expiryBadge(p.expiry)}</div></div><div style="display:flex;gap:6px;align-items:center;flex-shrink:0"><button class="qty-btn" onclick="decQty('${p.id}')">−</button><span style="font-weight:700;min-width:35px;text-align:center;">${p.qty} <small>${p.unit}</small></span><button class="qty-btn" onclick="incQty('${p.id}')">+</button><button class="btn btn-primary" onclick="editProduct('${p.id}')" style="padding:8px 12px;font-size:13px;border-radius:8px">✏️</button><button class="btn btn-primary" onclick="openScannerFor('${p.id}')" style="padding:8px 12px;font-size:13px;border-radius:8px">📷</button></div></div></div>`}).join(''):'<p style="text-align:center;color:#999;padding:40px">Keine Produkte. Füge etwas hinzu! 🍽️</p>';}
-function openScannerFor(productId){editId=productId;openModal('modalScanner');setTimeout(initScanner,300);}
-async function initScanner(){try{if(scan){scan.clear();scan=null;}scan=new Html5Qrcode("scanner-box");const cams=await Html5Qrcode.getCameras();if(!cams.length){document.getElementById('scanResult').textContent='Keine Kamera gefunden';return;}curCam=cams[0].id;document.getElementById('scanner-box').innerHTML='';await scan.start(curCam,{fps:10,qrbox:250},decoded=>{document.getElementById('scanResult').textContent='✅ '+decoded;handleScan(decoded);},()=>{});}catch(e){document.getElementById('scanner-box').innerHTML='❌ '+e.message;}}
-function closeScanner(){if(scan){scan.stop().then(()=>{scan.clear();scan=null;}).catch(()=>{});}closeModal('modalScanner');}
-async function handleScan(barcode){closeScanner();const code=barcode.replace(/[^0-9]/g,'');if(code.length<8){alert('Barcode zu kurz ('+code.length+' Ziffern)');openAddProduct();document.getElementById('prodBarcode').value=barcode;return;}
-try{const r=await fetch('https://world.openfoodfacts.org/api/v2/product/'+code+'.json');const d=await r.json();if(d.status===1&&d.product){const p=d.product;document.getElementById('prodName').value=p.product_name||'';document.getElementById('prodManufacturer').value=p.brands||'';document.getElementById('prodSize').value=p.quantity||'';document.getElementById('prodBarcode').value=barcode;}openAddProduct();}catch(e){openAddProduct();document.getElementById('prodBarcode').value=barcode;}}
-function renderRecipes(q){q=q||'';document.getElementById('recipes-list').innerHTML=RC.length?RC.map(r=>`<div class="card" onclick="showRecipe('${r.id}')" style="cursor:pointer"><h3>${r.n}</h3><small>${r.c} · ${r.p} Portionen · ${r.ing.length} Zutaten</small></div>`).join(''):'<p style="text-align:center;color:#999;padding:40px">Keine Rezepte.</p>';}
-function showRecipe(id){const r=RC.find(x=>x.id===id);if(!r)return;document.getElementById('recipe-detail').innerHTML=`<h2 style="margin-bottom:4px">${r.n}</h2><p style="color:#666;margin-bottom:16px">${r.c} · ${r.p} Portionen</p><h3 style="margin-bottom:8px">📝 Zutaten</h3><ul style="margin-bottom:16px;padding-left:20px">${r.ing.map(i=>`<li style="padding:4px 0">${i.a} ${i.u} ${i.n}</li>`).join('')}</ul><h3 style="margin-bottom:8px">👨‍🍳 Zubereitung</h3><ol style="margin-bottom:16px;padding-left:20px">${r.st.map(s=>`<li style="padding:6px 0">${s}</li>`).join('')}</ol><button class="btn btn-primary" onclick="addRecToShop('${r.id}')" style="width:100%">🛒 Zutaten auf Einkaufsliste</button>`;openModal('modalRecipe');}
-function addRecToShop(id){const r=RC.find(x=>x.id===id);if(!r)return;r.ing.forEach(i=>{const ex=SH.find(x=>x.n===i.n&&x.u===i.u);if(ex)ex.q+=i.a;else SH.push({id:'s'+Date.now()+Math.random().toString(36).substr(2,5),n:i.n,q:i.a,u:i.u,c:false});});sd(K.SH,SH);renderShoppingList();alert(r.n+' Zutaten hinzugefügt!');}
-function openAddRecipe(){['recName','recIngredients','recSteps'].forEach(id=>document.getElementById(id).value='');document.getElementById('recPortions').value='4';openModal('modalNewRecipe');}
-function saveNewRecipe(){const n=document.getElementById('recName').value.trim();if(!n){alert('Name fehlt');return;}
-const ings=document.getElementById('recIngredients').value.trim().split('\n').filter(l=>l.trim()).map(l=>{const parts=l.trim().split(/\s+/);return{a:parseFloat(parts[0])||1,u:parts[1]||'Stk',n:parts.slice(2).join(' ')||'Unbekannt'};});
-const steps=document.getElementById('recSteps').value.trim().split('\n').filter(l=>l.trim());
-RC.push({id:'r'+Date.now(),n:n,c:document.getElementById('recCategory').value,p:parseInt(document.getElementById('recPortions').value)||4,ing:ings,st:steps});sd(K.R,RC);closeModal('modalNewRecipe');renderRecipes();}
-function renderShoppingList(){const active=SH.filter(x=>!x.c),done=SH.filter(x=>x.c);
-document.getElementById('shopping-list').innerHTML=`${active.map(x=>`<div class="shopping-item" onclick="toggleItem('${x.id}')"><div style="display:flex;align-items:center;gap:12px;flex:1"><input type="checkbox" onclick="event.stopPropagation();toggleItem('${x.id}')" style="width:24px;height:24px;cursor:pointer;accent-color:#4A90D9"><span style="cursor:pointer">${x.q} ${x.u} ${x.n}</span></div><button class="btn btn-danger" onclick="event.stopPropagation();removeItem('${x.id}')" style="padding:6px 10px;font-size:12px">🗑️</button></div>`).join('')}
-${done.length?'<h3 style="margin:16px 0 8px;color:#999;font-size:14px">Abgehakt ('+done.length+')</h3>'+done.map(x=>`<div class="shopping-item" style="opacity:0.5"><span>☑️ ${x.q} ${x.u} ${x.n}</span><button class="btn btn-danger" onclick="removeItem('${x.id}')" style="padding:6px 10px;font-size:12px">🗑️</button></div>`).join(''):''}
-${!active.length&&!done.length?'<p style="text-align:center;color:#999;padding:40px">Einkaufsliste leer 🛒</p>':''}`;}
-function openAddShoppingItem(){openModal('modalShopping');}
-function addShoppingItem(){const n=document.getElementById('shopName').value.trim();if(!n){alert('Name fehlt');return;}
-SH.push({id:'s'+Date.now()+Math.random().toString(36).substr(2,5),n:n,q:parseFloat(document.getElementById('shopQty').value)||1,u:document.getElementById('shopUnit').value,c:false});
-sd(K.SH,SH);closeModal('modalShopping');document.getElementById('shopName').value='';renderShoppingList();}
-function toggleItem(id){const x=SH.find(s=>s.id===id);if(x){x.c=!x.c;sd(K.SH,SH);renderShoppingList();}}
-function removeItem(id){SH=SH.filter(s=>s.id!==id);sd(K.SH,SH);renderShoppingList();}
-function clearShopping(){if(!confirm('Abgehakte entfernen?'))return;SH=SH.filter(s=>!s.c);sd(K.SH,SH);renderShoppingList();}
-const days=['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
-function renderWeekPlan(){if(!WP.length)WP=[null,null,null,null,null,null,null];
-document.getElementById('week-plan').innerHTML=days.map((d,i)=>`<div class="card" style="padding:12px;margin-bottom:8px"><h3 style="font-size:16px;margin-bottom:8px">${d}</h3>${WP[i]?`<a style="color:#4A90D9;text-decoration:none;cursor:pointer;font-size:15px" onclick="showRecipe('${WP[i]}')">${RC.find(r=>r.id===WP[i])?.n||'Unbekannt'}</a>`:'<p style="color:#999;font-size:14px">Nicht geplant</p>'}<button class="btn btn-primary" onclick="pickRecipe(${i})" style="margin-top:8px;font-size:13px">📅 Planen</button></div>`).join('');}
-function pickRecipe(idx){const opts=RC.map(r=>'<option value="'+r.id+'">'+r.n+'</option>').join('');
-document.getElementById('recipe-pick-list').innerHTML='<select id="rpick" style="margin-bottom:12px">'+opts+'</select>';
-document.getElementById('modalRecipePick').classList.add('active');window._pickIdx=idx;}
-function saveDayPlan(){const sel=document.getElementById('rpick');WP[window._pickIdx]=sel.value;sd(K.W,WP);closeModal('modalRecipePick');renderWeekPlan();}
-function genShoppingFromPlan(){WP.filter(Boolean).forEach(rid=>{const r=RC.find(x=>x.id===rid);if(!r)return;r.ing.forEach(i=>{const ex=SH.find(x=>x.n===i.n&&x.u===i.u);if(ex)ex.q+=i.a;else SH.push({id:'s'+Date.now()+Math.random().toString(36).substr(2,5),n:i.n,q:i.a,u:i.u,c:false});});});
-sd(K.SH,SH);renderShoppingList();alert('Einkaufsliste aus Plan erstellt!');}
-function renderSettings(){document.getElementById('storage-list').innerHTML=ST.map(s=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px"><span>${s.i||'📦'} ${s.n}</span><button class="btn btn-danger" onclick="removeStorage('${s.id}')" style="padding:4px 10px;font-size:12px">🗑️</button></div>`).join('');
-document.getElementById('category-list').innerHTML=CA.map(c=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px"><span>${c}</span><button class="btn btn-danger" onclick="removeCat('${c}')" style="padding:4px 10px;font-size:12px">🗑️</button></div>`).join('');}
-function addStorage(){const n=document.getElementById('new-storage').value.trim();if(!n)return;ST.push({id:'st'+Date.now(),n:n,i:'📦'});sd(K.S,ST);renderSettings();document.getElementById('new-storage').value='';}
-function removeStorage(id){ST=ST.filter(s=>s.id!==id);sd(K.S,ST);renderSettings();}
-function addCategory(){const n=document.getElementById('new-cat').value.trim();if(!n||CA.includes(n))return;CA.push(n);sd(K.C,CA);renderSettings();document.getElementById('new-cat').value='';}
-function removeCat(n){CA=CA.filter(c=>c!==n);sd(K.C,CA);renderSettings();}
-function exportData(){const d={products:PD,recipes:RC,categories:CA,storages:ST,shopping:SH,weekplan:WP};const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='kitchen-vorrat-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(u);}
-function importData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(d.products)PD=d.products;if(d.recipes)RC=d.recipes;if(d.categories)CA=d.categories;if(d.storages)ST=d.storages;if(d.shopping)SH=d.shopping;if(d.weekplan)WP=d.weekplan;
-sd(K.P,PD);sd(K.R,RC);sd(K.C,CA);sd(K.S,ST);sd(K.SH,SH);sd(K.W,WP);alert('✅ Importiert!');refreshAll();}catch(err){alert('❌ Fehler: '+err.message);}};r.readAsText(f);}
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(a=>a.classList.remove('active'));
+  if(el)el.classList.add('active');else document.querySelector('.bottom-nav .nav-item:first-child').classList.add('active');
+  if(name==='vorrat')renderProducts();
+  if(name==='rezepte')renderRecipes();
+  if(name==='einkauf')renderShoppingList();
+  if(name==='plan')renderWeekPlan();
+  if(name==='einstellungen')renderSettings();
+}
+
 function openModal(id){document.getElementById(id).classList.add('active');}
 function closeModal(id){document.getElementById(id).classList.remove('active');}
-function populateSelects(){document.getElementById('prodCategory').innerHTML='<option value="">-- Kategorie --</option>'+CA.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
-document.getElementById('prodStorage').innerHTML='<option value="">-- Lagerplatz --</option>'+ST.map(s=>'<option value="'+s.id+'">'+(s.i||'📦')+' '+s.n+'</option>').join('');}
-function refreshAll(){PD=gd(K.P);RC=gd(K.R);CA=gd(K.C);ST=gd(K.S);SH=gd(K.SH);WP=gd(K.W);seed();renderProducts();renderRecipes();renderShoppingList();renderWeekPlan();renderSettings();}
+
+function populateSelects(){
+  document.getElementById('prodCategory').innerHTML='<option value="">-- Kategorie --</option>'+CA.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+  document.getElementById('prodStorage').innerHTML='<option value="">-- Lagerplatz --</option>'+ST.map(s=>'<option value="'+s.id+'">'+(s.i||'📦')+' '+s.n+'</option>').join('');
+}
+
+/* ─── Password Gate ─── */
+function checkPassword(){
+  const pw=document.getElementById('pw-input').value;
+  const hash=CryptoJS.SHA256(pw).toString();
+  if(hash===gw){
+    document.getElementById('pw-gate').style.display='none';
+    document.getElementById('app').style.display='block';
+    localStorage.setItem('kv_auth','1');
+    refreshAll();
+  } else {
+    document.getElementById('pw-error').style.display='block';
+  }
+}
+
+/* ─── Products ─── */
+function expiryBadge(date){
+  if(!date)return'';
+  const d=new Date(date),n=new Date(),diff=(d-n)/(864e5);
+  if(diff<0)return'<span class="product-badge expired"><span class="product-status-dot expired"></span>Abgelaufen</span>';
+  if(diff<=7)return'<span class="product-badge warning"><span class="product-status-dot warning"></span>'+Math.ceil(diff)+'d</span>';
+  return'<span class="product-badge ok"><span class="product-status-dot ok"></span>'+Math.ceil(diff)+'d</span>';
+}
+
+function renderCategoryPills(){
+  const all=['Alle',...CA];
+  document.getElementById('category-pills').innerHTML=all.map(c=>
+    '<button class="category-pill'+(activeCategory===c?(activeCategory==='All'? ' active':'' ): (c==='All'?' active':''))+'" onclick="filterByCategory(\''+c.replace(/'/g,"\\'")+'\')">'+'🏷️ '+c+'</button>'
+  ).join('');
+}
+
+function filterByCategory(cat){
+  activeCategory=cat;
+  renderCategoryPills();
+  renderProducts(document.getElementById('search-input').value?.toLowerCase()||'');
+}
+
+function renderProducts(q){
+  q=q||'';
+  let list=PD;
+  if(activeCategory && activeCategory!=='All'&&activeCategory!=='Alle'){
+    list=list.filter(p=>p.category===activeCategory);
+  }
+  if(q){
+    list=list.filter(p=>!q||p.name.toLowerCase().includes(q)||(p.manufacturer&&p.manufacturer.toLowerCase().includes(q)));
+  }
+  renderCategoryPills();
+  document.getElementById('products-list').innerHTML=list.length?list.map(p=>{
+    const s=ST.find(x=>x.id===p.storage);
+    return`<div class="product-card" onclick="editProduct('${p.id}')">
+      <div class="product-card-body">
+        <div class="product-card-name">${p.name}</div>
+        <div class="product-card-meta">
+          ${p.manufacturer?'<span class="product-tag manufacturer">'+p.manufacturer+'</span>':''}
+          ${p.size?'<span class="product-tag size">'+p.size+'</span>':''}
+          ${p.category?'<span class="product-tag category">'+p.category+'</span>':''}
+          ${s?'<span class="product-tag storage">'+s.i+' '+s.n+'</span>':''}
+          ${expiryBadge(p.expiry)}
+        </div>
+      </div>
+      <div class="product-card-footer">
+        <div class="qty-stepper">
+          <button onclick="event.stopPropagation();decQty('${p.id}')">−</button>
+          <span class="qty-value">${p.qty} <small>${p.unit}</small></span>
+          <button onclick="event.stopPropagation();incQty('${p.id}')">+</button>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn-icon" onclick="event.stopPropagation();openAddProduct()" title="Bearbeiten">✏️</button>
+          <button class="btn-icon" onclick="event.stopPropagation();openScannerFor('${p.id}')" title="Scannen">📷</button>
+        </div>
+      </div>
+    </div>`;
+  }).join(''):'<div class="empty-state"><div class="empty-icon">📦</div><div class="empty-title">Keine Produkte</div><div class="empty-desc">Füge dein erstes Produkt hinzu, um deinen Vorrat zu verwalten.</div></div>';
+}
+
+function openAddProduct(){
+  editId=null;
+  document.getElementById('mpTitle').textContent='Produkt hinzufügen';
+  document.getElementById('deleteProdBtn').style.display='none';
+  ['prodName','prodManufacturer','prodSize','prodExpiry','prodBarcode','prodNotes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('prodQty').value='1';
+  document.getElementById('prodUnit').value='Stk';
+  document.getElementById('prodMinQty').value='1';
+  populateSelects();
+  openModal('modalProduct');
+}
+
+function editProduct(id){
+  const p=PD.find(x=>x.id===id);if(!p)return;editId=id;
+  document.getElementById('mpTitle').textContent='Produkt bearbeiten';
+  document.getElementById('deleteProdBtn').style.display='block';
+  document.getElementById('prodName').value=p.name||'';
+  document.getElementById('prodManufacturer').value=p.manufacturer||'';
+  document.getElementById('prodSize').value=p.size||'';
+  document.getElementById('prodQty').value=p.qty||1;
+  document.getElementById('prodUnit').value=p.unit||'Stk';
+  document.getElementById('prodMinQty').value=p.minQty||1;
+  document.getElementById('prodExpiry').value=p.expiry||'';
+  document.getElementById('prodBarcode').value=p.barcode||'';
+  document.getElementById('prodNotes').value=p.notes||'';
+  populateSelects();
+  document.getElementById('prodCategory').value=p.category||'';
+  document.getElementById('prodStorage').value=p.storage||'';
+  openModal('modalProduct');
+}
+
+function saveProduct(){
+  const name=document.getElementById('prodName').value.trim();
+  if(!name){alert('Bitte Name eingeben');return;}
+  const obj={id:editId||'p'+Date.now(),name:name,manufacturer:document.getElementById('prodManufacturer').value.trim(),size:document.getElementById('prodSize').value.trim(),category:document.getElementById('prodCategory').value,storage:document.getElementById('prodStorage').value,qty:parseFloat(document.getElementById('prodQty').value)||1,unit:document.getElementById('prodUnit').value,minQty:parseFloat(document.getElementById('prodMinQty').value)||1,expiry:document.getElementById('prodExpiry').value,barcode:document.getElementById('prodBarcode').value.trim(),notes:document.getElementById('prodNotes').value.trim()};
+  if(editId){const i=PD.findIndex(x=>x.id===editId);if(i>=0)PD[i]=obj;}else PD.push(obj);
+  sd(K.P,PD);closeModal('modalProduct');renderProducts();showToast('✅ Produkt gespeichert');
+}
+
+function deleteProduct(){if(!editId)return;if(!confirm('Löschen?'))return;PD=PD.filter(x=>x.id!==editId);sd(K.P,PD);closeModal('modalProduct');renderProducts();showToast('🗑️ Produkt gelöscht');}
+
+function incQty(id){const p=PD.find(x=>x.id===id);if(p){p.qty++;sd(K.P,PD);renderProducts();}}
+function decQty(id){const p=PD.find(x=>x.id===id);if(p&&p.qty>0){p.qty--;sd(K.P,PD);renderProducts();}}
+function filterProducts(q){renderProducts(q?.toLowerCase()||'');}
+
+/* ─── Scanner ─── */
+function openScannerFor(productId){editId=productId;openModal('modalScanner');setTimeout(initScanner,300);}
+async function initScanner(){
+  try{
+    if(scan){scan.clear();scan=null;}
+    scan=new Html5Qrcode("scanner-box");
+    const cams=await Html5Qrcode.getCameras();
+    if(!cams.length){document.getElementById('scanResult').textContent='Keine Kamera gefunden';return;}
+    curCam=cams[0].id;
+    document.getElementById('scanner-box').innerHTML='';
+    await scan.start(curCam,{fps:10,qrbox:250},decoded=>{
+      document.getElementById('scanResult').textContent='✅ '+decoded;
+      handleScan(decoded);
+    },()=>{});
+  }catch(e){document.getElementById('scanner-box').innerHTML='❌ '+e.message;}
+}
+function closeScanner(){if(scan){scan.stop().then(()=>{scan.clear();scan=null;}).catch(()=>{});}closeModal('modalScanner');}
+async function handleScan(barcode){
+  closeScanner();
+  const code=barcode.replace(/[^0-9]/g,'');
+  if(code.length<8){showToast('Barcode zu kurz ('+code.length+' Ziffern)');openAddProduct();document.getElementById('prodBarcode').value=barcode;return;}
+  try{
+    const r=await fetch('https://world.openfoodfacts.org/api/v2/product/'+code+'.json');
+    const d=await r.json();
+    if(d.status===1&&d.product){
+      const p=d.product;
+      document.getElementById('prodName').value=p.product_name||'';
+      document.getElementById('prodManufacturer').value=p.brands||'';
+      document.getElementById('prodSize').value=p.quantity||'';
+      document.getElementById('prodBarcode').value=barcode;
+    }
+    openAddProduct();
+  }catch(e){openAddProduct();document.getElementById('prodBarcode').value=barcode;}
+}
+
+/* ─── Recipes ─── */
+function renderRecipes(){
+  document.getElementById('recipes-list').innerHTML=RC.length?RC.map(r=>
+    '<div class="recipe-card" onclick="showRecipe(\''+r.id+'\')"><div class="recipe-card-name">'+r.n+'</div><div class="recipe-card-meta">'+r.c+' · '+r.p+' Portionen · '+r.ing.length+' Zutaten</div></div>'
+  ).join(''):'<div class="empty-state"><div class="empty-icon">📖</div><div class="empty-title">Keine Rezepte</div><div class="empty-desc">Erstelle dein erstes Rezept!</div></div>';
+}
+
+function showRecipe(id){
+  const r=RC.find(x=>x.id===id);if(!r)return;
+  document.getElementById('recipe-detail').innerHTML=`<h2>${r.n}</h2><p class="recipe-meta">${r.c} · ${r.p} Portionen</p><h3 style="margin-bottom:8px">📝 Zutaten</h3><ul>${r.ing.map(i=>'<li style="padding:4px 0">'+i.a+' '+i.u+' '+i.n+'</li>').join('')}</ul><h3 style="margin-bottom:8px">👨‍🍳 Zubereitung</h3><ol>${r.st.map(s=>'<li style="padding:6px 0">'+s+'</li>').join('')}</ol><button class="btn btn-primary" onclick="addRecToShop(\''+r.id+'\')" style="width:100%">🛒 Zutaten auf Einkaufsliste</button>`;
+  openModal('modalRecipe');
+}
+
+function addRecToShop(id){
+  const r=RC.find(x=>x.id===id);if(!r)return;
+  r.ing.forEach(i=>{
+    const ex=SH.find(x=>x.n===i.n&&x.u===i.u);
+    if(ex)ex.q+=i.a;else SH.push({id:'s'+Date.now()+Math.random().toString(36).substr(2,5),n:i.n,q:i.a,u:i.u,c:false});
+  });
+  sd(K.SH,SH);renderShoppingList();showToast(r.n+' Zutaten hinzugefügt!');
+}
+
+function openAddRecipe(){['recName','recIngredients','recSteps'].forEach(id=>document.getElementById(id).value='');document.getElementById('recPortions').value='4';openModal('modalNewRecipe');}
+function saveNewRecipe(){
+  const n=document.getElementById('recName').value.trim();if(!n){alert('Name fehlt');return;}
+  const ings=document.getElementById('recIngredients').value.trim().split('\n').filter(l=>l.trim()).map(l=>{const parts=l.trim().split(/\s+/);return{a:parseFloat(parts[0])||1,u:parts[1]||'Stk',n:parts.slice(2).join(' ')||'Unbekannt'};});
+  const steps=document.getElementById('recSteps').value.trim().split('\n').filter(l=>l.trim());
+  RC.push({id:'r'+Date.now(),n:n,c:document.getElementById('recCategory').value,p:parseInt(document.getElementById('recPortions').value)||4,ing:ings,st:steps});
+  sd(K.R,RC);closeModal('modalNewRecipe');renderRecipes();showToast('✅ Rezept gespeichert');
+}
+
+/* ─── Shopping List ─── */
+function renderShoppingList(){
+  const active=SH.filter(x=>!x.c),done=SH.filter(x=>x.c);
+  document.getElementById('shopping-list').innerHTML=
+    active.map(x=>`<div class="shopping-item"><input type="checkbox" class="shopping-checkbox" ${x.c?'checked':''} onchange="toggleItem('${x.id}')"><div style="flex:1"><span class="shopping-name" onclick="toggleItem('${x.id}')">${x.n}</span><span class="shopping-qty"> · ${x.q} ${x.u}</span></div><button class="btn btn-danger btn-sm" onclick="removeItem('${x.id}')" style="padding:6px 10px;font-size:12px">🗑️</button></div>`).join('')+
+    (done.length?'<div style="padding:16px 16px 8px;font-size:var(--fs-small);font-weight:var(--fw-medium);color:var(--text-secondary)">Abgehakt ('+done.length+')</div>'+done.map(x=>`<div class="shopping-item checked"><input type="checkbox" class="shopping-checkbox" checked onchange="toggleItem('${x.id}')"><div style="flex:1"><span class="shopping-name">${x.n}</span><span class="shopping-qty"> · ${x.q} ${x.u}</span></div><button class="btn btn-danger btn-sm" onclick="removeItem('${x.id}')">🗑️</button></div>`).join('')):
+    (!active.length&&!done.length?'<div class="empty-state"><div class="empty-icon">🛒</div><div class="empty-title">Einkaufsliste leer</div></div>':'');
+}
+
+function openAddShoppingItem(){openModal('modalShopping');}
+function addShoppingItem(){
+  const n=document.getElementById('shopName').value.trim();if(!n){alert('Name fehlt');return;}
+  SH.push({id:'s'+Date.now()+Math.random().toString(36).substr(2,5),n:n,q:parseFloat(document.getElementById('shopQty').value)||1,u:document.getElementById('shopUnit').value,c:false});
+  sd(K.SH,SH);closeModal('modalShopping');document.getElementById('shopName').value='';renderShoppingList();showToast('✅ Hinzugefügt');
+}
+function toggleItem(id){const x=SH.find(s=>s.id===id);if(x){x.c=!x.c;sd(K.SH,SH);renderShoppingList();}}
+function removeItem(id){SH=SH.filter(s=>s.id!==id);sd(K.SH,SH);renderShoppingList();}
+function clearShopping(){if(!confirm('Abgehakte entfernen?'))return;SH=SH.filter(s=>!s.c);sd(K.SH,SH);renderShoppingList();showToast('🗑️ Liste bereinigt');}
+
+/* ─── Week Plan ─── */
+const days=['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
+function renderWeekPlan(){
+  if(!WP.length)WP=[null,null,null,null,null,null,null];
+  document.getElementById('week-plan').innerHTML=days.map((d,i)=>`<div class="week-day-card ${WP[i]?'active':''}" style="${WP[i]?'':'border-left-color:var(--border-card)'}"><span class="week-day-name-sm">${d}</span><span class="week-day-meal ${WP[i]?'':'none'}">${WP[i]?(RC.find(r=>r.id===WP[i])?.n||'Unbekannt'):'Nicht geplant'}</span><button class="btn btn-ghost btn-sm" onclick="pickRecipe(${i})" style="margin-left:8px">📅 Planen</button></div>`).join('');
+}
+function pickRecipe(idx){
+  const opts=RC.map(r=>'<option value="'+r.id+'">'+r.n+'</option>').join('');
+  document.getElementById('recipe-pick-list').innerHTML='<select class="kitchen-select" id="rpick" style="margin-bottom:12px;width:100%;padding:12px 16px;background:var(--bg-elevated);border:1.5px solid var(--border-subtle);border-radius:var(--radius-md);font-family:var(--font-primary);font-size:var(--fs-body);color:var(--text-primary);min-height:44px">'+opts+'</select>';
+  document.getElementById('modalRecipePick').classList.add('active');
+  window._pickIdx=idx;
+}
+function saveDayPlan(){const sel=document.getElementById('rpick');WP[window._pickIdx]=sel.value;sd(K.W,WP);closeModal('modalRecipePick');renderWeekPlan();showToast('✅ Geplant');}
+function genShoppingFromPlan(){
+  WP.filter(Boolean).forEach(rid=>{const r=RC.find(x=>x.id===rid);if(!r)return;r.ing.forEach(i=>{const ex=SH.find(x=>x.n===i.n&&x.u===i.u);if(ex)ex.q+=i.a;else SH.push({id:'s'+Date.now()+Math.random().toString(36).substr(2,5),n:i.n,q:i.a,u:i.u,c:false});});});
+  sd(K.SH,SH);renderShoppingList();showToast('🛒 Einkaufsliste erstellt!');
+}
+
+/* ─── Settings ─── */
+function renderSettings(){
+  document.getElementById('storage-list').innerHTML=ST.map(s=>`<div class="settings-item"><span>${s.i||'📦'} ${s.n}</span><button class="btn btn-danger btn-sm" onclick="removeStorage('${s.id}')" style="padding:4px 10px;font-size:12px">🗑️</button></div>`).join('');
+  document.getElementById('category-list').innerHTML=CA.map(c=>`<div class="settings-item"><span>${c}</span><button class="btn btn-danger btn-sm" onclick="removeCat('${c}')" style="padding:4px 10px;font-size:12px">🗑️</button></div>`).join('');
+}
+
+function addStorage(){
+  const n=document.getElementById('new-storage').value.trim();if(!n)return;
+  ST.push({id:'st'+Date.now(),n:n,i:'📦'});sd(K.S,ST);renderSettings();document.getElementById('new-storage').value='';
+}
+
+function addCategory(){
+  const n=document.getElementById('new-cat').value.trim();if(!n||CA.includes(n))return;
+  CA.push(n);sd(K.C,CA);renderSettings();document.getElementById('new-cat').value='';
+}
+
+/* ─── Export / Import ─── */
+function exportData(){
+  const d={products:PD,recipes:RC,categories:CA,storages:ST,shopping:SH,weekplan:WP};
+  const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+  const u=URL.createObjectURL(b),a=document.createElement('a');
+  a.href=u;a.download='kitchen-vorrat-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+  URL.revokeObjectURL(u);showToast('📤 Exportiert!');
+}
+
+function importData(inp){
+  const f=inp.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const d=JSON.parse(e.target.result);
+      if(d.products)PD=d.products;if(d.recipes)RC=d.recipes;if(d.categories)CA=d.categories;
+      if(d.storages)ST=d.storages;if(d.shopping)SH=d.shopping;if(d.weekplan)WP=d.weekplan;
+      sd(K.P,PD);sd(K.R,RC);sd(K.C,CA);sd(K.S,ST);sd(K.SH,SH);sd(K.W,WP);
+      alert('✅ Importiert!');refreshAll();
+    }catch(err){alert('❌ Fehler: '+err.message);}
+  };r.readAsText(f);
+}
+
+/* ─── Init ─── */
+function refreshAll(){
+  PD=gd(K.P);RC=gd(K.R);CA=gd(K.C);ST=gd(K.S);SH=gd(K.SH);WP=gd(K.W);
+  seed();
+  renderProducts();
+  renderRecipes();
+  renderShoppingList();
+  renderWeekPlan();
+  renderSettings();
+}
 refreshAll();
 </script>
 </body>
