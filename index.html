@@ -1,58 +1,329 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barcode Scanner</title>
-    <script>
-        async function scanAndAdd() {
-            try {
-                const barcode = await scanBarcode();
-                if (barcode) {
-                    const productInfo = await fetchProductInfo(barcode);
-                    if (productInfo) {
-                        openScanResult(productInfo);
-                    } else {
-                        alert('Product not found.');
-                    }
-                } else {
-                    alert('No barcode scanned.');
-                }
-            } catch (error) {
-                console.error('Error scanning barcode:', error);
-                alert('Error scanning barcode.');
-            }
-        }
-
-        async function scanBarcode() {
-            // Simulate barcode scanning
-            return '1234567890123'; // Replace with actual barcode scanning logic
-        }
-
-        async function fetchProductInfo(barcode) {
-            try {
-                const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
-                if (data.product && data.product.product_name) {
-                    return data.product;
-                } else {
-                    return null;
-                }
-            } catch (error) {
-                console.error('Error fetching product info:', error);
-                return null;
-            }
-        }
-
-        function openScanResult(productInfo) {
-            alert(`Product Name: ${productInfo.product_name}\nBrand: ${productInfo.brands}\nNutriscore: ${productInfo.nutriscore_grade}`);
-        }
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kitchen Vorrat</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f5f7;color:#1d1d1f;padding-bottom:80px}
+#pw-gate{position:fixed;inset:0;background:linear-gradient(135deg,#1d1d1f,#2d2d2f);display:flex;align-items:center;justify-content:center;z-index:9999}
+#pw-gate input{padding:16px 24px;font-size:18px;border:none;border-radius:12px;width:280px;text-align:center;margin-bottom:12px;background:rgba(255,255,255,0.1);color:#fff}
+#pw-gate input::placeholder{color:rgba(255,255,255,0.5)}
+#pw-gate button{padding:14px 40px;font-size:16px;background:#4A90D9;color:#fff;border:none;border-radius:12px;cursor:pointer;width:100%}
+#pw-error{color:#e74c3c;margin-top:12px;text-align:center}
+.section{display:none;padding:16px}
+.section.active{display:block}
+.card{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.card h3{margin-bottom:8px;font-size:18px}
+.btn{padding:10px 20px;border:none;border-radius:10px;font-size:15px;cursor:pointer;font-weight:500}
+.btn-primary{background:#4A90D9;color:#fff}
+.btn-danger{background:#e74c3c;color:#fff}
+.btn-success{background:#27ae60;color:#fff}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.header h1{font-size:24px}
+.search-box{margin-bottom:16px;padding:12px 16px;border:1px solid #ddd;border-radius:12px;font-size:16px;width:100%;background:#fff}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e0e0e0;display:flex;justify-content:space-around;padding:8px 0;z-index:100}
+nav a{text-decoration:none;color:#999;font-size:11px;text-align:center;flex:1;padding:4px;transition:color 0.2s}
+nav a.active{color:#4A90D9}
+nav a span{display:block;font-size:22px;margin-bottom:2px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:16px;margin-bottom:12px;background:#fff}
+label{font-weight:600;margin-bottom:4px;display:block;font-size:14px}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:flex-end;justify-content:center}
+.modal.active{display:flex}
+.modal-content{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;padding:20px}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-header h2{font-size:20px}
+.close-btn{background:none;border:none;font-size:28px;cursor:pointer;color:#999}
+.badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.badge-danger{background:#ffebee;color:#c62828}
+.badge-warning{background:#fff3e0;color:#e65100}
+.badge-success{background:#e8f5e9;color:#2e7d32}
+.shopping-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f0f0f0}
+.qty-btn{width:36px;height:36px;border-radius:50%;border:2px solid #4A90D9;background:#fff;color:#4A90D9;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:bold}
+.scanner-box{width:100%;height:300px;background:#000;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px}
+</style>
 </head>
 <body>
-    <button onclick="scanAndAdd()">Scan Barcode</button>
+<div id="pw-gate">
+<div style="text-align:center;max-width:320px;padding:20px">
+<div style="font-size:60px;margin-bottom:16px">🍽️</div>
+<h1 style="color:#fff;margin-bottom:8px">Kitchen Vorrat</h1>
+<p style="color:#aaa;margin-bottom:24px">Passwort eingeben</p>
+<input type="password" id="pw-input" placeholder="Passwort" onkeypress="if(event.key==='Enter')checkPassword()">
+<button onclick="checkPassword()">Anmelden</button>
+<p id="pw-error" style="display:none;margin-top:12px">❌ Falsches Passwort</p>
+</div>
+</div>
+<div id="app" style="display:none">
+<div id="sec-vorrat" class="section active">
+<div class="header"><h1>📦 Vorrat</h1><button class="btn btn-primary" onclick="openAddProduct()">+ Hinzufügen</button></div>
+<input class="search-box" type="text" placeholder="🔍 Suche..." id="search-input" oninput="filterProducts(this.value)">
+<div id="products-list"></div>
+</div>
+<div id="sec-rezepte" class="section">
+<div class="header"><h1>📖 Rezepte</h1><button class="btn btn-primary" onclick="openAddRecipe()">+ Rezept</button></div>
+<div id="recipes-list"></div>
+</div>
+<div id="sec-einkauf" class="section">
+<div class="header"><h1>🛒 Einkaufsliste</h1><div><button class="btn btn-danger" onclick="clearShopping()">Leeren</button> <button class="btn btn-primary" onclick="openAddShoppingItem()">+</button></div></div>
+<div id="shopping-list"></div>
+</div>
+<div id="sec-plan" class="section">
+<div class="header"><h1>📅 Wochenplan</h1><button class="btn btn-success" onclick="genShoppingFromPlan()">🛒 Liste erstellen</button></div>
+<div id="week-plan"></div>
+</div>
+<div id="sec-einstellungen" class="section">
+<div class="header"><h1>⚙️ Einstellungen</h1></div>
+<div class="card"><h3>📍 Lagerplätze</h3>
+<div style="display:flex;gap:8px;margin-top:8px"><input id="new-storage" placeholder="Neuer Lagerplatz" style="margin-bottom:0"><button class="btn btn-primary" onclick="addStorage()">+</button></div>
+<div id="storage-list" style="margin-top:8px"></div></div>
+<div class="card" style="margin-top:12px"><h3>🏷️ Kategorien</h3>
+<div style="display:flex;gap:8px;margin-top:8px"><input id="new-cat" placeholder="Neue Kategorie" style="margin-bottom:0"><button class="btn btn-primary" onclick="addCategory()">+</button></div>
+<div id="category-list" style="margin-top:8px"></div></div>
+<div class="card" style="margin-top:12px"><h3>💾 Daten</h3>
+<button class="btn btn-primary" onclick="exportData()" style="width:100%;margin-bottom:8px">📤 Exportieren (JSON)</button>
+<button class="btn btn-success" onclick="document.getElementById('import-file').click()" style="width:100%">📥 Importieren</button>
+<input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)"></div>
+<div class="card" style="margin-top:12px"><button class="btn btn-danger" onclick="logout()" style="width:100%">🔒 Abmelden</button></div>
+</div>
+</div>
+<nav id="bottom-nav">
+<a href="#" class="active" onclick="showSection('vorrat',this);return false"><span>📦</span>Vorrat</a>
+<a href="#" onclick="showSection('rezepte',this);return false"><span>📖</span>Rezepte</a>
+<a href="#" onclick="showSection('einkauf',this);return false"><span>🛒</span>Einkauf</a>
+<a href="#" onclick="showSection('plan',this);return false"><span>📅</span>Plan</a>
+<a href="#" onclick="showSection('einstellungen',this);return false"><span>⚙️</span>Setups</a>
+</nav>
+<div id="modalProduct" class="modal" onclick="if(event.target===this)closeModal('modalProduct')">
+<div class="modal-content">
+<div class="modal-header"><h2 id="mpTitle">Produkt</h2><button class="close-btn" onclick="closeModal('modalProduct')">&times;</button></div>
+<label>Name *</label><input id="prodName" placeholder="Produktname">
+<label>Hersteller</label><input id="prodManufacturer" placeholder="Hersteller">
+<label>Größe / Packungsgröße</label><input id="prodSize" placeholder="z.B. 500ml, 200g">
+<label>Kategorie</label><select id="prodCategory"></select>
+<label>Lagerplatz</label><select id="prodStorage"></select>
+<div style="display:flex;gap:12px"><div style="flex:1"><label>Menge</label><input type="number" id="prodQty" value="1" min="0" step="0.1"></div>
+<div style="flex:1"><label>Einheit</label><select id="prodUnit"><option>Stk</option><option>ml</option><option>l</option><option>g</option><option>kg</option><option>Beutel</option><option>Glas</option><option>Tube</option><option>Becher</option><option>Dose</option><option>Schale</option><option>Rolle</option><option>Packung</option></select></div></div>
+<label>Mindestmenge</label><input type="number" id="prodMinQty" value="1" min="0">
+<label>MHD</label><input type="date" id="prodExpiry">
+<label>Barcode</label><input id="prodBarcode" placeholder="Barcode">
+<label>Notizen</label><textarea id="prodNotes" rows="2"></textarea>
+<button class="btn btn-primary" onclick="saveProduct()" style="width:100%;margin-bottom:8px">💾 Speichern</button>
+<button class="btn btn-danger" id="deleteProdBtn" onclick="deleteProduct()" style="width:100%;display:none">🗑️ Löschen</button>
+</div></div>
+<div id="modalShopping" class="modal" onclick="if(event.target===this)closeModal('modalShopping')">
+<div class="modal-content">
+<div class="modal-header"><h2>Einkauf hinzufügen</h2><button class="close-btn" onclick="closeModal('modalShopping')">&times;</button></div>
+<label>Produkt</label><input id="shopName" placeholder="Produktname">
+<div style="display:flex;gap:12px"><div style="flex:1"><label>Menge</label><input type="number" id="shopQty" value="1" min="1"></div>
+<div style="flex:1"><label>Einheit</label><select id="shopUnit"><option>Stk</option><option>ml</option><option>l</option><option>g</option><option>kg</option><option>Beutel</option><option>Glas</option><option>Dose</option></select></div></div>
+<button class="btn btn-primary" onclick="addShoppingItem()" style="width:100%">Hinzufügen</button>
+</div></div>
+<div id="modalScanner" class="modal" onclick="if(event.target===this)closeModal('modalScanner')">
+<div class="modal-content">
+<div class="modal-header"><h2>📷 Barcode Scannen</h2><button class="close-btn" onclick="closeScanner()">&times;</button></div>
+<div id="scanner-box" class="scanner-box">Scanner wird geladen...</div>
+<p id="scanResult" style="text-align:center;margin-top:12px;font-weight:600"></p>
+</div></div>
+<div id="modalRecipe" class="modal" onclick="if(event.target===this)closeModal('modalRecipe')">
+<div class="modal-content"><div class="modal-header"><h2>Rezept</h2><button class="close-btn" onclick="closeModal('modalRecipe')">&times;</button></div><div id="recipe-detail"></div></div>
+</div>
+<div id="modalRecipePick" class="modal" onclick="if(event.target===this)closeModal('modalRecipePick')">
+<div class="modal-content">
+<div class="modal-header"><h2>Rezept auswählen</h2><button class="close-btn" onclick="closeModal('modalRecipePick')">&times;</button></div>
+<div id="recipe-pick-list"></div>
+<button class="btn btn-primary" onclick="saveDayPlan()" style="width:100%;margin-top:12px">Speichern</button>
+</div></div>
+<div id="modalNewRecipe" class="modal" onclick="if(event.target===this)closeModal('modalNewRecipe')">
+<div class="modal-content">
+<div class="modal-header"><h2>Neues Rezept</h2><button class="close-btn" onclick="closeModal('modalNewRecipe')">&times;</button></div>
+<label>Name</label><input id="recName" placeholder="Rezeptname">
+<label>Kategorie</label><select id="recCategory"><option>Hauptgerichte</option><option>Beilagen</option><option>Suppen</option><option>Salate</option><option>Desserts</option><option>Snacks</option><option>Getränke</option></select>
+<label>Portionen</label><input type="number" id="recPortions" value="4" min="1">
+<label>Zutaten (eine pro Zeile: Menge Einheit Name)</label><textarea id="recIngredients" rows="6" placeholder="400g Spaghetti&#10;200g Speck&#10;4 Eier"></textarea>
+<label>Schritte (eine pro Zeile)</label><textarea id="recSteps" rows="6" placeholder="Spaghetti kochen&#10;Speck würfeln und braten"></textarea>
+<button class="btn btn-primary" onclick="saveNewRecipe()" style="width:100%">💾 Speichern</button>
+</div></div>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+const K={P:'kv_p',R:'kv_r',C:'kv_c',S:'kv_s',SH:'kv_sh',W:'kv_w'},gw='8f3a5e7c9d1b2f4a6e8c0d2f4a6b8c0d2e4f6a8b0c2d4e6f8a0b2c4d6e8f0a2';
+let PD=[],RC=[],CA=[],ST=[],SH=[],WP=[],editId=null,scan=null,curCam=null;
+function gd(k){try{return JSON.parse(localStorage.getItem(k))||[]}catch(e){return[]}}
+function sd(k,d){localStorage.setItem(k,JSON.stringify(d))}
+function seed(){
+if(!CA.length)CA=['Lebensmittel','Getränke','Milchprodukte','Fleisch','Kühlung','Konserven','Tiefkühl','Reinigung','Sonstiges'];
+if(!ST.length)ST=[{id:'f',n:'Kühlschrank',i:'🧊'},{id:'fr',n:'Gefriertruhe',i:'❄️'},{id:'p',n:'Vorratskammer',i:'📦'},{id:'k',n:'Küche',i:'🍽️'},{id:'b',n:'Balkon',i:'🏠'},{id:'bl',n:'Keller',i:'🏚️'}];
+if(RC.length)return;
+RC=[{id:'c1',n:'Spaghetti Carbonara',c:'Hauptgerichte',p:4,ing:[{a:400,u:'g',n:'Spaghetti'},{a:200,u:'g',n:'Speck'},{a:4,u:'Stk',n:'Eier'},{a:100,u:'g',n:'Parmesan'},{a:1,u:'Prise',n:'Schwarzer Pfeffer'}],st:['Spaghetti al dente kochen','Speck in Würfel schneiden und knusprig braten','Eier mit geriebenem Parmesan verquirlen','Nudeln abgießen','Speck unter Nudeln rühren','Eiermischung unterrühren (nicht zu heiß!)','Mit viel schwarzem Pfeffer servieren']},
+{id:'c2',n:'Lasagne Bolognese',c:'Hauptgerichte',p:6,ing:[{a:12,u:'Stk',n:'Lasagneplatten'},{a:500,u:'g',n:'Rinderhack'},{a:400,u:'g',n:'Tomaten (Stückig)'},{a:1,u:'Stk',n:'Zwiebel'},{a:1,u:'Stk',n:'Karotte'},{a:80,u:'g',n:'Parmesan'},{a:200,u:'g',n:'Mozzarella'},{a:500,u:'ml',n:'Sahne'}],st:['Zwiebel, Karotte fein würfeln','In Öl anbraten, Hack dazu','Tomaten und Sahne, 30min köcheln','Béchamel: Butter, Mehl, Milch','Schichten: Sofrito, Nudeln, Béchamel, Käse','Wiederholen, mit Käse bedecken','180°C 30-35min backen']},
+{id:'c3',n:'Chili con Carne',c:'Hauptgerichte',p:4,ing:[{a:600,u:'g',n:'Rinderhack'},{a:2,u:'Dose',n:'Kidneybohnen'},{a:400,u:'g',n:'Tomaten (Stückig)'},{a:2,u:'Stk',n:'Paprika'},{a:2,u:'Stk',n:'Zwiebel'},{a:3,u:'Zehen',n:'Knoblauch'},{a:2,u:'EL',n:'Chiliflocken'}],st:['Fleinsel krümelig anbraten','Gemüse würfeln, mitbraten','Knoblauch und Chili','Tomaten und Bohnen (abgetropft)','30min köcheln lassen','Mit Reis, Sauerrahm und tortilla chips']},
+{id:'c4',n:'Wiener Schnitzel',c:'Hauptgerichte',p:4,ing:[{a:4,u:'Stk',n:'Schnitzel (Kalb oder Schwein)'},{a:100,u:'g',n:'Mehl'},{a:2,u:'Stk',n:'Eier'},{a:150,u:'g',n:'Semmelbrösel'},{a:100,u:'g',n:'Butter'}],st:['Schnitzel auf ca. 5mm dicke klopfen','Salzen und pfeffern','Mehl, verquirlte Eier, Brösel auf 3 Tellern','Panieren: Mehl - Ei - Brösel','In Butter/Oil goldbraun schwimmen lassen','Mit Zitrone, Petersilkartoffeln und Preiselbeeren']},
+{id:'c5',n:'Gulasch',c:'Hauptgerichte',p:6,ing:[{a:800,u:'g',n:'Rindfleisch (Geschmortes)'},{a:3,u:'Stk',n:'Zwiebel'},{a:3,u:'Stk',n:'Paprika'},{a:600,u:'g',n:'Kartoffeln'},{a:2,u:'EL',n:'Paprikamark'}],st:['Zwiebeln grob würfeln','Fleinsel in großen Klumpen anbraten','Zwiebeln und Paprikamark','Paprika und Kartoffeln in Stücken','Mit Brühe auffüllen','1,5-2 Std. köcheln','Mit Semmelknödel und Salat']},
+{id:'c6',n:'Pizza Margherita',c:'Hauptgerichte',p:2,ing:[{a:300,u:'g',n:'Mehl (Tipo 00)'},{a:7,u:'g',n:'Hefe (Trocken)'},{a:180,u:'ml',n:'Laufwasser'},{a:3,u:'EL',n:'Olivenöl'},{a:200,u:'ml',n:'Tomatensoße'},{a:200,u:'g',n:'Mozzarella'},{a:1,u:'Bund',n:'Basilikum'}],st:['Teig: Mehl, Hefe, Wasser, Öl verkneten','1 Std. gehen lassen','Ausrollen (dünner Rand)','Tomatensoße darauf','Mozzarella in Scheiben','250°C 8-10min backen','Mit Basilikum und Olivenöl']},
+{id:'c7',n:'Tomatensuppe',c:'Suppen',p:4,ing:[{a:800,u:'g',n:'Tomaten'},{a:1,u:'Stk',n:'Zwiebel'},{a:2,u:'Zehen',n:'Knoblauch'},{a:3,u:'EL',n:'Olivenöl'},{a:100,u:'ml',n:'Sahne'}],st:['Zwiebel und Knoblauch fein hacken','In Olivenöl anbraten','Tomaten dazu, 15min köcheln','Mit Pürierstab pürieren','Sahne unterrühren','Mit Croutons und Basilikum']},
+{id:'c8',n:'Rührkuchen mit Schokostreuseln',c:'Desserts',p:8,ing:[{a:250,u:'g',n:'Butter'},{a:250,u:'g',n:'Zucker'},{a:4,u:'Stk',n:'Eier'},{a:250,u:'g',n:'Mehl'},{a:100,u:'g',n:'Schokostreusel'},{a:1,u:'Pkt',n:'Backpulver'}],st:['Butter und Zucker cremig rühren','Eier einzeln unterrühren','Mehl und Backpulver sieben','Schokostreusel unterheben','In Kastenform','180°C 45-50min backen']},
+{id:'c9',n:'Apfelstrudel',c:'Desserts',p:6,ing:[{a:1,u:'Paket',n:'Blätterteig'},{a:6,u:'Stk',n:'Äpfel (Winer Wächter)'},{a:100,u:'g',n:'Zucker'},{a:2,u:'TL',n:'Zimt'},{a:50,u:'g',n:'Semmelbrösel'},{a:200,u:'ml',n:'Vanillesoße'}],st:['Äpfel schälen, in Streifen schneiden','Zucker und Zimt mischen','Blätterteig ausrollen','Apfelstück darauf verteilen','Aufrollen, mit Butter beträufeln','180°C 30min backen','Mit Vanillesoße']},
+{id:'c10',n:'Nudelsalat mit Feta',c:'Salate',p:4,ing:[{a:400,u:'g',n:'Spiralnudeln'},{a:200,u:'g',n:'Feta'},{a:1,u:'Stk',n:'Gurke'},{a:200,u:'g',n:'Kirschtomaten'},{a:100,u:'g',n:'Oliven'},{a:4,u:'EL',n:'Olivenöl'}],st:['Nudeln kochen, abkühlen','Gurke und Tomaten würfeln','Feta in Würfel','Oliven halbiert','Alles vermengen','Dressing: Olivenöl, Zitronensaft, Oregano']},
+{id:'c11',n:'Bäuerlicher Kartoffelsalat',c:'Salate',p:6,ing:[{a:1000,u:'g',n:'Kartoffeln (festkochend)'},{a:2,u:'Stk',n:'Zwiebel'},{a:200,u:'ml',n:'Rinderbrühe'},{a:3,u:'EL',n:'Essig'},{a:1,u:'EL',n:'Senf'},{a:100,u:'g',n:'Sonnentrockentomaten'}],st:['Kartoffeln in Schalen kochen','Zwiebel fein würfeln','Brühe mit Essig und Senf aufkochen','Heiß über die warmen Kartoffeln','Tomaten und Schnittlauch','Warm servieren!']},
+{id:'c12',n:'Crepes mit Nutella',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Mehl'},{a:3,u:'Stk',n:'Eier'},{a:500,u:'ml',n:'Milch'},{a:2,u:'EL',n:'Zucker'},{a:2,u:'EL',n:'Butter'},{a:200,u:'g',n:'Nutella'}],st:['Mehl, Eier, Milch, Zucker verrühren','15min ruhen lassen','In beschichteter Pfanne hauchdünn backen','Mit Nutella bestreichen','Zusammenklappen','Mit Puderzucker']},
+{id:'c13',n:'Flammkuchen',c:'Hauptgerichte',p:4,ing:[{a:300,u:'g',n:'Mehl'},{a:200,u:'g',n:'Joghurt'},{a:200,u:'ml',n:'Sahne'},{a:200,u:'g',n:'Quark'},{a:150,u:'g',n:'Speck'},{a:2,u:'Stk',n:'Zwiebeln'}],st:['Teig: Mehl, Joghurt, Ei, Salz','Dünn ausrollen','Sahne, Quark, Ei verquirlen','Darauf verteilen','Speckwürfel und Zwiebelringel','250°C 10min']},
+{id:'c14',n:'Bratreis',c:'Hauptgerichte',p:2,ing:[{a:400,u:'g',n:'gekochter Reis (vom Vortag)'},{a:2,u:'Stk',n:'Eier'},{a:100,u:'g',n:'Erbsen'},{a:1,u:'Stk',n:'Karotte'},{a:3,u:'EL',n:'Sojasoße'},{a:1,u:'EL',n:'Sesamöl'}],st:['Reis vom Vortag verwenden','Gemüse klein schneiden','Eier verquirlt, in Wok braten','Gemüse hinzufügen','Reis dazu, alles woken','Sojasoße und Sesamöl']},
+{id:'c15',n:'Pancakes',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Mehl'},{a:300,u:'ml',n:'Milch'},{a:2,u:'Stk',n:'Eier'},{a:2,u:'EL',n:'Zucker'},{a:2,u:'TL',n:'Backpulver'},{a:100,u:'ml',n:'Ahornsirup'}],st:['Trockene Zutaten mischen','Milch und Eier dazu','Nur kurz rühren (Knöckel ok!)','In Butter goldbraun backen','Mit Ahornsirup und Beeren']},
+{id:'c16',n:'Thunfisch-Pasta',c:'Hauptgerichte',p:2,ing:[{a:250,u:'g',n:'Pasta'},{a:1,u:'Dose',n:'Thunfisch'},{a:200,u:'g',n:'Kirschtomaten'},{a:2,u:'Zehen',n:'Knoblauch'},{a:3,u:'EL',n:'Olivenöl'},{a:1,u:'EL',n:'Zitronensaft'}],st:['Pasta kochen','Knoblauch dünn schneiden','In Olivenöl anbraten','Thunfisch und Tomaten','Pasta ins Öl','Zitronensaft, Parmesan']},
+{id:'c17',n:'Quiche Lorraine',c:'Hauptgerichte',p:6,ing:[{a:1,u:'Paket',n:'Mürbeteig'},{a:200,u:'g',n:'Speck'},{a:4,u:'Stk',n:'Eier'},{a:300,u:'ml',n:'Sahne'},{a:100,u:'g',n:'Emmentaler'},{a:1,u:'Prise',n:'Muskatnuss'}],st:['Teig auslegen','Speck würfeln, braten','Eier mit Sahne verquirlen','Muskat, Salz, Pfeffer','Speck und Käse','180°C 35min']},
+{id:'c18',n:'Milchreis mit Zimt',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Milchreis'},{a:1,u:'L',n:'Vollmilch'},{a:1,u:'Stk',n:'Zitrone'},{a:60,u:'g',n:'Zucker'},{a:1,u:'Stange',n:'Zimt'}],st:['Alle Zutaten Topf','50min bei kleiner Hitze','Ständig rühren','In Förmchen verteilen','Kalt stellen','Mit Zimt und Rosinen']},
+{id:'c19',n:'Belgische Waffeln',c:'Desserts',p:4,ing:[{a:250,u:'g',n:'Mehl'},{a:300,u:'ml',n:'Milch'},{a:125,u:'g',n:'Butter'},{a:4,u:'Stk',n:'Eier'},{a:3,u:'EL',n:'Zucker'},{a:50,u:'g',n:'Puderzucker'}],st:['Butter schmelzen und abkühlen','Mehl, Milch, Eigelb, Zucker','Eischnee unterheben','Waffeleisen vorheizen','Waffeln backen','Mit Puderzucker und Beeren']},
+{id:'c20',n:'Knoblauchbrot',c:'Snacks',p:4,ing:[{a:1,u:'Laib',n:'Ciabatta'},{a:100,u:'g',n:'Butter'},{a:4,u:'Zehen',n:'Knoblauch'},{a:1,u:'Bund',n:'Petersilie'},{a:50,u:'g',n:'Parmesan'}],st:['Butter mit Knoblauch und Petersilie','Ciabatta aufschneiden','Butter darauf','Parmesan darüber','180°C 10min backen']},
+{id:'c21',n:'Gyros mit Pita',c:'Hauptgerichte',p:4,ing:[{a:500,u:'g',n:'Schweinefleisch'},{a:4,u:'Stk',n:'Pita-Brot'},{a:200,u:'g',n:'Joghurt'},{a:1,u:'Stk',n:'Gurke'},{a:2,u:'Stk',n:'Tomate'},{a:1,u:'Stk',n:'Zwiebel'}],st:['Fleinsel würfeln, griechisch würzen','Grillen oder in der Pfanne','Joghurt-Sauce mit Knoblauch','Gemüse schneiden','Pita erhitzen','Alles zusammen']},
+{id:'c22',n:'Kartoffelgratin',c:'Beilagen',p:6,ing:[{a:1000,u:'g',n:'Kartoffeln'},{a:300,u:'ml',n:'Sahne'},{a:3,u:'Zehen',n:'Knoblauch'},{a:150,u:'g',n:'Gruyère oder Emmentaler'},{a:1,u:'Prise',n:'Muskatnuss'}],st:['Kartoffeln dünn schneiden','Auflaufform knoblen','Schichten: Kartoffeln, Sahne, Käse','Wiederholen','180°C 45min, goldbraun']},
+{id:'c23',n:'Selbstgemachte Spätzle',c:'Beilagen',p:4,ing:[{a:300,u:'g',n:'Mehl'},{a:3,u:'Stk',n:'Eier'},{a:100,u:'ml',n:'Wasser'},{a:1,u:'Prise',n:'Salz'},{a:50,u:'g',n:'Butter'}],st:['Teig: Mehl, Eier, Wasser, Salz','15min ruhen','Spätzlepresse oder Reibe','In Salzwasser kochen','Aufschwimmend heraus','Mit Butter und Schnittlauch']},
+{id:'c24',n:'Kaiserschmarrn',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Mehl'},{a:4,u:'Stk',n:'Eier'},{a:300,u:'ml',n:'Milch'},{a:3,u:'EL',n:'Zucker'},{a:1,u:'Stk',n:'Zitrone'}],st:['Teig: Mehl, Eier, Milch, Zucker','In beschichteter Pfanne','Wenn Blasen Aufsteigen -> in Stücke reißen','In Butter ausbacken','Mit Apfelmost oder Zwetschgenröster']},
+{id:'c25',n:'Dampfnudeln',c:'Desserts',p:4,ing:[{a:300,u:'g',n:'Mehl'},{a:250,u:'ml',n:'Milch lauwarm'},{a:42,u:'g',n:'Hefe'},{a:50,u:'g',n:'Zucker'},{a:50,u:'g',n:'Butter'}],st:['Teig: Mehl, Milch, Hefe, Zucker','2 Std. gehen lassen','Formen, weitere 50min','In Butterschmalz goldbraun','Mit Vanillesoße und Puderzucker']},
+{id:'c26',n:'Wok-Gemüse mit Hähnchen',c:'Hauptgerichte',p:4,ing:[{a:500,u:'g',n:'Hähnchenbrust'},{a:2,u:'Stk',n:'Paprika'},{a:1,u:'Stk',n:'Zucchini'},{a:200,u:'g',n:'Champignons'},{a:150,u:'g',n:'Zuckerschoten'},{a:4,u:'EL',n:'Sojasoße'}],st:['Wok sehr heiß machen','Hähnchen würfeln, braten','Gemüse in Streifen','Nacheinander in Wok','Sojasoße','Mit Basmatireis']},
+{id:'c27',n:'Gebratener Lachs',c:'Hauptgerichte',p:4,ing:[{a:4,u:'Stk',n:'Lachsfilet'},{a:2,u:'Stk',n:'Zitrone'},{a:1,u:'Bund',n:'Dill'},{a:200,u:'ml',n:'Sahne'},{a:600,u:'g',n:'Kartoffeln'}],st:['Lachs salzen, pfeffern','In Pfanne von einer Seite 4min','Wenden, 3min','Sahne mit Dill und Zitrone','Kartoffeln kochen','Mit Sauce']},
+{id:'c28',n:'Hummus',c:'Snacks',p:4,ing:[{a:2,u:'Dose',n:'Kichererbsen'},{a:4,u:'EL',n:'Tahini'},{a:1,u:'Stk',n:'Zitrone'},{a:2,u:'Zehen',n:'Knoblauch'},{a:3,u:'EL',n:'Olivenöl'}],st:['Kichererbsen abtropfen','Alle Zutaten Mixer','Cremig mixen','Mit Olivenöl und Paprika','Mit Pita-Brot']},
+{id:'c29',n:'Gemüsesuppe',c:'Suppen',p:6,ing:[{a:300,u:'g',n:'Karotten'},{a:1,u:'Stk',n:'Sellerie'},{a:400,u:'g',n:'Kartoffeln'},{a:200,u:'g',n:'Erbsen'},{a:1.5,u:'L',n:'Brühe'}],st:['Gemüse klein schneiden','In Brühe','25min köcheln','Mit Kräutern','Mit Brot']},
+{id:'c30',n:'Birchermüslí',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Haferflocken'},{a:300,u:'g',n:'Joghurt'},{a:2,u:'Stk',n:'Äpfel'},{a:50,u:'g',n:'Nüsse'},{a:2,u:'EL',n:'Zitronensaft'}],st:['Flocken mit Joghurt','Äpfel reiben, Zitronensaft','Nüsse hacken','Vermengen','Kalt stellen','Mit Obst und Honig']},
+{id:'c31',n:'Pasta Aglio e Olio',c:'Hauptgerichte',p:2,ing:[{a:200,u:'g',n:'Spaghetti'},{a:6,u:'Zehen',n:'Knoblauch'},{a:4,u:'EL',n:'Olivenöl'},{a:1,u:'TL',n:'Chili-Flocken'},{a:1,u:'Bund',n:'Petersilie'}],st:['Pasta kochen','Knoblauch dünn','In Öl goldbraun','Chili','Pasta ins Öl','Petersilie, Pasta-Wasser']},
+{id:'c32',n:'Pasta Cacio e Pepe',c:'Hauptgerichte',p:2,ing:[{a:200,u:'g',n:'Spaghetti'},{a:100,u:'g',n:'Pecorino Romano'},{a:2,u:'TL',n:'Schwarzer Pfeffer'}],st:['Pfeffer rösten','Pasta kochen','Pasta-Wasser aufheben','Pecorino gerieben','Pasta + Pfefferswasser + Käse','Schnell vermengen, cremig']},
+{id:'c33',n:'Deutsche Pfannkuchen',c:'Desserts',p:4,ing:[{a:250,u:'g',n:'Mehl'},{a:500,u:'ml',n:'Milch'},{a:3,u:'Stk',n:'Eier'},{a:2,u:'EL',n:'Zucker'},{a:2,u:'EL',n:'Butter'}],st:['Teig: Mehl, Milch, Eier, Zucker','15min ruhen','In Butter backen','Mit Zitronensaft und Zucker','Mit Apfelmus']},
+{id:'c34',n:'Reispfanne mit Gemüse',c:'Hauptgerichte',p:4,ing:[{a:300,u:'g',n:'Basmati-Reis'},{a:2,u:'Stk',n:'Paprika'},{a:1,u:'Stk',n:'Zucchini'},{a:300,u:'g',n:'Kürbis'},{a:2,u:'TL',n:'Curry'}],st:['Reis kochen','Gemüse würfeln','In Öl anbraten','Curry und Kokosmilch','Reis dazu','Mit Koriander']},
+{id:'c35',n:'Bananenbrot',c:'Desserts',p:8,ing:[{a:4,u:'Stk',n:'Bananen (reif)'},{a:250,u:'g',n:'Mehl'},{a:150,u:'g',n:'Zucker'},{a:2,u:'Stk',n:'Eier'},{a:75,u:'g',n:'Butter'}],st:['Bananen zerdrücken','Butter schmelzen','Alle Zutaten','Kastenform','180°C 50min','Abkühlen']},
+{id:'c36',n:'Grüner Smoothie',c:'Getränke',p:2,ing:[{a:100,u:'g',n:'Spinat'},{a:2,u:'Stk',n:'Banane'},{a:1,u:'Stk',n:'Apfel'},{a:1,u:'Stück',n:'Ingwer'},{a:300,u:'ml',n:'Wasser'}],st:['Alle Zutaten Mixer','Höchste Stufe','Sofort trinken']},
+{id:'c37',n:'Omelett mit Gemüse',c:'Hauptgerichte',p:2,ing:[{a:4,u:'Stk',n:'Eier'},{a:1,u:'Stk',n:'Paprika'},{a:0.5,u:'Stk',n:'Zwiebel'},{a:150,u:'g',n:'Champignons'},{a:50,u:'g',n:'Käse'}],st:['Gemüse klein','Eier verquirlt','Pfanne heiß','Gemüse anbraten','Eierdrang darüber','Käse, falten']},
+{id:'c38',n:'Kürbissuppe',c:'Suppen',p:4,ing:[{a:800,u:'g',n:'Kürbis (Hokkaido)'},{a:1,u:'Stk',n:'Zwiebel'},{a:1,u:'Stk',n:'Kartoffel'},{a:500,u:'ml',n:'Brühe'},{a:100,u:'ml',n:'Sahne'}],st:['Kürbis würfeln','Zwiebel anbraten','Kürbis und Kartoffel','Brühe dazu','20min','Pürieren, Sahne']},
+{id:'c39',n:'Linsensuppe',c:'Suppen',p:6,ing:[{a:300,u:'g',n:'Rote Linsen'},{a:1,u:'Stk',n:'Zwiebel'},{a:2,u:'Stk',n:'Karotten'},{a:400,u:'g',n:'Tomaten'},{a:1.5,u:'L',n:'Brühe'}],st:['Zwiebel, Karotten','Linsen, Tomaten','Brühe','20min','Mit Zitrone und Brot']},
+{id:'c40',n:'Spaghetti Bolognese',c:'Hauptgerichte',p:4,ing:[{a:400,u:'g',n:'Spaghetti'},{a:400,u:'g',n:'Rinderhack'},{a:400,u:'g',n:'Tomaten'},{a:1,u:'Stk',n:'Zwiebel'},{a:2,u:'Zehen',n:'Knoblauch'}],st:['Zwiebel, Knoblauch','Hack braten','Tomaten','1Std köcheln','Pasta','Parmesan']},
+{id:'c41',n:'Currywurst',c:'Hauptgerichte',p:4,ing:[{a:4,u:'Stk',n:'Currywurst'},{a:400,u:'g',n:'Ketchup'},{a:2,u:'EL',n:'Tomatenmark'},{a:2,u:'TL',n:'Currypulver'},{a:2,u:'Stk',n:'Brötchen'}],st:['Wurst braten oder grillen','Ketchup, Tomatenmark, Curry','Sauce 10min','Wurst schneiden','Über Sauce','Mit Pommes']},
+{id:'c42',n:'Kartoffelpuffer',c:'Hauptgerichte',p:4,ing:[{a:800,u:'g',n:'Kartoffeln'},{a:2,u:'Stk',n:'Eier'},{a:3,u:'EL',n:'Mehl'},{a:1,u:'TL',n:'Muskatnuss'},{a:50,u:'ml',n:'Wasser'}],st:['Kartoffeln reiben','Wasser auspressen','Eier, Mehl, Muskat','In Öl ausbacken','Mit Apfelmus oder Sauerrahm']},
+{id:'c43',n:'Gemüse-Curry',c:'Hauptgerichte',p:4,ing:[{a:1,u:'Kürbis',n:'Kürbis (Hokkaido)'},{a:2,u:'Stk',n:'Süße Kartoffel'},{a:1,u:'Dose',n:'Kokosmilch'},{a:3,u:'EL',n:'Currypaste (gelb)'},{a:2,u:'Stk',n:'Paprika'}],st:['Gemüse würfeln','Currypaste in Öl','Gemüse, Kokosmilch','30min','Mit Reis, Koriander']},
+{id:'c44',n:'Griechischer Salat',c:'Salate',p:4,ing:[{a:4,u:'Stk',n:'Tomaten'},{a:1,u:'Stk',n:'Gurke'},{a:1,u:'Stk',n:'Paprika'},{a:200,u:'g',n:'Feta'},{a:100,u:'g',n:'Oliven'},{a:4,u:'EL',n:'Olivenöl'}],st:['Groß würfeln','Feta in Block darauf','Oliven','Olivenöl, Oregano']},
+{id:'c45',n:'Schoko-Kuchen (1 Schüssel)',c:'Desserts',p:8,ing:[{a:200,u:'g',n:'Mehl'},{a:200,u:'g',n:'Zucker'},{a:75,u:'g',n:'Kakao'},{a:3,u:'Stk',n:'Eier'},{a:200,u:'ml',n:'Öl'},{a:200,u:'ml',n:'Buttermilch'}],st:['Alle Zutaten Schüssel','Rühren','Form','180°C 35min','Mit Puderzucker']},
+{id:'c46',n:'Pommes aus dem Ofen',c:'Beilagen',p:4,ing:[{a:1000,u:'g',n:'Kartoffeln'},{a:3,u:'EL',n:'Olivenöl'},{a:1,u:'TL',n:'Paprikapulver'},{a:1,u:'TL',n:'Salz'}],st:['Kartoffeln in Stifte','Einbacken, Öl, Gewürz','220°C 25-30min','Wenden nach 15min']},
+{id:'c47',n:'Müsli selbstgemacht',c:'Snacks',p:4,ing:[{a:200,u:'g',n:'Haferflocken'},{a:100,u:'g',n:'Nüsse'},{a:50,u:'g',n:'Rosinen'},{a:3,u:'EL',n:'Honig'},{a:2,u:'EL',n:'Olivenöl'}],st:['Flocken, Nüsse, Rosinen','Honig, Öl','Vermengen','150°C 20min','Abkühlen','Mit Joghurt und Obst']},
+{id:'c48',n:'Panna Cotta',c:'Desserts',p:4,ing:[{a:500,u:'ml',n:'Sahne'},{a:100,u:'g',n:'Zucker'},{a:1,u:'Pkt',n:'Vanille'},{a:10,u:'g',n:'Gelatine'},{a:200,u:'g',n:'Beeren'}],st:['Gelatine einweichen','Sahne, Zucker, Vanille','Erhitzen, Gelatine','In Förmchen','4Std kühl','Mit Beeren']},
+{id:'c49',n:'Falafel',c:'Hauptgerichte',p:4,ing:[{a:400,u:'g',n:'Kichererbsen (getrocknet)'},{a:1,u:'Stk',n:'Zwiebel'},{a:3,u:'Zehen',n:'Knoblauch'},{a:2,u:'TL',n:'Krepput'},{a:1,u:'TL',n:'Kümmel'}],st:['Kichererbsen über Nacht einweichen','Alle Zutaten Mixer','Formen, 30min ruhen','180°C 20min oder frittieren','Mit Tahini-Sauce und Salat']},
+{id:'c50',n:'Vanillepudding',c:'Desserts',p:4,ing:[{a:500,u:'ml',n:'Vollmilch'},{a:1,u:'Schote',n:'Vanille'},{a:4,u:'Eigelb'},{a:80,u:'g',n:'Zucker'},{a:40,u:'g',n:'Speisestärke'}],st:['Milch und Vanille erhitzen','Eigelb, Zucker, Stärke','Unter Rühren aufkochen','In Förmchen','Kühl']},
+{id:'c51',n:'Biergarten-Bratwurst',c:'Hauptgerichte',p:4,ing:[{a:8,u:'Stk',n:'Bratwürste'},{a:4,u:'Stk',n:'Brötchen'},{a:1,u:'Glas',n:'Senf'},{a:1,u:'Glas',n:'Ketchup'},{a:300,u:'g',n:'Krautsalat'}],st:['Bratwürste braten','Brötchen aufbacken','Senf, Ketchup','Krautsalat','Zusammen']},
+{id:'c52',n:'Thailändische Tom Yam Soup',c:'Suppen',p:4,ing:[{a:300,u:'g',n:'Garnelen'},{a:200,u:'ml',n:'Kokosmilch'},{a:3,u:'Stk',n:'Zitronengras'},{a:3,u:'Stk',n:'Kaffirlimetten-Blätter'},{a:3,u:'Stück',n:'Chili'}],st:['Brühe mit Zitronengras','Kokosmilch','Pilze und Garnelen','Limettensaft, Chili','Fischsauce, Palmzucker']},
+{id:'c53',n:'Fladenbrot mit Tomaten',c:'Hauptgerichte',p:4,ing:[{a:300,u:'g',n:'Fladenbrot (Fertig)'},{a:200,u:'g',n:'Creme Fraiche'},{a:4,u:'Stk',n:'Tomaten'},{a:150,u:'g',n:'Mozzarella'},{a:1,u:'Bund',n:'Basilikum'}],st:['Brot belegen','Creme Fraiche','Tomaten, Mozzarella','200°C 10min','Basilikum']},
+{id:'c54',n:'Magerquark mit Obst',c:'Desserts',p:2,ing:[{a:250,u:'g',n:'Magerquark'},{a:2,u:'EL',n:'Honig'},{a:200,u:'ml',n:'Vollmilch'},{a:1,u:'Stk',n:'Banane'},{a:100,u:'g',n:'Beeren'}],st:['Quark mit Milch glattrühren','Honig','Obst darauf','Mit Müsli']},
+{id:'c55',n:'Ofenlachs mit Kartoffeln',c:'Hauptgerichte',p:4,ing:[{a:4,u:'Stk',n:'Lachsfilet'},{a:800,u:'g',n:'Kartoffeln'},{a:2,u:'Stk',n:'Zitrone'},{a:1,u:'Bund',n:'Dill'}],st:['Kartoffeln schneiden','Lachs darauf','Zitrone, Dill, Olivenöl','200°C 25min']},
+{id:'c56',n:'Kartoffel-Waffeln',c:'Hauptgerichte',p:4,ing:[{a:600,u:'g',n:'Kartoffeln (gekocht)'},{a:2,u:'Stk',n:'Eier'},{a:100,u:'g',n:'Mehl'},{a:1,u:'TL',n:'Backpulver'}],st:['Kartoffeln zerdrücken','Eier, Mehl, BP','Ausbacken','Mit Sauerrahm und Schnittlauch']},
+{id:'c57',n:'Baguette mit Belag',c:'Snacks',p:4,ing:[{a:2,u:'Stk',n:'Baguette'},{a:200,u:'g',n:'Tomaten'},{a:200,u:'g',n:'Mozzarella'},{a:1,u:'Bund',n:'Basilikum'},{a:3,u:'EL',n:'Olivenöl'}],st:['Baguette aufschneiden','Tomaten, Mozzarella','Basilikum','200°C 8min','Olivenöl']},
+{id:'c58',n:'Zwiebelkuchen',c:'Hauptgerichte',p:6,ing:[{a:1,u:'Paket',n:'Mürbeteig'},{a:6,u:'Stk',n:'Zwiebeln'},{a:200,u:'ml',n:'Sahne'},{a:200,u:'g',n:'Quark'},{a:150,u:'g',n:'Speck'}],st:['Teig auslegen','Zwiebeln karamellisieren','Sahne, Quark, Ei','Speck darauf','180°C 30min']},
+{id:'c59',n:'Sahnepfannkuchen (süß)',c:'Desserts',p:4,ing:[{a:250,u:'g',n:'Mehl'},{a:500,u:'ml',n:'Milch'},{a:3,u:'Stk',n:'Eier'},{a:2,u:'EL',n:'Zucker'},{a:50,u:'g',n:'Butter'}],st:['Teig rühren','Pfannkuchen backen','Schlagsahne','Mit Zitrone und Zucker','Apfelmus']},
+{id:'c60',n:'Gemüse-Wok Orientalisch',c:'Hauptgerichte',p:4,ing:[{a:500,u:'g',n:'Hähnchen'},{a:300,u:'g',n:'Basmati'},{a:1,u:'Dose',n:'Kichererbsen'},{a:200,u:'ml',n:'Kokosmilch'},{a:2,u:'TL',n:'Krepput'}],st:['Reis kochen','Hähnchen würfeln, braten','Kichererbsen, Kokosmilch','Krepput','Mit Reis, Rosinen, Mandeln']},
+{id:'c61',n:'Kürbis-Kartoffel-Suppe',c:'Suppen',p:6,ing:[{a:800,u:'g',n:'Kürbis'},{a:400,u:'g',n:'Kartoffeln'},{a:1,u:'Stk',n:'Zwiebel'},{a:1,u:'L',n:'Brühe'},{a:100,u:'ml',n:'Sahne'}],st:['Zwiebel, Kürbis, Kartoffel','Brühe, 25min','Pürieren','Sahne','Mit Kürbiskernen']},
+{id:'c62',n:'Gebratene Nudeln',c:'Hauptgerichte',p:4,ing:[{a:400,u:'g',n:'Eiernudeln'},{a:2,u:'Stk',n:'Eier'},{a:3,u:'EL',n:'Sojasoße'},{a:1,u:'Bund',n:'Frühlingszwiebeln'}],st:['Nudeln kochen','Eier verquirlt','Wok heiß','Nudeln, Sojasoße','Frühlingszwiebeln']},
+{id:'c63',n:'Apfelmus',c:'Desserts',p:4,ing:[{a:1,u:'kg',n:'Äpfel (Wikinger)'},{a:100,u:'g',n:'Zucker'},{a:1,u:'TL',n:'Zimt'}],st:['Äpfel schälen, würfeln','Mit wenig Wasser','30min köcheln','Zucker, Zimt','Pürieren oder stumpf']},
+{id:'c64',n:'Quark-Sahne-Torte',c:'Desserts',p:8,ing:[{a:250,u:'g',n:'Mürbeteig'},{a:500,u:'g',n:'Quark'},{a:200,u:'g',n:'Sahne'},{a:100,u:'g',n:'Zucker'},{a:2,u:'Pkt',n:'Sahnesteif'}],st:['Teig auslegen','Quark, Sahne, Zucker, Sahnesteif','Auftragen','2Std kühl','Mit Obst']},
+{id:'c65',n:'Sahnepudding',c:'Desserts',p:4,ing:[{a:500,u:'ml',n:'Vollmilch'},{a:2,u:'Pkt',n:'Sahnepuddingpulver'},{a:100,u:'ml',n:'Schlagobers'},{a:2,u:'EL',n:'Zucker'}],st:['Milch aufkochen','Pudding einrühren','Schlagobers unterheben','In Förmchen','Kühl']},
+{id:'c66',n:'Bratkartoffeln mit Ei',c:'Hauptgerichte',p:4,ing:[{a:800,u:'g',n:'Kartoffeln (festkochend)'},{a:150,u:'g',n:'Speck'},{a:1,u:'Stk',n:'Zwiebel'},{a:4,u:'Stk',n:'Eier'},{a:100,u:'ml',n:'Sahne'}],st:['Kartoffeln kochen und schneiden','Speck würfeln und braten','Zwiebeln dazu','Kartoffeln dazu','Sahne und Eier','Beißen goldbraun']},
+{id:'c67',n:'Tomaten-Mozzarella',c:'Salate',p:4,ing:[{a:6,u:'Stk',n:'Tomaten'},{a:250,u:'g',n:'Mozzarella'},{a:1,u:'Bund',n:'Basilikum'},{a:3,u:'EL',n:'Olivenöl'},{a:1,u:'EL',n:'Balsamico'}],st:['Tomaten und Mozzarella in Scheiben','Abwechselnd anrichten','Basilikumblätter','Olivenöl, Balsamico','Salz, Pfeffer']},
+{id:'c68',n:'Spätzle mit Käseüberzug',c:'Hauptgerichte',p:4,ing:[{a:300,u:'g',n:'Spätzle (selbst gemacht oder fertig)'},{a:200,u:'g',n:'Emmentaler'},{a:50,u:'g',n:'Butter'},{a:2,u:'Stk',n:'Zwiebeln'}],st:['Spätzle kochen','Zwiebeln karamellisieren','Auflaufform mit Spätzlen','Käse darüber','180°C 15min überbacken']},
+{id:'c69',n:'Milchreis mit Zimt und Zucker',c:'Desserts',p:4,ing:[{a:200,u:'g',n:'Milchreis'},{a:1,u:'L',n:'Vollmilch'},{a:60,u:'g',n:'Zucker'},{a:1,u:'Stange',n:'Zimt'},{a:1,u:'Stk',n:'Zitrone (Abrieb)'}],st:['Milch, Reis, Zimt, Zitronenabrieb','50min bei kleiner Hitze','Ständig rühren','In Förmchen verteilen','Mit Zimt und Zucker']},
+{id:'c70',n:'Pute mit Preiselbeeren',c:'Hauptgerichte',p:4,ing:[{a:500,u:'g',n:'Putenbrust'},{a:100,u:'g',n:'Preiselbeeren'},{a:1,u:'Stk',n:'Zwiebel'},{a:200,u:'ml',n:'Brühe'},{a:1,u:'TL',n:'Senf'}],st:['Pute braten','Zwiebeln dazu','Preiselbeeren, Brühe','Senf','Scheiben, Sauce']},
+{id:'c71',n:'Ravioli mit Salbeibutter',c:'Hauptgerichte',p:4,ing:[{a:500,u:'g',n:'Ravioli (Käse oder Fleisch)'},{a:100,u:'g',n:'Butter'},{a:1,u:'Bund',n:'Salbei'},{a:50,u:'g',n:'Parmesan'}],st:['Ravioli kochen','Butter braun machen','Salbdblätter hinein','Ravioli in Butter','Parmesan darauf']},
+{id:'c72',n:'Ofenkartoffel mit Kräuterquark',c:'Hauptgerichte',p:4,ing:[{a:800,u:'g',n:'Kartoffeln (groß)'},{a:250,u:'g',n:'Quark'},{a:1,u:'Bund',n:'Schnittlauch'},{a:1,u:'Bund',n:'Sauerampfer'},{a:2,u:'EL',n:'Sauercreme'}],st:['Kartoffeln waschen, einwickeln','200°C 60-90min','Quark, Kräuter, Sauercreme','Kartoffeln aufschneiden','Mit Quark servieren']},
+{id:'c73',n:'Rouladen mit Senf',c:'Hauptgerichte',p:4,ing:[{a:4,u:'Stck',n:'Rouladenspieß (Oberschicht)'},{a:4,u:'Stck',n:'Speck'},{a:4,u:'Stck',n:'Cornichons'},{a:4,u:'Stck',n:'Senf'},{a:4,u:'Stck',n:'Salz und Pfeffer'}],st:['Fleinsel breit klopfen','Senf, Speck, Cornichon','Aufrollen, zusammenbinden','Anbraten, ablöschen','Mit Brühe 1,5Std','Mit Rotkohl und Klößen']},
+{id:'c74',n:'Blini mit Sauerrahm',c:'Hauptgerichte',p:4,ing:[{a:250,u:'ml',n:'Milch'},{a:2,u:'Stk',n:'Eier'},{a:150,u:'g',n:'Mehl'},{a:1,u:'TL',n:'Zucker'},{a:200,u:'ml',n:'Sauerrahm'}],st:['Teig: Milch, Eier, Mehl, Zucker','15min ruhen','In Butter kleine Pfannkuchen','Mit Sauerrahm','Mit Lachs oder Kaviar']},
+{id:'c75',n:'Schnell-Pasta Pesto',c:'Hauptgerichte',p:2,ing:[{a:200,u:'g',n:'Pasta'},{a:4,u:'EL',n:'Pesto gen'},{a:100,u:'g',n:'Kirschtomaten'},{a:50,u:'g',n:'Kichererbsen'},{a:3,u:'EL',n:'Parmesan'}],st:['Pasta kochen','Tomaten halbieren','Kichererbsen abtropfen','Pesto unterrühren','Parmesan']},
+{id:'c76',n:'Kartoffelknödel',c:'Beilagen',p:4,ing:[{a:500,u:'g',n:'Semmelbrösel (alt)'},{a:250,u:'ml',n:'Milch'},{a:2,u:'Stk',n:'Eier'},{a:1,u:'TL',n:'Muskatnuss'}],st:['Brösel mit warmer Milch','Eier, Muskat','30min quellen','Knödel formen','In Salzwasser 15min (nicht kochen!)']},
+{id:'c77',n:'Zucchinipfanne',c:'Hauptgerichte',p:4,ing:[{a:3,u:'Stk',n:'Zucchini'},{a:2,u:'Stk',n:'Paprika'},{a:1,u:'Stk',n:'Zwiebel'},{a:200,u:'g',n:'Feta'},{a:3,u:'EL',n:'Olivenöl'}],st:['Zucchini in Scheiben','Paprika, Zwiebel','In Öl braten','Feta darüber','Mit Fladenbrot']},
+{id:'c78',n:'Schokokuss-Torte',c:'Desserts',p:8,ing:[{a:200,u:'g',n:'Schokolade (Zartbitter)'},{a:200,u:'g',n:'Butter'},{a:200,u:'g',n:'Zucker'},{a:4,u:'Stk',n:'Eier'},{a:50,u:'g',n:'Mehl'}],st:['Schokolade und Butter schmelzen','Eier und Zucker','Mehl','Kuchenform','180°C 25min','Abkühlen, mit Puderzucker']},
+{id:'c79',n:'Eintopf',c:'Suppen',p:6,ing:[{a:500,u:'g',n:'Kartoffeln'},{a:300,u:'g',n:'Karotten'},{a:2,u:'Stk',n:'Wurst'},{a:1,u:'Dose',n:'Tomaten'},{a:1,u:'L',n:'Brühe'}],st:['Alles klein schneiden','Brühe dazu','45min köcheln','Mit Brot']},
+{id:'c80',n:'Apfel-Walnuss-Salat',c:'Salate',p:4,ing:[{a:4,u:'Stk',n:'Äpfel'},{a:100,u:'g',n:'Walnüsse'},{a:100,u:'g',n:'Rucola'},{a:50,u:'ml',n:'Essig'},{a:3,u:'EL',n:'Olivenöl'}],st:['Äpfel in Stifte','Walnüsse rösten','Rucola','Dressing: Essig, Öl, Senf','Walnüsse darauf']}];
+sd(K.R,RC);
+}
+function checkPassword(){
+const pw=document.getElementById('pw-input').value;
+const hash=CryptoJS.SHA256(pw).toString();
+if(hash===gw){document.getElementById('pw-gate').style.display='none';document.getElementById('app').style.display='block';localStorage.setItem('kv_auth','1');refreshAll();}
+else{document.getElementById('pw-error').style.display='block';}}
+if(localStorage.getItem('kv_auth')==='1'){document.getElementById('pw-gate').style.display='none';document.getElementById('app').style.display='block';setTimeout(refreshAll,100);}
+function logout(){localStorage.removeItem('kv_auth');location.reload();}
+function showSection(name,el){
+document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+document.getElementById('sec-'+name).classList.add('active');
+document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'));
+if(el)el.classList.add('active');else document.querySelector('nav a:first-child').classList.add('active');
+if(name==='vorrat')renderProducts();if(name==='rezepte')renderRecipes();if(name==='einkauf')renderShoppingList();if(name==='plan')renderWeekPlan();if(name==='einstellungen')renderSettings();}
+function openAddProduct(){
+editId=null;document.getElementById('mpTitle').textContent='Produkt hinzufügen';document.getElementById('deleteProdBtn').style.display='none';
+['prodName','prodManufacturer','prodSize','prodMinQty','prodExpiry','prodBarcode','prodNotes'].forEach(id=>document.getElementById(id).value='');
+document.getElementById('prodQty').value='1';document.getElementById('prodUnit').value='Stk';populateSelects();openModal('modalProduct');}
+function editProduct(id){const p=PD.find(x=>x.id===id);if(!p)return;editId=id;
+document.getElementById('mpTitle').textContent='Produkt bearbeiten';document.getElementById('deleteProdBtn').style.display='block';
+document.getElementById('prodName').value=p.name||'';document.getElementById('prodManufacturer').value=p.manufacturer||'';
+document.getElementById('prodSize').value=p.size||'';document.getElementById('prodQty').value=p.qty||1;
+document.getElementById('prodUnit').value=p.unit||'Stk';document.getElementById('prodMinQty').value=p.minQty||1;
+document.getElementById('prodExpiry').value=p.expiry||'';document.getElementById('prodBarcode').value=p.barcode||'';
+document.getElementById('prodNotes').value=p.notes||'';populateSelects();
+document.getElementById('prodCategory').value=p.category||'';document.getElementById('prodStorage').value=p.storage||'';openModal('modalProduct');}
+function saveProduct(){
+const name=document.getElementById('prodName').value.trim();if(!name){alert('Bitte Name eingeben');return;}
+const obj={id:editId||'p'+Date.now(),name:name,manufacturer:document.getElementById('prodManufacturer').value.trim(),size:document.getElementById('prodSize').value.trim(),category:document.getElementById('prodCategory').value,storage:document.getElementById('prodStorage').value,qty:parseFloat(document.getElementById('prodQty').value)||1,unit:document.getElementById('prodUnit').value,minQty:parseFloat(document.getElementById('prodMinQty').value)||1,expiry:document.getElementById('prodExpiry').value,barcode:document.getElementById('prodBarcode').value.trim(),notes:document.getElementById('prodNotes').value.trim()};
+if(editId){const i=PD.findIndex(x=>x.id===editId);if(i>=0)PD[i]=obj;}else PD.push(obj);
+sd(K.P,PD);closeModal('modalProduct');renderProducts();}
+function deleteProduct(){if(!editId)return;if(!confirm('Löschen?'))return;PD=PD.filter(x=>x.id!==editId);sd(K.P,PD);closeModal('modalProduct');renderProducts();}
+function incQty(id){const p=PD.find(x=>x.id===id);if(p){p.qty++;sd(K.P,PD);renderProducts();}}
+function decQty(id){const p=PD.find(x=>x.id===id);if(p&&p.qty>0){p.qty--;sd(K.P,PD);renderProducts();}}
+function expiryBadge(date){if(!date)return'';const d=new Date(date),n=new Date(),diff=(d-n)/(864e5);if(diff<0)return'<span class="badge badge-danger">❌ Abgelaufen</span>';if(diff<=7)return'<span class="badge badge-warning">⚠️ '+Math.ceil(diff)+'d</span>';return'<span class="badge badge-success">✅ '+Math.ceil(diff)+'d</span>';}
+function filterProducts(q){renderProducts(q?.toLowerCase()||'');}
+function renderProducts(q){q=q||'';const list=PD.filter(p=>!q||p.name.toLowerCase().includes(q)||(p.manufacturer&&p.manufacturer.toLowerCase().includes(q)));
+document.getElementById('products-list').innerHTML=list.length?list.map(p=>{const s=ST.find(x=>x.id===p.storage);const c=CA.find(x=>x===p.category);
+return`<div class="card"><div style="display:flex;justify-content:space-between;align-items:start;gap:12px"><div style="flex:1;min-width:0"><h3>${p.name}</h3><div style="display:flex;gap:6px;flex-wrap:wrap;margin:4px 0">${p.manufacturer?'<span class="badge" style="background:#f0f0f0;">'+p.manufacturer+'</span>':''}${p.size?'<span class="badge" style="background:#f0f0f0;">'+p.size+'</span>':''}${c?'<span class="badge" style="background:#e3f2fd;color:#1565c0;">'+c+'</span>':''}${s?'<span class="badge" style="background:#f3e5f5;color:#7b1fa2;">'+s.i+' '+s.n+'</span>':''}${expiryBadge(p.expiry)}</div></div><div style="display:flex;gap:6px;align-items:center;flex-shrink:0"><button class="qty-btn" onclick="decQty('${p.id}')">−</button><span style="font-weight:700;min-width:35px;text-align:center;">${p.qty} <small>${p.unit}</small></span><button class="qty-btn" onclick="incQty('${p.id}')">+</button><button class="btn btn-primary" onclick="editProduct('${p.id}')" style="padding:8px 12px;font-size:13px;border-radius:8px">✏️</button><button class="btn btn-primary" onclick="openScannerFor('${p.id}')" style="padding:8px 12px;font-size:13px;border-radius:8px">📷</button></div></div></div>`}).join(''):'<p style="text-align:center;color:#999;padding:40px">Keine Produkte. Füge etwas hinzu! 🍽️</p>';}
+function openScannerFor(productId){editId=productId;openModal('modalScanner');setTimeout(initScanner,300);}
+async function initScanner(){try{if(scan){scan.clear();scan=null;}scan=new Html5Qrcode("scanner-box");const cams=await Html5Qrcode.getCameras();if(!cams.length){document.getElementById('scanResult').textContent='Keine Kamera gefunden';return;}curCam=cams[0].id;document.getElementById('scanner-box').innerHTML='';await scan.start(curCam,{fps:10,qrbox:250},decoded=>{document.getElementById('scanResult').textContent='✅ '+decoded;handleScan(decoded);},()=>{});}catch(e){document.getElementById('scanner-box').innerHTML='❌ '+e.message;}}
+function closeScanner(){if(scan){scan.stop().then(()=>{scan.clear();scan=null;}).catch(()=>{});}closeModal('modalScanner');}
+async function handleScan(barcode){closeScanner();const code=barcode.replace(/[^0-9]/g,'');if(code.length<8){alert('Barcode zu kurz ('+code.length+' Ziffern)');openAddProduct();document.getElementById('prodBarcode').value=barcode;return;}
+try{const r=await fetch('https://world.openfoodfacts.org/api/v2/product/'+code+'.json');const d=await r.json();if(d.status===1&&d.product){const p=d.product;document.getElementById('prodName').value=p.product_name||'';document.getElementById('prodManufacturer').value=p.brands||'';document.getElementById('prodSize').value=p.quantity||'';document.getElementById('prodBarcode').value=barcode;}openAddProduct();}catch(e){openAddProduct();document.getElementById('prodBarcode').value=barcode;}}
+function renderRecipes(q){q=q||'';document.getElementById('recipes-list').innerHTML=RC.length?RC.map(r=>`<div class="card" onclick="showRecipe('${r.id}')" style="cursor:pointer"><h3>${r.n}</h3><small>${r.c} · ${r.p} Portionen · ${r.ing.length} Zutaten</small></div>`).join(''):'<p style="text-align:center;color:#999;padding:40px">Keine Rezepte.</p>';}
+function showRecipe(id){const r=RC.find(x=>x.id===id);if(!r)return;document.getElementById('recipe-detail').innerHTML=`<h2 style="margin-bottom:4px">${r.n}</h2><p style="color:#666;margin-bottom:16px">${r.c} · ${r.p} Portionen</p><h3 style="margin-bottom:8px">📝 Zutaten</h3><ul style="margin-bottom:16px;padding-left:20px">${r.ing.map(i=>`<li style="padding:4px 0">${i.a} ${i.u} ${i.n}</li>`).join('')}</ul><h3 style="margin-bottom:8px">👨‍🍳 Zubereitung</h3><ol style="margin-bottom:16px;padding-left:20px">${r.st.map(s=>`<li style="padding:6px 0">${s}</li>`).join('')}</ol><button class="btn btn-primary" onclick="addRecToShop('${r.id}')" style="width:100%">🛒 Zutaten auf Einkaufsliste</button>`;openModal('modalRecipe');}
+function addRecToShop(id){const r=RC.find(x=>x.id===id);if(!r)return;r.ing.forEach(i=>{const ex=SH.find(x=>x.n===i.n&&x.u===i.u);if(ex)ex.q+=i.a;else SH.push({id:'s'+Date.now()+Math.random().toString(36).substr(2,5),n:i.n,q:i.a,u:i.u,c:false});});sd(K.SH,SH);renderShoppingList();alert(r.n+' Zutaten hinzugefügt!');}
+function openAddRecipe(){['recName','recIngredients','recSteps'].forEach(id=>document.getElementById(id).value='');document.getElementById('recPortions').value='4';openModal('modalNewRecipe');}
+function saveNewRecipe(){const n=document.getElementById('recName').value.trim();if(!n){alert('Name fehlt');return;}
+const ings=document.getElementById('recIngredients').value.trim().split('\n').filter(l=>l.trim()).map(l=>{const parts=l.trim().split(/\s+/);return{a:parseFloat(parts[0])||1,u:parts[1]||'Stk',n:parts.slice(2).join(' ')||'Unbekannt'};});
+const steps=document.getElementById('recSteps').value.trim().split('\n').filter(l=>l.trim());
+RC.push({id:'r'+Date.now(),n:n,c:document.getElementById('recCategory').value,p:parseInt(document.getElementById('recPortions').value)||4,ing:ings,st:steps});sd(K.R,RC);closeModal('modalNewRecipe');renderRecipes();}
+function renderShoppingList(){const active=SH.filter(x=>!x.c),done=SH.filter(x=>x.c);
+document.getElementById('shopping-list').innerHTML=`${active.map(x=>`<div class="shopping-item" onclick="toggleItem('${x.id}')"><div style="display:flex;align-items:center;gap:12px;flex:1"><input type="checkbox" onclick="event.stopPropagation();toggleItem('${x.id}')" style="width:24px;height:24px;cursor:pointer;accent-color:#4A90D9"><span style="cursor:pointer">${x.q} ${x.u} ${x.n}</span></div><button class="btn btn-danger" onclick="event.stopPropagation();removeItem('${x.id}')" style="padding:6px 10px;font-size:12px">🗑️</button></div>`).join('')}
+${done.length?'<h3 style="margin:16px 0 8px;color:#999;font-size:14px">Abgehakt ('+done.length+')</h3>'+done.map(x=>`<div class="shopping-item" style="opacity:0.5"><span>☑️ ${x.q} ${x.u} ${x.n}</span><button class="btn btn-danger" onclick="removeItem('${x.id}')" style="padding:6px 10px;font-size:12px">🗑️</button></div>`).join(''):''}
+${!active.length&&!done.length?'<p style="text-align:center;color:#999;padding:40px">Einkaufsliste leer 🛒</p>':''}`;}
+function openAddShoppingItem(){openModal('modalShopping');}
+function addShoppingItem(){const n=document.getElementById('shopName').value.trim();if(!n){alert('Name fehlt');return;}
+SH.push({id:'s'+Date.now()+Math.random().toString(36).substr(2,5),n:n,q:parseFloat(document.getElementById('shopQty').value)||1,u:document.getElementById('shopUnit').value,c:false});
+sd(K.SH,SH);closeModal('modalShopping');document.getElementById('shopName').value='';renderShoppingList();}
+function toggleItem(id){const x=SH.find(s=>s.id===id);if(x){x.c=!x.c;sd(K.SH,SH);renderShoppingList();}}
+function removeItem(id){SH=SH.filter(s=>s.id!==id);sd(K.SH,SH);renderShoppingList();}
+function clearShopping(){if(!confirm('Abgehakte entfernen?'))return;SH=SH.filter(s=>!s.c);sd(K.SH,SH);renderShoppingList();}
+const days=['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'];
+function renderWeekPlan(){if(!WP.length)WP=[null,null,null,null,null,null,null];
+document.getElementById('week-plan').innerHTML=days.map((d,i)=>`<div class="card" style="padding:12px;margin-bottom:8px"><h3 style="font-size:16px;margin-bottom:8px">${d}</h3>${WP[i]?`<a style="color:#4A90D9;text-decoration:none;cursor:pointer;font-size:15px" onclick="showRecipe('${WP[i]}')">${RC.find(r=>r.id===WP[i])?.n||'Unbekannt'}</a>`:'<p style="color:#999;font-size:14px">Nicht geplant</p>'}<button class="btn btn-primary" onclick="pickRecipe(${i})" style="margin-top:8px;font-size:13px">📅 Planen</button></div>`).join('');}
+function pickRecipe(idx){const opts=RC.map(r=>'<option value="'+r.id+'">'+r.n+'</option>').join('');
+document.getElementById('recipe-pick-list').innerHTML='<select id="rpick" style="margin-bottom:12px">'+opts+'</select>';
+document.getElementById('modalRecipePick').classList.add('active');window._pickIdx=idx;}
+function saveDayPlan(){const sel=document.getElementById('rpick');WP[window._pickIdx]=sel.value;sd(K.W,WP);closeModal('modalRecipePick');renderWeekPlan();}
+function genShoppingFromPlan(){WP.filter(Boolean).forEach(rid=>{const r=RC.find(x=>x.id===rid);if(!r)return;r.ing.forEach(i=>{const ex=SH.find(x=>x.n===i.n&&x.u===i.u);if(ex)ex.q+=i.a;else SH.push({id:'s'+Date.now()+Math.random().toString(36).substr(2,5),n:i.n,q:i.a,u:i.u,c:false});});});
+sd(K.SH,SH);renderShoppingList();alert('Einkaufsliste aus Plan erstellt!');}
+function renderSettings(){document.getElementById('storage-list').innerHTML=ST.map(s=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px"><span>${s.i||'📦'} ${s.n}</span><button class="btn btn-danger" onclick="removeStorage('${s.id}')" style="padding:4px 10px;font-size:12px">🗑️</button></div>`).join('');
+document.getElementById('category-list').innerHTML=CA.map(c=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px"><span>${c}</span><button class="btn btn-danger" onclick="removeCat('${c}')" style="padding:4px 10px;font-size:12px">🗑️</button></div>`).join('');}
+function addStorage(){const n=document.getElementById('new-storage').value.trim();if(!n)return;ST.push({id:'st'+Date.now(),n:n,i:'📦'});sd(K.S,ST);renderSettings();document.getElementById('new-storage').value='';}
+function removeStorage(id){ST=ST.filter(s=>s.id!==id);sd(K.S,ST);renderSettings();}
+function addCategory(){const n=document.getElementById('new-cat').value.trim();if(!n||CA.includes(n))return;CA.push(n);sd(K.C,CA);renderSettings();document.getElementById('new-cat').value='';}
+function removeCat(n){CA=CA.filter(c=>c!==n);sd(K.C,CA);renderSettings();}
+function exportData(){const d={products:PD,recipes:RC,categories:CA,storages:ST,shopping:SH,weekplan:WP};const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='kitchen-vorrat-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(u);}
+function importData(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(d.products)PD=d.products;if(d.recipes)RC=d.recipes;if(d.categories)CA=d.categories;if(d.storages)ST=d.storages;if(d.shopping)SH=d.shopping;if(d.weekplan)WP=d.weekplan;
+sd(K.P,PD);sd(K.R,RC);sd(K.C,CA);sd(K.S,ST);sd(K.SH,SH);sd(K.W,WP);alert('✅ Importiert!');refreshAll();}catch(err){alert('❌ Fehler: '+err.message);}};r.readAsText(f);}
+function openModal(id){document.getElementById(id).classList.add('active');}
+function closeModal(id){document.getElementById(id).classList.remove('active');}
+function populateSelects(){document.getElementById('prodCategory').innerHTML='<option value="">-- Kategorie --</option>'+CA.map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+document.getElementById('prodStorage').innerHTML='<option value="">-- Lagerplatz --</option>'+ST.map(s=>'<option value="'+s.id+'">'+(s.i||'📦')+' '+s.n+'</option>').join('');}
+function refreshAll(){PD=gd(K.P);RC=gd(K.R);CA=gd(K.C);ST=gd(K.S);SH=gd(K.SH);WP=gd(K.W);seed();renderProducts();renderRecipes();renderShoppingList();renderWeekPlan();renderSettings();}
+refreshAll();
+</script>
 </body>
 </html>
