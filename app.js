@@ -809,22 +809,16 @@ async function initScan(){
       }
     }catch(e){
       // Kamera fehlgeschlagen
-      scr.innerHTML='<div style="text-align:center;padding:30px 20px"><div style="font-size:48px;margin-bottom:12px">📷</div>';
-      scr+='<p style="color:var(--tx2);font-size:14px;margin-bottom:16px;">Barcode manuell eingeben</p>';
-      scr+='<input id="barcodeInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Barcode eingeben…" style="width:85%;padding:14px;border:2px solid var(--ac);border-radius:12px;font-size:16px;background:var(--bg);color:var(--tx);text-align:center;">';
-      scr+='<p style="color:var(--tx2);font-size:12px;margin-top:10px;">8–13 Ziffern (z.B. von Getränkedose)</p>';
-      scr+='</div>';
+      scr.innerHTML='<div style="text-align:center;padding:30px 20px"><div style="font-size:48px;margin-bottom:12px">📷</div><p style="color:var(--tx2);font-size:14px;margin-bottom:16px;">Barcode manuell eingeben</p>';
+      scr+='<input id="barcodeInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Barcode eingeben…" style="width:85%;padding:14px;border:2px solid var(--ac);border-radius:12px;font-size:16px;background:var(--bg);color:var(--tx);text-align:center;"><p style="color:var(--tx2);font-size:12px;margin-top:10px;">8–13 Ziffern (z.B. von Getränkedose)</p></div>';
       document.getElementById('barcodeInput').addEventListener('keyup',function(e){
         if(e.key==='Enter')handleScan(this.value);
       });
     }
   }else{
     // Kein Kamera-Support
-    scr.innerHTML='<div style="text-align:center;padding:30px 20px"><div style="font-size:48px;margin-bottom:12px">📷</div>';
-    scr+='<p style="color:var(--tx2);font-size:14px;margin-bottom:16px;">Barcode manuell eingeben</p>';
-    scr+='<input id="barcodeInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Barcode eingeben…" style="width:85%;padding:14px;border:2px solid var(--ac);border-radius:12px;font-size:16px;background:var(--bg);color:var(--tx);text-align:center;">';
-    scr+='<p style="color:var(--tx2);font-size:12px;margin-top:10px;">8–13 Ziffern (z.B. von Getränkedose)</p>';
-    scr+='</div>';
+    scr.innerHTML='<div style="text-align:center;padding:30px 20px"><div style="font-size:48px;margin-bottom:12px">📷</div><p style="color:var(--tx2);font-size:14px;margin-bottom:16px;">Barcode manuell eingeben</p>';
+    scr+='<input id="barcodeInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Barcode eingeben…" style="width:85%;padding:14px;border:2px solid var(--ac);border-radius:12px;font-size:16px;background:var(--bg);color:var(--tx);text-align:center;"><p style="color:var(--tx2);font-size:12px;margin-top:10px;">8–13 Ziffern (z.B. von Getränkedose)</p></div>';
     document.getElementById('barcodeInput').addEventListener('keyup',function(e){
       if(e.key==='Enter')handleScan(this.value);
     });
