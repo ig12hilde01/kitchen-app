@@ -509,13 +509,13 @@ function sDP(){
 
 // === STATS ===
 function renderStats(){
-  var expired=0,expiring=0,lowStock=0;
+  var expired=0,expiring=0,lowCount=0;
   var totalVal=0;
   for(var i=0;i<PD.length;i++){
     var p=PD[i];
     if(isExpired(p))expired++;
     if(isExpiringSoon(p))expiring++;
-    if(lowStock(p))lowStock++;
+    if(lowStock(p))lowCount++;
     totalVal+=p.price*p.qty;
   }
   var totalItems=PD.length;
@@ -523,7 +523,7 @@ function renderStats(){
   html+='<div class="sc"><div class="sv" style="color:var(--ac)">'+totalItems+'</div><div class="sl">Produkte</div></div>';
   html+='<div class="sc"><div class="sv" style="color:var(--err)">'+expired+'</div><div class="sl">Abgelaufen</div></div>';
   html+='<div class="sc"><div class="sv" style="color:var(--warn)">'+expiring+'</div><div class="sl">Bald ablaufend</div></div>';
-  html+='<div class="sc"><div class="sv" style="color:var(--err)">'+lowStock+'</div><div class="sl">Niedrig</div></div>';
+  html+='<div class="sc"><div class="sv" style="color:var(--err)">'+lowCount+'</div><div class="sl">Niedrig</div></div>';
   html+='<div class="sc"><div class="sv" style="color:var(--ok)">'+totalVal.toFixed(2)+'€</div><div class="sl">Gesamtwert</div></div>';
   var shopCount=0;for(var i=0;i<SH.length;i++){if(!SH[i].checked)shopCount++;}
   html+='<div class="sc"><div class="sv" style="color:var(--ac)">'+shopCount+'</div><div class="sl">Einkauf offen</div></div>';
