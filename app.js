@@ -551,7 +551,7 @@ function renderStats(){
   // Tips
   var tips=[];
   if(expired>0)tips.push('🗑️ '+expired+' Produkt'+(expired>1?'e':'')+' entsorgen oder auf die Einkaufsliste setzen.');
-  if(lowStock>0)tips.push('🛒 '+lowStock+' Produkt'+(lowStock>1?'e':'')+' sind fast aufgebraucht. Smart-Liste erstellen?');
+  if(lowCount>0)tips.push('🛒 '+lowCount+' Produkt'+(lowCount>1?'e':'')+' sind fast aufgebraucht. Smart-Liste erstellen?');
   var hasCleaning=false;for(var i=0;i<PD.length;i++){if(PD[i].category==='Reinigung'){hasCleaning=true;break;}}
   if(!hasCleaning)tips.push('🧹 Du hast noch keine Reinigungsartikel. Waschmittel, Spüler und Allzweckreiniger nicht vergessen!');
   if(tips.length===0)tips.push('✨ Dein Haushalt ist super organisiert!');
@@ -834,7 +834,9 @@ async function handleScan(barcode){
     var d=await r.json();
     if(d.status===1&&d.product){
       var p=d.product;
+      var savedEditId=editId;
       openProd();
+      editId=savedEditId;
       setTimeout(function(){
         var nEl=document.getElementById('pN');if(nEl)nEl.value=p.product_name||'';
         var mEl=document.getElementById('pM');if(mEl)mEl.value=p.brands||'';
@@ -843,8 +845,8 @@ async function handleScan(barcode){
         toast('✅ Produkt gefunden: '+p.product_name);
       },100);
     }
-    else{toast('Produkt nicht gefunden — Name manuell eingeben');openProd();var bEl2=document.getElementById('pB');if(bEl2)bEl2.value=barcode;}
-  }catch(e){toast('Netzwerkfehler — Barcode gespeichert, manuell eingeben');openProd();var bEl3=document.getElementById('pB');if(bEl3)bEl3.value=barcode;}
+    else{var savedEditId=editId;toast('Produkt nicht gefunden — Name manuell eingeben');openProd();editId=savedEditId;var bEl2=document.getElementById('pB');if(bEl2)bEl2.value=barcode;}
+  }catch(e){var savedEditId=editId;toast('Netzwerkfehler — Barcode gespeichert, manuell eingeben');openProd();editId=savedEditId;var bEl3=document.getElementById('pB');if(bEl3)bEl3.value=barcode;}
 }
 
 function closeScan(){
