@@ -718,18 +718,87 @@ function impD(inp){
 }
 
 // === SCANNER ===
-function openScanFor(prodId){editId=prodId;openM('mSc');initScanFallback();}
-function openScan(){editId=null;openM('mSc');initScanFallback();}
+function openScanFor(prodId){editId=prodId;openM('mSc');initScan();}
+function openScan(){editId=null;openM('mSc');initScan();}
 
-function initScanFallback(){
+async function initScan(){
   var scr=document.getElementById('scanner');
-  scr.innerHTML='<div style="text-align:center;padding:20px">';
-  scr.innerHTML+='<div style="font-size:48px;margin-bottom:16px">📷</div>';
-  scr.innerHTML+='<p style="color:#fff;font-size:14px;margin-bottom:16px">Barcode eingeben oder Kamera nutzen</p>';
-  scr.innerHTML+='<input id="barcodeInput" type="text" placeholder="Barcode eingeben..." style="width:80%;padding:14px;border:2px solid #0071e3;border-radius:12px;font-size:16px;background:rgba(255,255,255,0.1);color:#fff;text-align:center;margin-bottom:12px">';
-  scr.innerHTML+='<button onclick="doScan()" style="padding:12px 24px;background:#0071e3;color:#fff;border:none;border-radius:12px;font-size:16px;cursor:pointer">🔍 Scannen</button>';
-  scr.innerHTML+='</div>';
   document.getElementById('sr').textContent='📷 Barcode scannen oder eingeben';
+
+  // Prüfe ob Kamera + BarcodeDetector verfügbar
+  var cameraSupported = false;
+  if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+    // BarcodeDetector (Chrome, Edge, Firefox nightly)
+    if(window.BarcodeDetector){
+      cameraSupported = true;
+    } else {
+      // Versuch Kamera trotzdem zu öffnen
+      try{
+        var testStream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+        cameraSupported = true;
+        testStream.getTracks().forEach(function(t){t.stop();});
+      }catch(e){}
+    }
+  }
+
+  if(cameraSupported){
+    // Kamera-Modus
+    scr.innerHTML='<div style="position:relative;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;">';
+    scr.innerHTML+='<video id="scanVideo" style="width:100%;height:100%;object-fit:cover;max-height:300px;border-radius:12px;"></video>';
+    scr.innerHTML+='<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:250px;height:150px;border:3px solid #0071e3;border-radius:8px;pointer-events:none;"></div>';
+    scr.innerHTML+='<p style="color:#fff;font-size:13px;margin-top:12px;text-align:center;">Kamera auf Barcode richten</p>';
+    scr.innerHTML+='<input id="barcodeInput" type="text" placeholder="Oder Barcode hier eingeben..." style="width:80%;padding:12px;margin-top:8px;border:1px solid rgba(255,255,255,0.3);border-radius:8px;font-size:15px;background:rgba(255,255,255,0.1);color:#fff;text-align:center;">';
+    scr.innerHTML+='</div>';
+
+    // Kamera starten
+    try{
+      var video=document.getElementById('scanVideo');
+      var stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:640},height:{ideal:480}}});
+      video.srcObject=stream;
+      video.play();
+
+      // BarcodeDetector versuchen
+      if(window.BarcodeDetector){
+        var detector=new BarcodeDetector({formats:['ean_13','ean_8','code_128','code_39','qr_code','upc_a','upc_e']});
+        var scanInterval=setInterval(function(){
+          if(video.readyState===video.HAVE_ENOUGH_DATA){
+            detector.detect(video).then(function(barcodes){
+              if(barcodes.length>0){
+                clearInterval(scanInterval);
+                handleScan(barcodes[0].rawValue);
+              }
+            }).catch(function(){});
+          }
+        },300);
+        window._scanInterval=scanInterval;
+      }
+
+      // Eingabe-Listener
+      document.getElementById('barcodeInput').addEventListener('keyup',function(e){
+        if(e.key==='Enter')handleScan(this.value);
+      });
+    }catch(e){
+      // Kamera fehlgeschlagen → manueller Modus
+      scr.innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:36px;margin-bottom:8px">⚠️</div>';
+      scr.innerHTML+='<p style="color:var(--tx2);font-size:13px;margin-bottom:12px;">Kamera nicht verfügbar — manuell eingeben</p>';
+      scr.innerHTML+='<input id="barcodeInput" type="text" placeholder="Barcode eingeben..." style="width:80%;padding:12px;border:2px solid var(--ac);border-radius:10px;font-size:16px;background:var(--bg);color:var(--tx);text-align:center;">';
+      scr.innerHTML+='<p style="color:var(--tx2);font-size:11px;margin-top:8px;">Typisch: 12-stellig (z.B. Barcode auf Getränke/Dosen)</p>';
+      scr.innerHTML+='</div>';
+      document.getElementById('barcodeInput').addEventListener('keyup',function(e){
+        if(e.key==='Enter')handleScan(this.value);
+      });
+    }
+  } else {
+    // Kein Kamera-Support → manueller Modus
+    scr.innerHTML='<div style="text-align:center;padding:20px"><div style="font-size:48px;margin-bottom:8px">📷</div>';
+    scr.innerHTML+='<p style="color:var(--tx2);font-size:13px;margin-bottom:12px;">Barcode manuell eingeben</p>';
+    scr.innerHTML+='<input id="barcodeInput" type="text" placeholder="Barcode eingeben..." style="width:80%;padding:12px;border:2px solid var(--ac);border-radius:10px;font-size:16px;background:var(--bg);color:var(--tx);text-align:center;">';
+    scr.innerHTML+='<p style="color:var(--tx2);font-size:11px;margin-top:8px;">Typisch: 12-stellig (z.B. Barcode auf Getränke/Dosen)</p>';
+    scr.innerHTML+='</div>';
+    document.getElementById('barcodeInput').addEventListener('keyup',function(e){
+      if(e.key==='Enter')handleScan(this.value);
+    });
+  }
 }
 
 function doScan(){
@@ -740,24 +809,29 @@ function doScan(){
 
 async function handleScan(barcode){
   var code=barcode.replace(/[^0-9]/g,'');
-  if(code.length<8){toast('Barcode zu kurz ('+code.length+' Ziffern)');openProd();document.getElementById('pB').value=barcode;return;}
+  if(code.length<6){toast('Barcode zu kurz ('+code.length+' Ziffern)');return;}
   try{
     var r=await fetch('https://world.openfoodfacts.org/api/v2/product/'+code+'.json');
     var d=await r.json();
     if(d.status===1&&d.product){
       var p=d.product;
-      document.getElementById('pN').value=p.product_name||'';
-      document.getElementById('pM').value=p.brands||'';
-      document.getElementById('pS').value=p.quantity||'';
-      document.getElementById('pB').value=barcode;
-      toast('✅ Produkt gefunden: '+p.product_name);
+      openProd();
+      setTimeout(function(){
+        document.getElementById('pN').value=p.product_name||'';
+        document.getElementById('pM').value=p.brands||'';
+        document.getElementById('pS').value=p.quantity||'';
+        document.getElementById('pB').value=barcode;
+        toast('✅ Produkt gefunden: '+p.product_name);
+      },100);
     }
-    else{toast('Produkt nicht gefunden — Name manuell eingeben');}
-  }catch(e){toast('Netzwerkfehler — Barcode gespeichert, manuell eingeben');}
-  openProd();
+    else{toast('Produkt nicht gefunden — Name manuell eingeben');openProd();document.getElementById('pB').value=barcode;}
+  }catch(e){toast('Netzwerkfehler — Barcode gespeichert, manuell eingeben');openProd();document.getElementById('pB').value=barcode;}
 }
 
 function closeScan(){
+  if(window._scanInterval){clearInterval(window._scanInterval);window._scanInterval=null;}
+  var video=document.getElementById('scanVideo');
+  if(video&&video.srcObject){video.srcObject.getTracks().forEach(function(t){t.stop();});}
   clM('mSc');
   document.getElementById('scanner').innerHTML='';
 }
