@@ -725,38 +725,41 @@ async function initScan(){
   var scr=document.getElementById('scanner');
   document.getElementById('sr').textContent='📷 Barcode scannen oder eingeben';
 
-  // Prüfe ob Kamera + BarcodeDetector verfügbar
-  var cameraSupported=false;
+  // Prüfe Browser-Fähigkeiten
   var hasBarcodeDetector=!!window.BarcodeDetector;
-  if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
-    if(hasBarcodeDetector){
-      cameraSupported=true;
-    }else{
-      try{
-        var testStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
-        cameraSupported=true;
-        testStream.getTracks().forEach(function(t){t.stop();});
-      }catch(e){}
-    }
-  }
+  var hasCameraAPI=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);
+  var isSafari=/Apple Computer/.test(navigator.vendor);
 
-  if(cameraSupported){
-    // Kamera-Modus mit Live-Scan
-    var h='';
-    h+='<div style="position:relative;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;">';
-    h+='<video id="scanVideo" playsinline style="width:100%;height:100%;object-fit:cover;max-height:350px;border-radius:12px;"></video>';
-    // Scan-Overlay mit Fokusrahmen
-    h+='<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80%;max-width:300px;height:120px;border:2px solid rgba(0,113,227,0.6);border-radius:4px;pointer-events:none;z-index:1;">';
-    h+='<div style="position:absolute;top:-2px;left:0;width:30px;height:30px;border-top:3px solid #0071e3;border-left:3px solid #0071e3;border-radius:4px 0 0 0;"></div>';
-    h+='<div style="position:absolute;top:-2px;right:0;width:30px;height:30px;border-top:3px solid #0071e3;border-right:3px solid #0071e3;border-radius:0 4px 0 0;"></div>';
-    h+='<div style="position:absolute;bottom:-2px;left:0;width:30px;height:30px;border-bottom:3px solid #0071e3;border-left:3px solid #0071e3;border-radius:0 0 0 4px;"></div>';
-    h+='<div style="position:absolute;bottom:-2px;right:0;width:30px;height:30px;border-bottom:3px solid #0071e3;border-right:3px solid #0071e3;border-radius:0 0 4px 0;"></div>';
-    h+='</div>';
-    h+='<div style="margin-top:10px;display:flex;align-items:center;gap:10px;">';
-    h+='<input id="barcodeInput" type="text" placeholder="Oder Barcode eingeben…" style="flex:1;padding:10px;border:1px solid rgba(255,255,255,0.3);border-radius:8px;font-size:15px;background:rgba(255,255,255,0.1);color:#fff;text-align:center;">';
-    h+='<button id="scanBtn" style="padding:10px 18px;background:#0071e3;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">🔍</button>';
-    h+='</div>';
-    h+='<p id="scanStatus" style="color:rgba(255,255,255,0.6);font-size:11px;margin-top:6px;">Scanne…</p>';
+  if(hasCameraAPI){
+    // Kamera-Modus mit Preview
+    var h='<div style="display:flex;flex-direction:column;height:100%;align-items:center;justify-content:center;gap:16px;padding:20px;">';
+
+    if(hasBarcodeDetector&&!isSafari){
+      // Native BarcodeScanner (Chrome/Edge)
+      h+='<p style="color:var(--tx2);font-size:14px;margin:0;">📷 Kamera wird geöffnet — Barcode in den Fokus halten</p>';
+      h+='<video id="scanVideo" playsinline style="width:100%;max-width:400px;border-radius:12px;aspect-ratio:4/3;object-fit:cover;background:#000;"></video>';
+      h+='<div style="width:80%;max-width:300px;height:100px;border:2px dashed rgba(0,113,227,0.5);border-radius:8px;position:relative;">';
+      h+='<div style="position:absolute;top:0;left:0;width:16px;height:16px;border-top:3px solid #0071e3;border-left:3px solid #0071e3;"></div>';
+      h+='<div style="position:absolute;top:0;right:0;width:16px;height:16px;border-top:3px solid #0071e3;border-right:3px solid #0071e3;"></div>';
+      h+='<div style="position:absolute;bottom:0;left:0;width:16px;height:16px;border-bottom:3px solid #0071e3;border-left:3px solid #0071e3;"></div>';
+      h+='<div style="position:absolute;bottom:0;right:0;width:16px;height:16px;border-bottom:3px solid #0071e3;border-right:3px solid #0071e3;"></div>';
+      h+='</div>';
+      h+='<div style="display:flex;gap:10px;width:80%;max-width:300px;">';
+      h+='<input id="barcodeInput" type="text" placeholder="Barcode eingeben…" style="flex:1;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--bg);color:var(--tx);text-align:center;">';
+      h+='<button id="scanBtn" style="padding:12px 16px;background:#0071e3;color:#fff;border:none;border-radius:10px;font-size:18px;cursor:pointer;">🔍</button>';
+      h+='</div>';
+      h+='<p id="scanStatus" style="color:var(--tx2);font-size:12px;margin:0;">Scanne…</p>';
+    }else{
+      // Kein BarcodeDetector (Safari) → Kamera + manuelle Eingabe
+      h+='<p style="color:#f59e0b;font-size:14px;margin:0;">📷 Kamera wird geöffnet</p>';
+      h+='<video id="scanVideo" playsinline style="width:100%;max-width:400px;border-radius:12px;aspect-ratio:4/3;object-fit:cover;background:#000;"></video>';
+      h+='<div style="width:80%;max-width:300px;padding:16px;background:var(--bg);border-radius:12px;border:1px solid var(--border);">';
+      h+='<p style="color:var(--tx);font-size:14px;font-weight:600;margin:0 0 4px 0;">⌨️ Barcode manuell eingeben</p>';
+      h+='<p style="color:var(--tx2);font-size:12px;margin:0 0 10px 0;">Kamera-Scan wird von diesem Browser nicht unterstützt. Bitte Barcode tippen.</p>';
+      h+='<input id="barcodeInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="z.B. 7622210449283" style="width:100%;padding:12px;border:2px solid var(--ac);border-radius:10px;font-size:18px;text-align:center;letter-spacing:2px;background:var(--bg);color:var(--tx);">';
+      h+='<p style="color:var(--tx2);font-size:11px;margin:6px 0 0 0;">Typisch: 8–13 Ziffern (Getränke, Dosen, Schokolade, Hygiene)</p>';
+      h+='</div>';
+    }
     h+='</div>';
     scr.innerHTML=h;
 
@@ -770,8 +773,7 @@ async function initScan(){
 
       var scanInterval=null;
 
-      if(hasBarcodeDetector){
-        // Alle unterstützten Formate (Bindestriche!)
+      if(hasBarcodeDetector&&!isSafari){
         try{
           var detector=new BarcodeDetector({formats:['ean-13','ean-8','code-128','code-39','code-93','qr-code','datamatrix','pdf417','aztec','upc-a','upc-e','itf','codabar']});
           scanInterval=setInterval(function(){
@@ -779,37 +781,38 @@ async function initScan(){
               detector.detect(video).then(function(barcodes){
                 if(barcodes.length>0){
                   clearInterval(scanInterval);
-                  var value=barcodes[0].rawValue;
                   document.getElementById('scanStatus').textContent='✅ Gescannt!';
-                  handleScan(value);
+                  handleScan(barcodes[0].rawValue);
                 }
               }).catch(function(){});
             }
           },200);
         }catch(e){
-          // BarcodeDetector mit falschen Formats → Fallback auf Kamera + manuell
-          document.getElementById('scanStatus').textContent='⚠️ Manueller Barcode-Eingabe nötig';
+          document.getElementById('scanStatus').textContent='⚠️ Manueller Scan nötig';
         }
-      }else{
-        // Kein BarcodeDetector → manueller Modus
-        document.getElementById('scanStatus').textContent='📷 Kamera aktiv — Barcode manuell eingeben';
       }
       window._scanInterval=scanInterval;
 
       // Eingabe-Listener
-      document.getElementById('barcodeInput').addEventListener('keyup',function(e){
-        if(e.key==='Enter')handleScan(this.value);
-      });
-      document.getElementById('scanBtn').addEventListener('click',function(){
-        var val=document.getElementById('barcodeInput').value.trim();
-        if(val)handleScan(val);
-      });
+      var inputEl=document.getElementById('barcodeInput');
+      if(inputEl){
+        inputEl.addEventListener('keyup',function(e){
+          if(e.key==='Enter')handleScan(this.value);
+        });
+      }
+      var btnEl=document.getElementById('scanBtn');
+      if(btnEl){
+        btnEl.addEventListener('click',function(){
+          var val=document.getElementById('barcodeInput').value.trim();
+          if(val)handleScan(val);
+        });
+      }
     }catch(e){
-      // Kamera fehlgeschlagen → manueller Modus
+      // Kamera fehlgeschlagen
       scr.innerHTML='<div style="text-align:center;padding:30px 20px"><div style="font-size:48px;margin-bottom:12px">📷</div>';
       scr+='<p style="color:var(--tx2);font-size:14px;margin-bottom:16px;">Barcode manuell eingeben</p>';
-      scr+='<input id="barcodeInput" type="text" placeholder="Barcode eingeben…" style="width:85%;padding:14px;border:2px solid var(--ac);border-radius:12px;font-size:16px;background:var(--bg);color:var(--tx);text-align:center;">';
-      scr+='<p style="color:var(--tx2);font-size:12px;margin-top:10px;">12-stelliger Barcode (z.B. von Getränkedose, Schokolade)</p>';
+      scr+='<input id="barcodeInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Barcode eingeben…" style="width:85%;padding:14px;border:2px solid var(--ac);border-radius:12px;font-size:16px;background:var(--bg);color:var(--tx);text-align:center;">';
+      scr+='<p style="color:var(--tx2);font-size:12px;margin-top:10px;">8–13 Ziffern (z.B. von Getränkedose)</p>';
       scr+='</div>';
       document.getElementById('barcodeInput').addEventListener('keyup',function(e){
         if(e.key==='Enter')handleScan(this.value);
@@ -819,8 +822,8 @@ async function initScan(){
     // Kein Kamera-Support
     scr.innerHTML='<div style="text-align:center;padding:30px 20px"><div style="font-size:48px;margin-bottom:12px">📷</div>';
     scr+='<p style="color:var(--tx2);font-size:14px;margin-bottom:16px;">Barcode manuell eingeben</p>';
-    scr+='<input id="barcodeInput" type="text" placeholder="Barcode eingeben…" style="width:85%;padding:14px;border:2px solid var(--ac);border-radius:12px;font-size:16px;background:var(--bg);color:var(--tx);text-align:center;">';
-    scr+='<p style="color:var(--tx2);font-size:12px;margin-top:10px;">12-stelliger Barcode (z.B. von Getränkedose, Schokolade)</p>';
+    scr+='<input id="barcodeInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Barcode eingeben…" style="width:85%;padding:14px;border:2px solid var(--ac);border-radius:12px;font-size:16px;background:var(--bg);color:var(--tx);text-align:center;">';
+    scr+='<p style="color:var(--tx2);font-size:12px;margin-top:10px;">8–13 Ziffern (z.B. von Getränkedose)</p>';
     scr+='</div>';
     document.getElementById('barcodeInput').addEventListener('keyup',function(e){
       if(e.key==='Enter')handleScan(this.value);
