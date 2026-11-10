@@ -446,7 +446,7 @@ RC=[
 {id:'c60',n:'Ofenkartoffel Quark',c:'Hauptgerichte',p:4,ing:[{a:800,u:'g',n:'Kartoffeln'},{a:250,u:'g',n:'Quark'}],st:['Einwickeln','60min','Kräuterquark']}];
 sd(K.R,RC);}
 
-function checkPassword(){
+function ckPw(){
 const pw=document.getElementById('pwI').value;
 const hash=CryptoJS.SHA256(pw).toString();
 if(hash===gw){document.getElementById('pw').style.display='none';document.getElementById('app').style.display='block';
