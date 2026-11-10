@@ -8,7 +8,6 @@
 <meta name="theme-color" content="#f5f5f7">
 <title>Haushalt Vorrat</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
 <style>
 :root{
 --bg:#f5f5f7;--surf:#fff;--elev:#fafafc;--inv:#1d1d1f;--tx:#1d1d1f;--tx2:#6e6e73;--tx3:#aeaeb2;
@@ -446,9 +445,17 @@ RC=[
 {id:'c60',n:'Ofenkartoffel Quark',c:'Hauptgerichte',p:4,ing:[{a:800,u:'g',n:'Kartoffeln'},{a:250,u:'g',n:'Quark'}],st:['Einwickeln','60min','Kräuterquark']}];
 sd(K.R,RC);}
 
-function ckPw(){
+function sha256(str) {
+const encoder = new TextEncoder();
+const data = encoder.encode(str);
+return crypto.subtle.digest('SHA-256', data).then(hash => {
+const bytes = new Uint8Array(hash);
+return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+});}
+
+async function ckPw(){
 const pw=document.getElementById('pwI').value;
-const hash=CryptoJS.SHA256(pw).toString();
+const hash=await sha256(pw);
 if(hash===gw){document.getElementById('pw').style.display='none';document.getElementById('app').style.display='block';
 localStorage.setItem('kv_auth','1');refreshAll();}
 else{document.getElementById('pwE').style.display='block';}}
