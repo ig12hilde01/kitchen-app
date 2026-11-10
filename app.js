@@ -270,7 +270,7 @@ function renderProducts(containerId,query,filterCat,filterLoc){
   var list=[];
   for(var i=0;i<PD.length;i++){
     var p=PD[i];
-    var matchQ=!query||p.name.toLowerCase().indexOf(query)>=0||(p.brand&&p.brand.toLowerCase().indexOf(query)>=0);
+    var matchQ=!query||p.name.toLowerCase().indexOf(query.toLowerCase())>=0||(p.brand&&p.brand.toLowerCase().indexOf(query.toLowerCase())>=0);
     var matchC=filterCat==='all'||p.category===filterCat;
     var matchL=filterLoc==='all'||p.location===filterLoc;
     if(matchQ&&matchC&&matchL)list.push(p);
