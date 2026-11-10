@@ -742,21 +742,23 @@ async function initScan(){
 
   if(cameraSupported){
     // Kamera-Modus mit Live-Scan
-    scr.innerHTML='<div style="position:relative;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;">';
-    scr.innerHTML+='<video id="scanVideo" playsinline style="width:100%;height:100%;object-fit:cover;max-height:350px;border-radius:12px;"></video>';
+    var h='';
+    h+='<div style="position:relative;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;">';
+    h+='<video id="scanVideo" playsinline style="width:100%;height:100%;object-fit:cover;max-height:350px;border-radius:12px;"></video>';
     // Scan-Overlay mit Fokusrahmen
-    scr+='<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80%;max-width:300px;height:120px;border:2px solid rgba(0,113,227,0.6);border-radius:4px;pointer-events:none;z-index:1;">';
-    scr+='<div style="position:absolute;top:-2px;left:0;width:30px;height:30px;border-top:3px solid #0071e3;border-left:3px solid #0071e3;border-radius:4px 0 0 0;"></div>';
-    scr+='<div style="position:absolute;top:-2px;right:0;width:30px;height:30px;border-top:3px solid #0071e3;border-right:3px solid #0071e3;border-radius:0 4px 0 0;"></div>';
-    scr+='<div style="position:absolute;bottom:-2px;left:0;width:30px;height:30px;border-bottom:3px solid #0071e3;border-left:3px solid #0071e3;border-radius:0 0 0 4px;"></div>';
-    scr+='<div style="position:absolute;bottom:-2px;right:0;width:30px;height:30px;border-bottom:3px solid #0071e3;border-right:3px solid #0071e3;border-radius:0 0 4px 0;"></div>';
-    scr+='</div>';
-    scr+='<div style="margin-top:10px;display:flex;align-items:center;gap:10px;">';
-    scr+='<input id="barcodeInput" type="text" placeholder="Oder Barcode eingeben…" style="flex:1;padding:10px;border:1px solid rgba(255,255,255,0.3);border-radius:8px;font-size:15px;background:rgba(255,255,255,0.1);color:#fff;text-align:center;">';
-    scr+='<button id="scanBtn" style="padding:10px 18px;background:#0071e3;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">🔍</button>';
-    scr+='</div>';
-    scr+='<p id="scanStatus" style="color:rgba(255,255,255,0.6);font-size:11px;margin-top:6px;">Scanne…</p>';
-    scr+='</div>';
+    h+='<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80%;max-width:300px;height:120px;border:2px solid rgba(0,113,227,0.6);border-radius:4px;pointer-events:none;z-index:1;">';
+    h+='<div style="position:absolute;top:-2px;left:0;width:30px;height:30px;border-top:3px solid #0071e3;border-left:3px solid #0071e3;border-radius:4px 0 0 0;"></div>';
+    h+='<div style="position:absolute;top:-2px;right:0;width:30px;height:30px;border-top:3px solid #0071e3;border-right:3px solid #0071e3;border-radius:0 4px 0 0;"></div>';
+    h+='<div style="position:absolute;bottom:-2px;left:0;width:30px;height:30px;border-bottom:3px solid #0071e3;border-left:3px solid #0071e3;border-radius:0 0 0 4px;"></div>';
+    h+='<div style="position:absolute;bottom:-2px;right:0;width:30px;height:30px;border-bottom:3px solid #0071e3;border-right:3px solid #0071e3;border-radius:0 0 4px 0;"></div>';
+    h+='</div>';
+    h+='<div style="margin-top:10px;display:flex;align-items:center;gap:10px;">';
+    h+='<input id="barcodeInput" type="text" placeholder="Oder Barcode eingeben…" style="flex:1;padding:10px;border:1px solid rgba(255,255,255,0.3);border-radius:8px;font-size:15px;background:rgba(255,255,255,0.1);color:#fff;text-align:center;">';
+    h+='<button id="scanBtn" style="padding:10px 18px;background:#0071e3;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">🔍</button>';
+    h+='</div>';
+    h+='<p id="scanStatus" style="color:rgba(255,255,255,0.6);font-size:11px;margin-top:6px;">Scanne…</p>';
+    h+='</div>';
+    scr.innerHTML=h;
 
     // Kamera starten
     try{
@@ -767,16 +769,12 @@ async function initScan(){
       await video.play();
 
       var scanInterval=null;
-      var lastScan='';
-      var scanCount=0;
 
       if(hasBarcodeDetector){
-        // Alle unterstützten Formate
+        // Alle unterstützten Formate (Bindestriche!)
         try{
           var detector=new BarcodeDetector({formats:['ean-13','ean-8','code-128','code-39','code-93','qr-code','datamatrix','pdf417','aztec','upc-a','upc-e','itf','codabar']});
-          scanCount=0;
           scanInterval=setInterval(function(){
-            scanCount++;
             if(video.readyState>=video.HAVE_ENOUGH_DATA){
               detector.detect(video).then(function(barcodes){
                 if(barcodes.length>0){
@@ -785,9 +783,7 @@ async function initScan(){
                   document.getElementById('scanStatus').textContent='✅ Gescannt!';
                   handleScan(value);
                 }
-              }).catch(function(e){
-                // Ignorieren
-              });
+              }).catch(function(){});
             }
           },200);
         }catch(e){
@@ -810,8 +806,7 @@ async function initScan(){
       });
     }catch(e){
       // Kamera fehlgeschlagen → manueller Modus
-      scr.innerHTML='<div style="text-align:center;padding:30px 20px">';
-      scr+='<div style="font-size:48px;margin-bottom:12px">📷</div>';
+      scr.innerHTML='<div style="text-align:center;padding:30px 20px"><div style="font-size:48px;margin-bottom:12px">📷</div>';
       scr+='<p style="color:var(--tx2);font-size:14px;margin-bottom:16px;">Barcode manuell eingeben</p>';
       scr+='<input id="barcodeInput" type="text" placeholder="Barcode eingeben…" style="width:85%;padding:14px;border:2px solid var(--ac);border-radius:12px;font-size:16px;background:var(--bg);color:var(--tx);text-align:center;">';
       scr+='<p style="color:var(--tx2);font-size:12px;margin-top:10px;">12-stelliger Barcode (z.B. von Getränkedose, Schokolade)</p>';
@@ -822,8 +817,7 @@ async function initScan(){
     }
   }else{
     // Kein Kamera-Support
-    scr.innerHTML='<div style="text-align:center;padding:30px 20px">';
-    scr+='<div style="font-size:48px;margin-bottom:12px">📷</div>';
+    scr.innerHTML='<div style="text-align:center;padding:30px 20px"><div style="font-size:48px;margin-bottom:12px">📷</div>';
     scr+='<p style="color:var(--tx2);font-size:14px;margin-bottom:16px;">Barcode manuell eingeben</p>';
     scr+='<input id="barcodeInput" type="text" placeholder="Barcode eingeben…" style="width:85%;padding:14px;border:2px solid var(--ac);border-radius:12px;font-size:16px;background:var(--bg);color:var(--tx);text-align:center;">';
     scr+='<p style="color:var(--tx2);font-size:12px;margin-top:10px;">12-stelliger Barcode (z.B. von Getränkedose, Schokolade)</p>';
