@@ -780,6 +780,13 @@ function fRecL(q){
 function refreshAll(){
   PD=gd(K.P);RC=gd(K.R);CA=gd(K.C);LO=gd(K.L);SH=gd(K.SH);WP=gd(K.W);
   HU=gd(K.H)||{name:'Mein Haushalt'};BD=gd(K.B)||{amount:0,spent:0};SF=gd(K.F)||{sort:'name',view:'all'};
+  // Sicherstellen dass Arrays wirklich Arrays sind
+  if(!Array.isArray(PD))PD=[];
+  if(!Array.isArray(RC))RC=[];
+  if(!Array.isArray(CA))CA=[];
+  if(!Array.isArray(LO))LO=[];
+  if(!Array.isArray(SH))SH=[];
+  if(!Array.isArray(WP))WP=[];
   seed();
   populateSel();
   renderHome();
