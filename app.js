@@ -717,7 +717,7 @@ function impD(inp){
   };r.readAsText(f);
 }
 
-// === SCANNER ===
+// === SCANNER (QuaggaJS) ===
 function openScanFor(prodId){editId=prodId;openM('mSc');initScan();}
 function openScan(){editId=null;openM('mSc');initScan();}
 
@@ -725,98 +725,109 @@ async function initScan(){
   var scr=document.getElementById('scanner');
   document.getElementById('sr').textContent='📷 Barcode scannen oder eingeben';
 
-  // Prüfe Browser-Fähigkeiten
-  var hasBarcodeDetector=!!window.BarcodeDetector;
+  // Kamera-Verfügbarkeit prüfen
   var hasCameraAPI=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);
-  var isSafari=/Apple Computer/.test(navigator.vendor);
 
-  if(hasCameraAPI){
-    // Kamera-Modus mit Preview
-    var h='<div style="display:flex;flex-direction:column;height:100%;align-items:center;justify-content:center;gap:16px;padding:20px;">';
-
-    if(hasBarcodeDetector&&!isSafari){
-      // Native BarcodeScanner (Chrome/Edge)
-      h+='<p style="color:var(--tx2);font-size:14px;margin:0;">📷 Kamera wird geöffnet — Barcode in den Fokus halten</p>';
-      h+='<video id="scanVideo" playsinline style="width:100%;max-width:400px;border-radius:12px;aspect-ratio:4/3;object-fit:cover;background:#000;"></video>';
-      h+='<div style="width:80%;max-width:300px;height:100px;border:2px dashed rgba(0,113,227,0.5);border-radius:8px;position:relative;">';
-      h+='<div style="position:absolute;top:0;left:0;width:16px;height:16px;border-top:3px solid #0071e3;border-left:3px solid #0071e3;"></div>';
-      h+='<div style="position:absolute;top:0;right:0;width:16px;height:16px;border-top:3px solid #0071e3;border-right:3px solid #0071e3;"></div>';
-      h+='<div style="position:absolute;bottom:0;left:0;width:16px;height:16px;border-bottom:3px solid #0071e3;border-left:3px solid #0071e3;"></div>';
-      h+='<div style="position:absolute;bottom:0;right:0;width:16px;height:16px;border-bottom:3px solid #0071e3;border-right:3px solid #0071e3;"></div>';
-      h+='</div>';
-      h+='<div style="display:flex;gap:10px;width:80%;max-width:300px;">';
-      h+='<input id="barcodeInput" type="text" placeholder="Barcode eingeben…" style="flex:1;padding:12px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--bg);color:var(--tx);text-align:center;">';
-      h+='<button id="scanBtn" style="padding:12px 16px;background:#0071e3;color:#fff;border:none;border-radius:10px;font-size:18px;cursor:pointer;">🔍</button>';
-      h+='</div>';
-      h+='<p id="scanStatus" style="color:var(--tx2);font-size:12px;margin:0;">Scanne…</p>';
-    }else{
-      // Kein BarcodeDetector (Safari) → Kamera + manuelle Eingabe
-      h+='<p style="color:#f59e0b;font-size:14px;margin:0;">📷 Kamera wird geöffnet</p>';
-      h+='<video id="scanVideo" playsinline style="width:100%;max-width:400px;border-radius:12px;aspect-ratio:4/3;object-fit:cover;background:#000;"></video>';
-      h+='<div style="width:80%;max-width:300px;padding:16px;background:var(--bg);border-radius:12px;border:1px solid var(--border);">';
-      h+='<p style="color:var(--tx);font-size:14px;font-weight:600;margin:0 0 4px 0;">⌨️ Barcode manuell eingeben</p>';
-      h+='<p style="color:var(--tx2);font-size:12px;margin:0 0 10px 0;">Kamera-Scan wird von diesem Browser nicht unterstützt. Bitte Barcode tippen.</p>';
-      h+='<input id="barcodeInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="z.B. 7622210449283" style="width:100%;padding:12px;border:2px solid var(--ac);border-radius:10px;font-size:18px;text-align:center;letter-spacing:2px;background:var(--bg);color:var(--tx);">';
-      h+='<p style="color:var(--tx2);font-size:11px;margin:6px 0 0 0;">Typisch: 8–13 Ziffern (Getränke, Dosen, Schokolade, Hygiene)</p>';
-      h+='</div>';
-    }
-    h+='</div>';
+  if(hasCameraAPI&&window.Quagga){
+    // === Kamera-Scanner mit QuaggaJS ===
+    var h='<div style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:20px;width:100%">';
+    h+='<div id="scan-container" style="width:100%;max-width:400px;position:relative;border-radius:12px;overflow:hidden;background:#000;">';
+    h+='<div id="interactive" style="width:100%;aspect-ratio:4/3;"></div>';
+    // Scan-Overlay (Fokusrahmen)
+    h+='<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:70%;height:40%;border:3px solid rgba(0,255,0,0.6);border-radius:8px;pointer-events:none;">';
+    h+='<div style="position:absolute;top:-3px;left:-3px;width:20px;height:20px;border-top:4px solid #00ff00;border-left:4px solid #00ff00;"></div>';
+    h+='<div style="position:absolute;top:-3px;right:-3px;width:20px;height:20px;border-top:4px solid #00ff00;border-right:4px solid #00ff00;"></div>';
+    h+='<div style="position:absolute;bottom:-3px;left:-3px;width:20px;height:20px;border-bottom:4px solid #00ff00;border-left:4px solid #00ff00;"></div>';
+    h+='<div style="position:absolute;bottom:-3px;right:-3px;width:20px;height:20px;border-bottom:4px solid #00ff00;border-right:4px solid #00ff00;"></div>';
+    h+='</div></div>';
+    h+='<p id="scanStatus" style="color:#98989d;font-size:14px;margin:0;">Scanne… Barcode in den grünen Rahmen halten</p>';
+    // Manuelle Eingabe
+    h+='<div style="width:100%;max-width:400px;padding:16px;background:var(--surf);border-radius:12px;border:1px solid var(--border);">';
+    h+='<p style="color:var(--tx);font-size:13px;font-weight:600;margin:0 0 6px;">⌨️ Oder Barcode manuell eingeben:</p>';
+    h+='<div style="display:flex;gap:8px;">';
+    h+='<input id="barcodeInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="z.B. 7622210449283" style="flex:1;padding:12px;border:2px solid var(--ac);border-radius:12px;font-size:16px;text-align:center;background:var(--bg);color:var(--tx);">';
+    h+='<button id="scanBtn" style="padding:12px 16px;background:var(--ac);color:#fff;border:none;border-radius:12px;font-size:18px;cursor:pointer;">🔍</button>';
+    h+='</div><p style="color:var(--tx2);font-size:11px;margin:6px 0 0;">Typisch: 8–13 Ziffern (Getränke, Dosen, Schokolade)</p></div></div>';
     scr.innerHTML=h;
 
-    // Kamera starten
+    // QuaggaJS starten
     try{
-      var video=document.getElementById('scanVideo');
-      var stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720},frameRate:{ideal:15}}});
-      video.srcObject=stream;
-      video.setAttribute('playsinline','true');
-      await video.play();
-
-      var scanInterval=null;
-
-      if(hasBarcodeDetector&&!isSafari){
-        try{
-          var detector=new BarcodeDetector({formats:['ean-13','ean-8','code-128','code-39','code-93','qr-code','datamatrix','pdf417','aztec','upc-a','upc-e','itf','codabar']});
-          scanInterval=setInterval(function(){
-            if(video.readyState>=video.HAVE_ENOUGH_DATA){
-              detector.detect(video).then(function(barcodes){
-                if(barcodes.length>0){
-                  clearInterval(scanInterval);
-                  document.getElementById('scanStatus').textContent='✅ Gescannt!';
-                  handleScan(barcodes[0].rawValue);
-                }
-              }).catch(function(){});
-            }
-          },200);
-        }catch(e){
-          document.getElementById('scanStatus').textContent='⚠️ Manueller Scan nötig';
+      Quagga.init({
+        inputStream:{
+          name:"Live",
+          type:"LiveStream",
+          target:document.querySelector('#interactive'),
+          constraints:{
+            facingMode:'environment',
+            width:{ideal:640},
+            height:{ideal:480}
+          }
+        },
+        decoder:{
+          readers:[
+            'ean_reader','ean_8_reader',
+            'code_128_reader','code_39_reader',
+            'upc_a_reader','upc_e_reader',
+            'i2of5_reader','codabar_reader',
+            'qr_reader'
+          ]
+        },
+        locate:true
+      },function(err){
+        if(err){
+          console.error('Quagga init fehlgeschlagen:',err);
+          document.getElementById('scanStatus').textContent='⚠️ Kamera-Scan nicht verfügbar — unten manuell eingeben';
+          return;
         }
-      }
-      window._scanInterval=scanInterval;
+        Quagga.start();
+      });
+      window._quaggaInitialized=true;
 
-      // Eingabe-Listener
-      var inputEl=document.getElementById('barcodeInput');
-      if(inputEl){
-        inputEl.addEventListener('keyup',function(e){
-          if(e.key==='Enter')handleScan(this.value);
-        });
-      }
-      var btnEl=document.getElementById('scanBtn');
-      if(btnEl){
-        btnEl.addEventListener('click',function(){
-          var val=document.getElementById('barcodeInput').value.trim();
-          if(val)handleScan(val);
-        });
-      }
+      // Barcode-Erkennung
+      Quagga.onDetected(function(result){
+        var code=result.codeResult.code;
+        // Verhindere Mehrfacherkennung
+        if(window._lastScannedCode===code)return;
+        window._lastScannedCode=code;
+        document.getElementById('scanStatus').textContent='✅ Gescannt: '+code;
+        setTimeout(function(){handleScan(code);},600);
+      });
+
+      // Manueller Scan-Button
+      var btn=document.getElementById('scanBtn');
+      if(btn)btn.addEventListener('click',function(){
+        var val=document.getElementById('barcodeInput').value.trim();
+        if(val)handleScan(val);
+      });
+
+      // Enter-Taste
+      var input=document.getElementById('barcodeInput');
+      if(input)input.addEventListener('keyup',function(e){
+        if(e.key==='Enter')handleScan(this.value);
+      });
     }catch(e){
-      // Kamera fehlgeschlagen
-      scr.innerHTML='<div style="text-align:center;padding:30px 20px"><div style="font-size:48px;margin-bottom:12px">📷</div><p style="color:var(--tx2);font-size:14px;margin-bottom:16px;">Barcode manuell eingeben</p><input id="barcodeInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Barcode eingeben…" style="width:85%;padding:14px;border:2px solid var(--ac);border-radius:12px;font-size:16px;background:var(--bg);color:var(--tx);text-align:center;"><p style="color:var(--tx2);font-size:12px;margin-top:10px;">8–13 Ziffern (z.B. von Getränkedose)</p></div>';
-      (function(){var el=document.getElementById('barcodeInput');if(el)el.addEventListener('keyup',function(e){if(e.key==='Enter')handleScan(this.value);});})();
+      console.error('Quagga error:',e);
+      document.getElementById('scanStatus').textContent='⚠️ Kamera-Scan nicht verfügbar — unten manuell eingeben';
     }
   }else{
-    // Kein Kamera-Support
+    // Kein Kamera-Support — nur manuelle Eingabe
     scr.innerHTML='<div style="text-align:center;padding:30px 20px"><div style="font-size:48px;margin-bottom:12px">📷</div><p style="color:var(--tx2);font-size:14px;margin-bottom:16px;">Barcode manuell eingeben</p><input id="barcodeInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Barcode eingeben…" style="width:85%;padding:14px;border:2px solid var(--ac);border-radius:12px;font-size:16px;background:var(--bg);color:var(--tx);text-align:center;"><p style="color:var(--tx2);font-size:12px;margin-top:10px;">8–13 Ziffern (z.B. von Getränkedose)</p></div>';
     (function(){var el=document.getElementById('barcodeInput');if(el)el.addEventListener('keyup',function(e){if(e.key==='Enter')handleScan(this.value);});})();
   }
+}
+
+function closeScan(){
+  // QuaggaJS stoppen
+  if(window._quaggaInitialized){
+    try{Quagga.stop();}catch(e){}
+    window._quaggaInitialized=false;
+  }
+  window._lastScannedCode=null;
+  window._scanInterval=null;
+
+  clM('mSc');
+  var scanner=document.getElementById('scanner');
+  if(scanner)scanner.innerHTML='';
 }
 
 function doScan(){
