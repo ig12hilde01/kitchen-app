@@ -776,7 +776,16 @@ async function initScan(){
           if(window._lastScannedBarcode===decodedText)return;
           window._lastScannedBarcode=decodedText;
           document.getElementById('scanStatus').textContent='✅ Gescannt: '+decodedText;
-          setTimeout(function(){handleScan(decodedText);},600);
+          // Scanner stoppen und Produkt öffnen
+          setTimeout(function(){
+            if(html5QrcodeScanner&&window._html5QrcodeStarted){
+              html5QrcodeScanner.stop().then(function(){
+                html5QrcodeScanner.clear();
+              }).catch(function(e){});
+              window._html5QrcodeStarted=false;
+            }
+            handleScan(decodedText);
+          },600);
         },
         function(errorMessage){
           // Kamera-Fehler — ignorieren (normal bei "kein Barcode im Bild")
