@@ -810,23 +810,20 @@ async function initScan(){
     }catch(e){
       // Kamera fehlgeschlagen
       scr.innerHTML='<div style="text-align:center;padding:30px 20px"><div style="font-size:48px;margin-bottom:12px">📷</div><p style="color:var(--tx2);font-size:14px;margin-bottom:16px;">Barcode manuell eingeben</p><input id="barcodeInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Barcode eingeben…" style="width:85%;padding:14px;border:2px solid var(--ac);border-radius:12px;font-size:16px;background:var(--bg);color:var(--tx);text-align:center;"><p style="color:var(--tx2);font-size:12px;margin-top:10px;">8–13 Ziffern (z.B. von Getränkedose)</p></div>';
-      document.getElementById('barcodeInput').addEventListener('keyup',function(e){
-        if(e.key==='Enter')handleScan(this.value);
-      });
+      (function(){var el=document.getElementById('barcodeInput');if(el)el.addEventListener('keyup',function(e){if(e.key==='Enter')handleScan(this.value);});})();
     }
   }else{
     // Kein Kamera-Support
     scr.innerHTML='<div style="text-align:center;padding:30px 20px"><div style="font-size:48px;margin-bottom:12px">📷</div><p style="color:var(--tx2);font-size:14px;margin-bottom:16px;">Barcode manuell eingeben</p><input id="barcodeInput" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Barcode eingeben…" style="width:85%;padding:14px;border:2px solid var(--ac);border-radius:12px;font-size:16px;background:var(--bg);color:var(--tx);text-align:center;"><p style="color:var(--tx2);font-size:12px;margin-top:10px;">8–13 Ziffern (z.B. von Getränkedose)</p></div>';
-    document.getElementById('barcodeInput').addEventListener('keyup',function(e){
-      if(e.key==='Enter')handleScan(this.value);
-    });
+    (function(){var el=document.getElementById('barcodeInput');if(el)el.addEventListener('keyup',function(e){if(e.key==='Enter')handleScan(this.value);});})();
   }
 }
 
 function doScan(){
   var input=document.getElementById('barcodeInput');
   if(!input)return;
-  handleScan(input.value);
+  var val=input.value.trim();
+  if(val)handleScan(val);
 }
 
 async function handleScan(barcode){
@@ -839,15 +836,15 @@ async function handleScan(barcode){
       var p=d.product;
       openProd();
       setTimeout(function(){
-        document.getElementById('pN').value=p.product_name||'';
-        document.getElementById('pM').value=p.brands||'';
-        document.getElementById('pS').value=p.quantity||'';
-        document.getElementById('pB').value=barcode;
+        var nEl=document.getElementById('pN');if(nEl)nEl.value=p.product_name||'';
+        var mEl=document.getElementById('pM');if(mEl)mEl.value=p.brands||'';
+        var sEl=document.getElementById('pS');if(sEl)sEl.value=p.quantity||'';
+        var bEl=document.getElementById('pB');if(bEl)bEl.value=barcode;
         toast('✅ Produkt gefunden: '+p.product_name);
       },100);
     }
-    else{toast('Produkt nicht gefunden — Name manuell eingeben');openProd();document.getElementById('pB').value=barcode;}
-  }catch(e){toast('Netzwerkfehler — Barcode gespeichert, manuell eingeben');openProd();document.getElementById('pB').value=barcode;}
+    else{toast('Produkt nicht gefunden — Name manuell eingeben');openProd();var bEl2=document.getElementById('pB');if(bEl2)bEl2.value=barcode;}
+  }catch(e){toast('Netzwerkfehler — Barcode gespeichert, manuell eingeben');openProd();var bEl3=document.getElementById('pB');if(bEl3)bEl3.value=barcode;}
 }
 
 function closeScan(){
@@ -855,7 +852,8 @@ function closeScan(){
   var video=document.getElementById('scanVideo');
   if(video&&video.srcObject){video.srcObject.getTracks().forEach(function(t){t.stop();});}
   clM('mSc');
-  document.getElementById('scanner').innerHTML='';
+  var scanner=document.getElementById('scanner');
+  if(scanner)scanner.innerHTML='';
 }
 
 // === UTILS ===
